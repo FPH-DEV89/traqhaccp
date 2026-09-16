@@ -5,10 +5,9 @@
   "type": "module",
   "description": "TraqHACCP Pro - Plan de Maitrise Sanitaire (PMS). Application web statique, sans build, ES modules natifs.",
   "scripts": {
-    "test": "node tools/check-syntax.mjs && node tools/check-design.mjs && node tools/check-parity.mjs && node tools/test-domain.mjs",
+    "test": "node tools/check-syntax.mjs && node tools/check-design.mjs && node tools/check-parity.mjs && node tools/check-css-coverage.mjs && node tools/test-domain.mjs",
     "check": "node tools/check-syntax.mjs && node tools/check-design.mjs && node tools/check-parity.mjs",
     "test:domain": "node tools/test-domain.mjs",
-    "test:e2e": "node tools/e2e.mjs",
     "lint:design": "impeccable detect css src/presentation/views",
     "serve": "python3 -m http.server 8899"
   }

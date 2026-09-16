@@ -1,9 +1,11 @@
 /**
- * TraqHACCP Pro - Domain Entities & Value Objects
- * Clean Architecture - Pure Domain Layer
+ * TraqHACCP Pro — Entités du Domaine & Objets Valeur
+ * Clean Architecture — Couche Domaine pure.
+ * Aucune dépendance externe, aucun accès DOM / localStorage.
  */
 
-import { HACCP_NORMS } from './constants.js';
+import { HACCP_NORMS, DEFAULT_SETTINGS, DEFAULT_BRIGADE } from './constants.js';
+import { ROLES } from './roles.js';
 
 export class Equipment {
   constructor({ id, name, type, min, max, current = 0, status = 'ok', lastLog = '-', operator = '-', history = [] }) {
@@ -313,3 +315,178 @@ export class WeightControlRecord {
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   FABRIQUES & NORMALISEURS — opérateurs, réglages
+   ═══════════════════════════════════════════════════════════════════ */
+
+/** Expression régulière pour un nom propre valide (2–40 car.). */
+const NAME_RE = /^[\p{L}\s'\-]{2,40}$/u;
+
+/** PINs évidents à rejeter (suites simples, répétitions). */
+const OBVIOUS_PINS = new Set(['1234', '2345', '3456', '4567', '5678', '6789', '0000',
+  '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999',
+  '1122', '1212', '0123', '9876', '1230']);
+
+/**
+ * Génère un identifiant stable à partir d'un slug ou d'un timestamp.
+ * @param {string} firstName
+ * @param {string} lastName
+ * @returns {string}
+ */
+function makeOperatorId(firstName, lastName) {
+  const slug = `${firstName}-${lastName}`
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  return `op-${slug}-${Date.now().toString(36)}`;
+}
+
+/**
+ * Crée un nouvel opérateur avec toutes les valeurs par défaut.
+ * Ne valide pas : appeler validateOperator() si nécessaire.
+ * @param {{ firstName: string, lastName: string, role?: string, pin?: string, initials?: string, active?: boolean }} input
+ * @returns {{ id: string, firstName: string, lastName: string, short: string, initials: string, role: string, pin: string, active: boolean, createdAt: string }}
+ */
+export function createOperator(input) {
+  const firstName = (input.firstName ?? '').trim();
+  const lastName  = (input.lastName  ?? '').trim();
+  const role      = ROLES[input.role] ? input.role : 'operateur';
+  const initials  = input.initials
+    ? input.initials.toUpperCase().slice(0, 2)
+    : `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  return {
+    id:        input.id ?? makeOperatorId(firstName, lastName),
+    firstName,
+    lastName,
+    short:     firstName,
+    initials,
+    role,
+    pin:       input.pin ?? '',
+    active:    input.active !== false,
+    createdAt: input.createdAt ?? new Date().toISOString(),
+  };
+}
+
+/**
+ * Normalise un opérateur v3 (sans champ role / active / initials) vers le format v4.
+ * Aucune donnée n'est perdue : les champs inconnus sont conservés par spread.
+ * @param {object} raw
+ * @returns {object}
+ */
+export function normalizeOperator(raw) {
+  if (!raw || typeof raw !== 'object') return createOperator({});
+  const firstName = raw.firstName ?? (raw.name ?? '').split(' ')[0] ?? '';
+  const lastName  = raw.lastName  ?? (raw.name ?? '').split(' ').slice(1).join(' ') ?? '';
+  const role      = ROLES[raw.role] ? raw.role : 'operateur';
+  const initials  = raw.initials
+    ?? `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  return {
+    ...raw,
+    id:        raw.id ?? makeOperatorId(firstName, lastName),
+    firstName,
+    lastName,
+    short:     raw.short ?? firstName,
+    initials,
+    role,
+    pin:       raw.pin ?? '',
+    active:    raw.active !== false,
+    createdAt: raw.createdAt ?? new Date().toISOString(),
+  };
+}
+
+/**
+ * Valide un opérateur. Retourne { ok, errors }.
+ * errors est un objet { champ: messageFrançais } (vide si ok).
+ * @param {object} op
+ * @param {object[]} [existingOperators] — liste des opérateurs existants pour vérifier les doublons
+ * @returns {{ ok: boolean, errors: Record<string, string> }}
+ */
+export function validateOperator(op, existingOperators = []) {
+  const errors = {};
+
+  if (!op.firstName || !NAME_RE.test(op.firstName)) {
+    errors.firstName = 'Le prénom est requis (2 à 40 caractères, lettres, tirets ou apostrophes).';
+  }
+  if (!op.lastName || !NAME_RE.test(op.lastName)) {
+    errors.lastName = 'Le nom est requis (2 à 40 caractères, lettres, tirets ou apostrophes).';
+  }
+  if (!ROLES[op.role]) {
+    errors.role = `Le rôle « ${op.role} » est inconnu.`;
+  }
+  if (op.pin) {
+    const pinStr = String(op.pin);
+    if (!/^\d{4,6}$/.test(pinStr)) {
+      errors.pin = 'Le code PIN doit comporter 4 à 6 chiffres.';
+    } else if (OBVIOUS_PINS.has(pinStr)) {
+      errors.pin = 'Ce code PIN est trop prévisible. Choisissez une combinaison moins évidente.';
+    }
+  }
+  // Doublon de nom complet parmi les opérateurs actifs (hors soi-même)
+  const fullName = `${op.firstName} ${op.lastName}`.toLowerCase();
+  const duplicate = existingOperators.some(
+    (o) => o.id !== op.id && o.active !== false &&
+           `${o.firstName} ${o.lastName}`.toLowerCase() === fullName
+  );
+  if (duplicate) {
+    errors.lastName = 'Un opérateur actif avec ce nom complet existe déjà.';
+  }
+
+  return { ok: Object.keys(errors).length === 0, errors };
+}
+
+/**
+ * Fusionne un objet partiel avec DEFAULT_SETTINGS (2 niveaux de profondeur).
+ * @param {object} [input]
+ * @returns {object}
+ */
+export function createSettings(input) {
+  const base = DEFAULT_SETTINGS;
+  if (!input || typeof input !== 'object') return { ...base };
+  const merged = { ...base, ...input };
+  // Fusion profonde des sous-objets connus
+  for (const key of ['establishment', 'norms']) {
+    if (input[key] && typeof input[key] === 'object') {
+      merged[key] = { ...base[key], ...input[key] };
+    }
+  }
+  return merged;
+}
+
+/**
+ * Normalise un objet réglages partiel ou absent vers des réglages complets et valides.
+ * Garantit que establishment et norms sont toujours présents.
+ * @param {object|null|undefined} raw
+ * @returns {object}
+ */
+export function normalizeSettings(raw) {
+  if (!raw || typeof raw !== 'object') return createSettings({});
+  return createSettings(raw);
+}
+
+/**
+ * Retourne le nom complet affiché d'un opérateur.
+ * @param {{ firstName?: string, lastName?: string, name?: string }} op
+ * @returns {string}
+ */
+export function operatorDisplayName(op) {
+  if (!op) return '';
+  if (op.firstName && op.lastName) return `${op.firstName} ${op.lastName}`;
+  if (op.name) return op.name;
+  return '';
+}
+
+/**
+ * Retourne les initiales (2 lettres) d'un opérateur.
+ * Calcule à partir du prénom/nom si le champ initials est absent.
+ * @param {{ initials?: string, firstName?: string, lastName?: string, name?: string }} op
+ * @returns {string}
+ */
+export function operatorInitials(op) {
+  if (!op) return '??';
+  if (op.initials) return op.initials.toUpperCase().slice(0, 2);
+  const first = op.firstName ?? (op.name ?? '').split(' ')[0] ?? '';
+  const last  = op.lastName  ?? (op.name ?? '').split(' ').slice(1).join(' ') ?? '';
+  return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase() || '??';
+}
