@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design system — Registre · TraqHACCP v4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/layout.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/views.css">
+<style>
+/* ── Styleguide uniquement ───────────────────────────────────────────── */
+:root { --sg-gap: var(--s-9); }
+.sg-root { font-family: var(--ff-sans); color: var(--ink); background: var(--paper); min-height: 100vh; padding-bottom: var(--s-11); }
+.sg-header { background: var(--sheet); border-bottom: 1px solid var(--rule-2); padding: var(--s-8) var(--s-9); }
+.sg-header__eyebrow { font-family: var(--ff-mono); font-size: var(--t-sm); color: var(--ink-3); margin-bottom: var(--s-3); }
+.sg-header__title { font-family: var(--ff-serif); font-size: var(--t-display); font-weight: 400; line-height: 1.08; letter-spacing: -0.015em; color: var(--ink); }
+.sg-header__meta { display: flex; gap: var(--s-6); margin-top: var(--s-5); font-size: var(--t-sm); color: var(--ink-2); }
+.sg-header__meta strong { color: var(--ink); font-family: var(--ff-mono); }
+.sg-wrap { max-width: 1320px; margin-inline: auto; padding-inline: var(--s-8); }
+.sg-section { margin-top: var(--sg-gap); }
+.sg-section-title { font-size: var(--t-h1); font-weight: 600; letter-spacing: -0.01em; color: var(--ink); border-bottom: 1px solid var(--rule-2); padding-bottom: var(--s-5); margin-bottom: var(--s-8); }
+.sg-subsection { margin-top: var(--s-8); }
+.sg-subsection-title { font-size: var(--t-h2); font-weight: 600; color: var(--ink); margin-bottom: var(--s-4); }
+.sg-note { font-size: var(--t-sm); color: var(--ink-2); margin-bottom: var(--s-5); }
+/* Dual-theme display */
+.sg-dual { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-6); }
+.sg-theme-block { border: 1px solid var(--rule); border-radius: var(--r-2); overflow: hidden; }
+.sg-theme-label { font-family: var(--ff-mono); font-size: var(--t-sm); padding: var(--s-3) var(--s-5); border-bottom: 1px solid var(--rule); color: var(--ink-3); }
+.sg-theme-inner { padding: var(--s-6); }
+[data-theme="nuit"] .sg-theme-label { border-bottom-color: var(--rule); }
+/* Palette swatches */
+.sg-palette { display: flex; flex-wrap: wrap; gap: var(--s-4); }
+.sg-swatch { width: 80px; }
+.sg-swatch__color { width: 80px; height: 48px; border-radius: var(--r-2); border: 1px solid var(--rule); }
+.sg-swatch__name { font-family: var(--ff-mono); font-size: 10px; color: var(--ink-2); margin-top: var(--s-2); word-break: break-all; }
+.sg-swatch__hex { font-family: var(--ff-mono); font-size: 9px; color: var(--ink-3); }
+/* Type scale rows */
+.sg-type-row { display: flex; align-items: baseline; gap: var(--s-6); border-bottom: 1px solid var(--rule); padding-block: var(--s-4); }
+.sg-type-meta { flex: 0 0 140px; font-family: var(--ff-mono); font-size: 10px; color: var(--ink-3); line-height: 1.4; }
+.sg-type-sample { flex: 1; color: var(--ink); }
+/* Spacing bars */
+.sg-space-row { display: flex; align-items: center; gap: var(--s-5); padding-block: var(--s-3); }
+.sg-space-bar { background: var(--accent-wash); border: 1px solid var(--accent); border-radius: var(--r-1); flex-shrink: 0; height: 8px; }
+.sg-space-label { font-family: var(--ff-mono); font-size: var(--t-sm); color: var(--ink-3); width: 60px; }
+.sg-space-val { font-family: var(--ff-mono); font-size: var(--t-sm); color: var(--ink-2); }
+/* Icon grid */
+.sg-icon-grid { display: flex; flex-wrap: wrap; gap: var(--s-5); }
+.sg-icon-item { display: flex; flex-direction: column; align-items: center; gap: var(--s-2); width: 68px; }
+.sg-icon-item svg { color: var(--ink-2); }
+.sg-icon-name { font-family: var(--ff-mono); font-size: 9px; color: var(--ink-3); text-align: center; word-break: break-all; }
+/* Do / Don't */
+.sg-dont { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-6); }
+.sg-dont-block { border: 1px solid var(--rule); border-radius: var(--r-2); overflow: hidden; }
+.sg-dont-label { font-family: var(--ff-mono); font-size: var(--t-sm); padding: var(--s-3) var(--s-5); border-bottom: 1px solid var(--rule); }
+.sg-dont-label--no { background: var(--danger); color: var(--on-accent); border-bottom-color: var(--danger); }
+.sg-dont-label--yes { background: var(--ok); color: var(--on-accent); border-bottom-color: var(--ok); }
+.sg-dont-inner { padding: var(--s-6); background: var(--sheet); }
+/* Radius display */
+.sg-radius-row { display: flex; gap: var(--s-8); align-items: flex-end; }
+.sg-radius-item { display: flex; flex-direction: column; align-items: center; gap: var(--s-3); }
+.sg-radius-box { width: 48px; height: 48px; background: var(--accent-wash); border: 1px solid var(--accent); }
+/* Static overlay wrappers (position: static, not fixed) */
+.sg-overlay-demo { position: relative; overflow: hidden; border: 1px solid var(--rule); border-radius: var(--r-2); }
+.sg-panel-static { width: 320px; background: var(--sheet); border-left: 1px solid var(--rule); box-shadow: var(--sh-1); display: flex; flex-direction: column; }
+.sg-modal-static { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--r-3); box-shadow: var(--sh-2); max-width: 420px; display: flex; flex-direction: column; }
+/* Print */
+@media print {
+  .sg-header { background: var(--sheet); }
+  .sg-dual { grid-template-columns: 1fr; }
+  .sg-dont { grid-template-columns: 1fr; }
+  .sg-section { break-inside: avoid; }
+}
+</style>
+</head>
+<body class="sg-root">
+
+<!-- ── En-tête ──────────────────────────────────────────────────────────── -->
+<header class="sg-header">
+<div class="sg-wrap">
+  <p class="sg-header__eyebrow">Le Comptoir des Halles — TraqHACCP &nbsp;·&nbsp; Version <strong>4.0</strong> &nbsp;·&nbsp; <span class="num">2026-09-16</span></p>
+  <h1 class="sg-header__title">Design system — Registre</h1>
+  <div class="sg-header__meta">
+    <span>Référence visuelle officielle — toute nouvelle vue doit se conformer à <strong>docs/DESIGN.md</strong></span>
+    <span><strong>86</strong> variables définies dans <strong>tokens.css</strong></span>
+  </div>
+</div>
+</header>
+
+<div class="sg-wrap">
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     §1 — Palette
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="sg-section">
+<h2 class="sg-section-title">1 · Palette</h2>
+<p class="sg-note"><strong>Règle :</strong> une seule couleur d'accent — les statuts utilisent <code>--ok</code> / <code>--warn</code> / <code>--danger</code>. Aucune couleur littérale hors de <code>tokens.css</code>.</p>
+
+<div class="sg-dual">
+  <div class="sg-theme-block">
+    <div class="sg-theme-label">Thème papier (défaut)</div>
+    <div class="sg-theme-inner" data-theme="papier">
+      <div class="sg-palette">
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--paper)"></div><div class="sg-swatch__name">--paper</div><div class="sg-swatch__hex">#F2F0EA</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--paper-2)"></div><div class="sg-swatch__name">--paper-2</div><div class="sg-swatch__hex">#EAE7DF</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--sheet)"></div><div class="sg-swatch__name">--sheet</div><div class="sg-swatch__hex">#FBFAF7</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--ink)"></div><div class="sg-swatch__name">--ink</div><div class="sg-swatch__hex">#1A1C1E</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--ink-2)"></div><div class="sg-swatch__name">--ink-2</div><div class="sg-swatch__hex">#4C5257</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--ink-3)"></div><div class="sg-swatch__name">--ink-3</div><div class="sg-swatch__hex">#6F757B</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--rule)"></div><div class="sg-swatch__name">--rule</div><div class="sg-swatch__hex">#DDD9CF</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--rule-2)"></div><div class="sg-swatch__name">--rule-2</div><div class="sg-swatch__hex">#C3BEB1</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--accent)"></div><div class="sg-swatch__name">--accent</div><div class="sg-swatch__hex">#0E4F55</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--accent-2)"></div><div class="sg-swatch__name">--accent-2</div><div class="sg-swatch__hex">#0A3B40</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--accent-wash)"></div><div class="sg-swatch__name">--accent-wash</div><div class="sg-swatch__hex">#E3EDED</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--ok)"></div><div class="sg-swatch__name">--ok</div><div class="sg-swatch__hex">#1D6B3F</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--warn)"></div><div class="sg-swatch__name">--warn</div><div class="sg-swatch__hex">#8A5A00</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--danger)"></div><div class="sg-swatch__name">--danger</div><div class="sg-swatch__hex">#9E241C</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--on-accent)"></div><div class="sg-swatch__name">--on-accent</div><div class="sg-swatch__hex">#F7FBFA</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="sg-theme-block" data-theme="nuit">
+    <div class="sg-theme-label">Thème nuit</div>
+    <div class="sg-theme-inner">
+      <div class="sg-palette">
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--paper)"></div><div class="sg-swatch__name">--paper</div><div class="sg-swatch__hex">#141413</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--paper-2)"></div><div class="sg-swatch__name">--paper-2</div><div class="sg-swatch__hex">#1A1918</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--sheet)"></div><div class="sg-swatch__name">--sheet</div><div class="sg-swatch__hex">#1C1B19</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--ink)"></div><div class="sg-swatch__name">--ink</div><div class="sg-swatch__hex">#E9E6E0</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--ink-2)"></div><div class="sg-swatch__name">--ink-2</div><div class="sg-swatch__hex">#ABA8A1</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--ink-3)"></div><div class="sg-swatch__name">--ink-3</div><div class="sg-swatch__hex">#8A867F</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--rule)"></div><div class="sg-swatch__name">--rule</div><div class="sg-swatch__hex">#2E2C29</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--rule-2)"></div><div class="sg-swatch__name">--rule-2</div><div class="sg-swatch__hex">#423F3A</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--accent)"></div><div class="sg-swatch__name">--accent</div><div class="sg-swatch__hex">#5FB3B0</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--accent-2)"></div><div class="sg-swatch__name">--accent-2</div><div class="sg-swatch__hex">#7CC5C2</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--accent-wash)"></div><div class="sg-swatch__name">--accent-wash</div><div class="sg-swatch__hex">#14312F</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--ok)"></div><div class="sg-swatch__name">--ok</div><div class="sg-swatch__hex">#4FA96E</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--warn)"></div><div class="sg-swatch__name">--warn</div><div class="sg-swatch__hex">#C79A3A</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--danger)"></div><div class="sg-swatch__name">--danger</div><div class="sg-swatch__hex">#D9645A</div></div>
+        <div class="sg-swatch"><div class="sg-swatch__color" style="background:var(--on-accent)"></div><div class="sg-swatch__name">--on-accent</div><div class="sg-swatch__hex">#0C1613</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     §2 — Typographie
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="sg-section">
+<h2 class="sg-section-title">2 · Typographie</h2>
+<p class="sg-note">Trois familles : <strong>Instrument Serif</strong> (display) · <strong>Archivo</strong> (interface) · <strong>IBM Plex Mono</strong> (données). Tout chiffre mesuré = <code>.num</code>. Unités = <code>.unit</code>.</p>
+<div class="sg-type-row"><div class="sg-type-meta">--t-display<br>30px · Serif 400<br>Display éditorial</div><div class="sg-type-sample" style="font-family:var(--ff-serif);font-size:var(--t-display);font-weight:400;line-height:1.08;letter-spacing:-0.015em;">Relevés de température — semaine 37</div></div>
+<div class="sg-type-row"><div class="sg-type-meta">--t-h1<br>21px · Archivo 600<br>Titre section</div><div class="sg-type-sample" style="font-size:var(--t-h1);font-weight:600;letter-spacing:-0.01em;">Contrôle des températures</div></div>
+<div class="sg-type-row"><div class="sg-type-meta">--t-h2<br>15px · Archivo 600<br>Titre bloc</div><div class="sg-type-sample" style="font-size:var(--t-h2);font-weight:600;letter-spacing:-0.005em;">Chambre froide positive n° 1</div></div>
+<div class="sg-type-row"><div class="sg-type-meta">--t-h3<br>13px · Archivo 600<br>Sous-titre</div><div class="sg-type-sample" style="font-size:var(--t-h3);font-weight:600;">Dernière mesure · 14 h 22</div></div>
+<div class="sg-type-row"><div class="sg-type-meta">--t-body<br>13.5px · Archivo 400<br>Texte courant</div><div class="sg-type-sample" style="font-size:var(--t-body);line-height:1.5;">À consommer jusqu'au 18/09/2026. Huile mise au repos à 14 h 05 par Karim Bouziane.</div></div>
+<div class="sg-type-row"><div class="sg-type-meta">--t-sm<br>12px · Archivo 400<br>Texte secondaire</div><div class="sg-type-sample" style="font-size:var(--t-sm);line-height:1.45;color:var(--ink-2);">Relevé enregistré par Amélie Ferrand — gérante</div></div>
+<div class="sg-type-row"><div class="sg-type-meta">--t-label<br>10.5px · 600 uppercase<br>Micro-libellés</div><div class="sg-type-sample" style="font-size:10.5px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:var(--ink-3);">Température centrale</div></div>
+<div class="sg-type-row"><div class="sg-type-meta">--t-num<br>13.5px · Mono 400<br>Valeurs tabulaires</div><div class="sg-type-sample" style="font-family:var(--ff-mono);font-size:var(--t-num);font-variant-numeric:tabular-nums;">3,4&nbsp;<span style="font-size:var(--t-sm);color:var(--ink-3);margin-left:2px;">°C</span></div></div>
+<div class="sg-type-row"><div class="sg-type-meta">--t-num-lg<br>20px · Mono 500<br>KPI</div><div class="sg-type-sample" style="font-family:var(--ff-mono);font-size:var(--t-num-lg);font-weight:500;font-variant-numeric:tabular-nums;">-18,6&nbsp;<span style="font-size:var(--t-sm);color:var(--ink-3);margin-left:2px;">°C</span></div></div>
+<div class="sg-type-row"><div class="sg-type-meta">--t-num-xl<br>34px · Mono 500<br>Score sanitaire</div><div class="sg-type-sample" style="font-family:var(--ff-mono);font-size:var(--t-num-xl);font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;">97,3<span style="font-size:var(--t-sm);color:var(--ink-3);margin-left:2px;">%</span></div></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     §3 — Espacements & Rayons
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="sg-section">
+<h2 class="sg-section-title">3 · Espacements et rayons</h2>
+<div class="sg-space-row"><div class="sg-space-label">--s-1</div><div class="sg-space-bar" style="width:var(--s-1)"></div><div class="sg-space-val">2 px</div></div>
+<div class="sg-space-row"><div class="sg-space-label">--s-2</div><div class="sg-space-bar" style="width:var(--s-2)"></div><div class="sg-space-val">4 px</div></div>
+<div class="sg-space-row"><div class="sg-space-label">--s-3</div><div class="sg-space-bar" style="width:var(--s-3)"></div><div class="sg-space-val">6 px</div></div>
+<div class="sg-space-row"><div class="sg-space-label">--s-4</div><div class="sg-space-bar" style="width:var(--s-4)"></div><div class="sg-space-val">8 px</div></div>
+<div class="sg-space-row"><div class="sg-space-label">--s-5</div><div class="sg-space-bar" style="width:var(--s-5)"></div><div class="sg-space-val">12 px</div></div>
+<div class="sg-space-row"><div class="sg-space-label">--s-6</div><div class="sg-space-bar" style="width:var(--s-6)"></div><div class="sg-space-val">16 px</div></div>
+<div class="sg-space-row"><div class="sg-space-label">--s-7</div><div class="sg-space-bar" style="width:var(--s-7)"></div><div class="sg-space-val">20 px</div></div>
+<div class="sg-space-row"><div class="sg-space-label">--s-8</div><div class="sg-space-bar" style="width:var(--s-8)"></div><div class="sg-space-val">24 px</div></div>
+<div class="sg-space-row"><div class="sg-space-label">--s-9</div><div class="sg-space-bar" style="width:var(--s-9)"></div><div class="sg-space-val">32 px</div></div>
+<div class="sg-space-row"><div class="sg-space-label">--s-10</div><div class="sg-space-bar" style="width:var(--s-10)"></div><div class="sg-space-val">40 px</div></div>
+<div class="sg-space-row"><div class="sg-space-label">--s-11</div><div class="sg-space-bar" style="width:var(--s-11)"></div><div class="sg-space-val">56 px</div></div>
+<div class="sg-subsection">
+  <h3 class="sg-subsection-title">Rayons</h3>
+  <div class="sg-radius-row">
+    <div class="sg-radius-item"><div class="sg-radius-box" style="border-radius:var(--r-1)"></div><div class="sg-space-label">--r-1 · 2 px</div></div>
+    <div class="sg-radius-item"><div class="sg-radius-box" style="border-radius:var(--r-2)"></div><div class="sg-space-label">--r-2 · 3 px</div></div>
+    <div class="sg-radius-item"><div class="sg-radius-box" style="border-radius:var(--r-3)"></div><div class="sg-space-label">--r-3 · 6 px (max)</div></div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     §4 — Composants
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="sg-section">
+<h2 class="sg-section-title">4 · Composants</h2>
+
+<!-- 4.1 Boutons -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.1 Boutons — <code>.btn</code></h3>
+<p class="sg-note">Hauteur <code>--ctl</code> (32 px), bordure 1 px, rayon <code>--r-2</code>. <code>.btn--primary</code> = fond accent. <code>.icon-btn</code> = carré 32 px.</p>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);">
+    <div class="row row--sm" style="flex-wrap:wrap;gap:var(--s-4);margin-bottom:var(--s-4);">
+      <button class="btn">Défaut</button>
+      <button class="btn btn--primary">Principal</button>
+      <button class="btn btn--ghost">Fantôme</button>
+      <button class="btn btn--danger">Supprimer</button>
+      <button class="btn btn--sm">Petit</button>
+      <button class="btn" disabled>Désactivé</button>
+    </div>
+    <button class="btn btn--block btn--primary">Pleine largeur</button>
+    <div style="margin-top:var(--s-4);display:flex;gap:var(--s-3);">
+      <button class="icon-btn" aria-label="Rechercher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+      <button class="icon-btn" aria-label="Filtrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></button>
+    </div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);">
+    <div class="row row--sm" style="flex-wrap:wrap;gap:var(--s-4);margin-bottom:var(--s-4);">
+      <button class="btn">Défaut</button>
+      <button class="btn btn--primary">Principal</button>
+      <button class="btn btn--ghost">Fantôme</button>
+      <button class="btn btn--danger">Supprimer</button>
+      <button class="btn btn--sm">Petit</button>
+      <button class="btn" disabled>Désactivé</button>
+    </div>
+    <button class="btn btn--block btn--primary">Pleine largeur</button>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.2 Champs -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.2 Champs — <code>.field</code></h3>
+<p class="sg-note">Hauteur <code>--ctl-lg</code> (36 px). Validation inline : <code>.field__error</code> + <code>aria-invalid</code>. Aucun <code>alert()</code>.</p>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-5);">
+    <div class="field"><label class="field__label">Température relevée</label><input class="input num" type="number" placeholder="3,4" value="3.4"><span class="field__hint">En degrés Celsius — obligatoire</span></div>
+    <div class="field"><label class="field__label">Enceinte</label><select class="select"><option>Chambre froide n° 1</option><option>Congélateur pâtisserie</option></select></div>
+    <div class="field"><label class="field__label">Température (erreur)</label><input class="input" type="text" aria-invalid="true" value="-99,0"><span class="field__error">Hors plage admissible (0 °C – 8 °C)</span></div>
+    <div class="field"><label class="field__label">Remarque</label><textarea class="textarea" rows="3" placeholder="Huile mise au repos…"></textarea></div>
+    <label class="switch"><input type="checkbox" checked><span class="switch__track"><span class="switch__thumb"></span></span>Relevé conforme</label>
+    <label class="checkbox"><input type="checkbox" checked>Valider la chaîne du froid</label>
+    <div class="field"><label class="field__label">Code PIN</label><div class="pin"><input class="pin__cell" type="password" maxlength="1"><input class="pin__cell" type="password" maxlength="1"><input class="pin__cell" type="password" maxlength="1"><input class="pin__cell" type="password" maxlength="1"></div></div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-5);">
+    <div class="field"><label class="field__label">Température relevée</label><input class="input num" type="number" value="-18.6"><span class="field__hint">Congélateur — plage : -25 °C – -15 °C</span></div>
+    <div class="field"><label class="field__label">Enceinte</label><select class="select"><option>Congélateur pâtisserie</option></select></div>
+    <div class="field"><label class="field__label">Température (erreur)</label><input class="input" type="text" aria-invalid="true" value="5,1"><span class="field__error">Température hors plage</span></div>
+    <label class="switch"><input type="checkbox"><span class="switch__track"><span class="switch__thumb"></span></span>Nettoyage effectué</label>
+    <label class="checkbox"><input type="checkbox">Signature électronique</label>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.3 Seg, Toolbar -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.3 Segmented control & barre de filtres — <code>.seg</code> · <code>.toolbar</code></h3>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);">
+    <div class="seg" role="group" aria-label="Période">
+      <button class="seg__item is-active">Aujourd'hui</button>
+      <button class="seg__item">Semaine</button>
+      <button class="seg__item">Mois</button>
+    </div>
+    <div class="toolbar" style="margin-top:var(--s-5);">
+      <div class="seg"><button class="seg__item is-active">Tous</button><button class="seg__item">Conforme</button><button class="seg__item">Alerte</button></div>
+      <input class="input" type="search" placeholder="Rechercher…" style="width:180px;">
+    </div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);">
+    <div class="seg"><button class="seg__item">Aujourd'hui</button><button class="seg__item is-active">Semaine</button><button class="seg__item">Mois</button></div>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.4 KPI -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.4 KPI — <code>.kpi</code></h3>
+<p class="sg-note"><code>.kpi__delta.is-up</code> = vert / <code>.is-down</code> = rouge. <code>.kpi__spark</code> = mini-graphe SVG optionnel.</p>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-5);">
+    <div class="sheet"><div class="kpi"><div class="kpi__label">Conformité</div><div class="kpi__value num">97,3<span class="kpi__unit">%</span></div><div class="kpi__delta is-up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="12" height="12" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>+2,1</div></div></div>
+    <div class="sheet"><div class="kpi"><div class="kpi__label">Alertes</div><div class="kpi__value num">3</div><div class="kpi__delta is-down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="12" height="12" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>-1</div><svg class="kpi__spark" viewBox="0 0 64 20" width="64" height="20" aria-hidden="true"><polyline points="0,16 10,14 20,10 30,12 40,6 50,8 64,4" fill="none" stroke="var(--accent)" stroke-width="1.5"/></svg></div></div>
+    <div class="sheet"><div class="kpi"><div class="kpi__label">TPM huile</div><div class="kpi__value num">18<span class="kpi__unit">%</span></div><div class="kpi__delta is-up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="12" height="12" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>+3</div></div></div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-5);">
+    <div class="sheet"><div class="kpi"><div class="kpi__label">Conformité</div><div class="kpi__value num">94,1<span class="kpi__unit">%</span></div><div class="kpi__delta is-down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="12" height="12" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>-3,2</div></div></div>
+    <div class="sheet"><div class="kpi"><div class="kpi__label">Tâches en retard</div><div class="kpi__value num">7</div><div class="kpi__delta is-down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="12" height="12" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>-2</div></div></div>
+    <div class="sheet"><div class="kpi"><div class="kpi__label">Score DDPP</div><div class="kpi__value num">14<span class="kpi__unit">/20</span></div><div class="kpi__delta is-up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="12" height="12" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>+2</div></div></div>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.5 Section, Sheet -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.5 Conteneurs — <code>.section</code> · <code>.sheet</code></h3>
+<p class="sg-note"><code>.sheet</code> = surface composant (fond <code>--sheet</code>, bordure 1 px, rayon <code>--r-2</code>). Aucune ombre sur les cartes.</p>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);">
+    <div class="section">
+      <div class="section__head"><h3 class="section__title">Relevés du jour</h3><button class="btn btn--sm btn--primary">Ajouter</button></div>
+      <div class="sheet">
+        <div class="sheet__head"><span style="font-size:var(--t-h3);font-weight:600;">Chambre froide n° 1</span><span class="badge-count">4</span></div>
+        <div class="sheet__body" style="font-size:var(--t-sm);color:var(--ink-2);">3 tâches en retard sur ce poste de travail.</div>
+        <div class="sheet__foot"><button class="btn btn--ghost btn--sm">Voir tout</button><button class="btn btn--sm btn--primary">Relever</button></div>
+      </div>
+    </div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);">
+    <div class="section">
+      <div class="section__head"><h3 class="section__title">Alertes actives</h3><span class="badge-count">3</span></div>
+      <div class="sheet">
+        <div class="sheet__head"><span style="font-size:var(--t-h3);font-weight:600;">Congélateur pâtisserie</span></div>
+        <div class="sheet__body" style="font-size:var(--t-sm);color:var(--ink-2);">Température hors plage depuis 02 h 14.</div>
+        <div class="sheet__foot"><button class="btn btn--danger btn--sm">Signaler</button></div>
+      </div>
+    </div>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.6 Callout -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.6 Callout — <code>.callout</code></h3>
+<p class="sg-note">Bordure gauche 3 px. Trois variantes : info · warn · danger.</p>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-4);">
+    <div class="callout callout--info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>Relevé enregistré. Prochain contrôle à 20 h 00.</span></div>
+    <div class="callout callout--warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Huile à surveiller — TPM&nbsp;: <span class="num">18&nbsp;%</span>. Seuil critique à 25 %.</span></div>
+    <div class="callout callout--danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><span>Température hors plage depuis <span class="num">02 h 14</span>. Intervention requise immédiatement.</span></div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-4);">
+    <div class="callout callout--info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>3 tâches en retard — assignées à Tom Rivière.</span></div>
+    <div class="callout callout--warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg><span>DLC dépassée sur 2 préparations.</span></div>
+    <div class="callout callout--danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><span>Non-conformité détectée — fiche de non-conformité ouverte.</span></div>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.7 Tableau -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.7 Tableau — <code>.table</code></h3>
+<p class="sg-note">Entêtes : <code>--t-label</code>, fond <code>--paper-2</code>. Lignes : hauteur <code>--row</code> (40 px). Colonnes numériques : <code>.num</code>. Statuts : <code>.mark</code>.</p>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);padding:0;">
+    <table class="table">
+      <thead><tr><th>Enceinte</th><th>Heure</th><th class="num">T °C</th><th>Statut</th><th>Opérateur</th></tr></thead>
+      <tbody>
+        <tr><td>CF n° 1</td><td class="num">08:12</td><td class="num">3,4</td><td><span class="mark mark--ok"><span class="mark__label">Conforme</span></span></td><td>A. Ferrand</td></tr>
+        <tr class="is-selected"><td>Congélateur pâtisserie</td><td class="num">08:15</td><td class="num">-18,6</td><td><span class="mark mark--ok"><span class="mark__label">Conforme</span></span></td><td>K. Bouziane</td></tr>
+        <tr><td>CF n° 2</td><td class="num">08:20</td><td class="num mark">7,1</td><td><span class="mark mark--warn"><span class="mark__label">À surveiller</span></span></td><td>L. Marcotte</td></tr>
+        <tr><td>Liaison chaude</td><td class="num">09:05</td><td class="num">61,3</td><td><span class="mark mark--danger"><span class="mark__label">Hors plage</span></span></td><td>T. Rivière</td></tr>
+        <tr><td colspan="5" class="empty" style="padding:var(--s-5);text-align:center;color:var(--ink-3);font-size:var(--t-sm);">Fin des relevés</td></tr>
+      </tbody>
+    </table>
+    <div style="padding:var(--s-5);display:flex;flex-direction:column;gap:var(--s-3);">
+      <div class="skeleton" style="height:40px;width:100%;border-radius:var(--r-2);"></div>
+      <div class="skeleton" style="height:40px;width:85%;border-radius:var(--r-2);"></div>
+    </div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);padding:0;">
+    <table class="table table--zebra">
+      <thead><tr><th>Document</th><th>Date</th><th>Statut</th></tr></thead>
+      <tbody>
+        <tr><td>Fiche de non-conformité #41</td><td class="num">2026-09-14</td><td><span class="mark mark--danger"><span class="mark__label">Ouvert</span></span></td></tr>
+        <tr><td>Relevé CF n° 1</td><td class="num">2026-09-15</td><td><span class="mark mark--ok"><span class="mark__label">Validé</span></span></td></tr>
+        <tr><td>Plan nettoyage</td><td class="num">2026-09-16</td><td><span class="mark mark--neutral"><span class="mark__label">En cours</span></span></td></tr>
+      </tbody>
+    </table>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.8 Timeline -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.8 Chronologie — <code>.timeline</code></h3>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);">
+    <div class="timeline">
+      <div class="timeline__item"><div><div class="num" style="font-size:var(--t-sm);color:var(--ink-3);">08:12</div><div style="font-size:var(--t-sm);color:var(--ink);">Relevé CF n° 1 — <span class="num">3,4 °C</span></div></div></div>
+      <div class="timeline__item"><div><div class="num" style="font-size:var(--t-sm);color:var(--ink-3);">09:05</div><div style="font-size:var(--t-sm);color:var(--ink);">Alerte liaison chaude — Karim Bouziane</div></div></div>
+      <div class="timeline__item"><div><div class="num" style="font-size:var(--t-sm);color:var(--ink-3);">10:30</div><div style="font-size:var(--t-sm);color:var(--ink);">Huile mise au repos — TPM <span class="num">18&nbsp;%</span></div></div></div>
+    </div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);">
+    <div class="timeline">
+      <div class="timeline__item"><div><div class="num" style="font-size:var(--t-sm);color:var(--ink-3);">14:22</div><div style="font-size:var(--t-sm);color:var(--ink);">Nettoyage de la plonge — Tom Rivière</div></div></div>
+      <div class="timeline__item"><div><div class="num" style="font-size:var(--t-sm);color:var(--ink-3);">15:47</div><div style="font-size:var(--t-sm);color:var(--ink);">Réception fournisseur — <span class="num">4,1 °C</span></div></div></div>
+    </div>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.9 Stamp -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.9 Tampon d'enregistrement — <code>.stamp</code></h3>
+<p class="sg-note">Animation <code>opacity 0&rarr;1 + scale 1.04&rarr;1</code> en <code>--d-3</code>, une seule fois. Bordure accent, texte mono.</p>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);">
+    <div class="stamp" style="animation:none;opacity:1;">RELEVÉ ENREGISTRÉ<br><span class="num">2026-09-16 &nbsp;08:12</span><br>Amélie Ferrand — gérante</div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);">
+    <div class="stamp" style="animation:none;opacity:1;">NON-CONFORMITÉ #41<br><span class="num">2026-09-14 &nbsp;22:05</span><br>Karim Bouziane — second de cuisine</div>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.10 Matrice allergènes -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.10 Matrice allergènes — <code>.matrix</code></h3>
+<p class="sg-note">Entêtes verticales (<code>writing-mode: vertical-rl</code>). Cellules 36 px. <code>.matrix__on</code> = présent, <code>.matrix__off</code> = absent.</p>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);padding:0;">
+    <div class="matrix">
+      <table>
+        <thead><tr><th>Préparation</th><th>Gluten</th><th>Crustacés</th><th>Oeufs</th><th>Poissons</th><th>Arachides</th></tr></thead>
+        <tbody>
+          <tr><td>Crème brûlée</td><td><span class="matrix__off"></span></td><td><span class="matrix__off"></span></td><td><span class="matrix__on"></span></td><td><span class="matrix__off"></span></td><td><span class="matrix__off"></span></td></tr>
+          <tr><td>Tarte tatin</td><td><span class="matrix__on"></span></td><td><span class="matrix__off"></span></td><td><span class="matrix__on"></span></td><td><span class="matrix__off"></span></td><td><span class="matrix__off"></span></td></tr>
+          <tr><td>Soupe de poissons</td><td><span class="matrix__off"></span></td><td><span class="matrix__on"></span></td><td><span class="matrix__off"></span></td><td><span class="matrix__on"></span></td><td><span class="matrix__off"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);padding:0;">
+    <div class="matrix">
+      <table>
+        <thead><tr><th>Préparation</th><th>Lait</th><th>Soja</th><th>Sésame</th><th>Sulfites</th><th>Lupin</th></tr></thead>
+        <tbody>
+          <tr><td>Madeleines au miel</td><td><span class="matrix__on"></span></td><td><span class="matrix__off"></span></td><td><span class="matrix__off"></span></td><td><span class="matrix__off"></span></td><td><span class="matrix__off"></span></td></tr>
+          <tr><td>Vinaigrette maison</td><td><span class="matrix__off"></span></td><td><span class="matrix__off"></span></td><td><span class="matrix__on"></span></td><td><span class="matrix__on"></span></td><td><span class="matrix__off"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.11 Jauge, Chrono, Temp -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.11 Jauge · Chronomètre · Température — <code>.gauge</code> · <code>.chrono</code> · <code>.temp</code></h3>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-6);">
+    <div class="gauge">
+      <div class="gauge__value num">18&nbsp;<span style="font-size:var(--t-sm);color:var(--ink-3);">%</span></div>
+      <div class="gauge__track"><div class="gauge__fill" style="width:72%;"></div><div class="gauge__cursor" style="left:72%;"></div><div class="gauge__mark" style="left:100%;" data-label="25 %"></div></div>
+      <div class="gauge__labels"><span>0&nbsp;%</span><span>25&nbsp;%</span></div>
+    </div>
+    <div class="chrono"><div class="chrono__label">Décongélation — restant</div><div class="chrono__value num">02:14</div><div class="chrono__bar"><div class="chrono__progress" style="width:63%;"></div></div></div>
+    <div style="display:flex;gap:var(--s-5);align-items:center;">
+      <span class="temp temp--ok num">3,4&nbsp;<span style="font-size:var(--t-sm);color:var(--ink-3);">°C</span></span>
+      <span class="temp temp--warm num">7,1&nbsp;<span style="font-size:var(--t-sm);color:var(--ink-3);">°C</span></span>
+      <span class="temp temp--cold num">-18,6&nbsp;<span style="font-size:var(--t-sm);color:var(--ink-3);">°C</span></span>
+      <span class="temp temp--hot num">63,2&nbsp;<span style="font-size:var(--t-sm);color:var(--ink-3);">°C</span></span>
+    </div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-6);">
+    <div class="gauge">
+      <div class="gauge__value num">23&nbsp;<span style="font-size:var(--t-sm);color:var(--ink-3);">%</span></div>
+      <div class="gauge__track"><div class="gauge__fill" style="width:92%;"></div><div class="gauge__cursor" style="left:92%;"></div><div class="gauge__mark" style="left:100%;" data-label="25 %"></div></div>
+      <div class="gauge__labels"><span>0&nbsp;%</span><span>25&nbsp;%</span></div>
+    </div>
+    <div class="chrono chrono--late"><div class="chrono__label">Refroidissement — dépassé</div><div class="chrono__value num">00:00</div><div class="chrono__bar"><div class="chrono__progress" style="width:100%;"></div></div></div>
+    <div style="display:flex;gap:var(--s-5);">
+      <span class="temp temp--cold num">-18,6&nbsp;<span style="font-size:var(--t-sm);color:var(--ink-3);">°C</span></span>
+      <span class="temp temp--danger num">−0,2&nbsp;<span style="font-size:var(--t-sm);color:var(--ink-3);">°C</span></span>
+    </div>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.12 Checklist, GED, Zone upload -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.12 Checklist · GED · Zone d'import — <code>.checklist</code> · <code>.ged</code> · <code>.zone-upload</code></h3>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-6);">
+    <div class="checklist" style="border:1px solid var(--rule);border-radius:var(--r-2);">
+      <div class="checklist__item is-done"><div class="checklist__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></div><div class="checklist__label">Nettoyage surfaces de travail</div><div class="checklist__due num">07:00</div></div>
+      <div class="checklist__item"><div class="checklist__check"></div><div class="checklist__label">Relevé chambre froide n° 2</div><div class="checklist__due num">10:00</div></div>
+      <div class="checklist__item"><div class="checklist__check"></div><div class="checklist__label">Vérification DLC préparations J-1</div><div class="checklist__due num">12:00</div></div>
+    </div>
+    <div class="ged" style="border:1px solid var(--rule);border-radius:var(--r-2);">
+      <div class="ged__item"><div class="ged__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="ged__name">Plan de nettoyage — semaine 37.pdf</div><div class="ged__meta num">128 Ko</div></div>
+      <div class="ged__item"><div class="ged__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="ged__name">Fiche de non-conformité #41.pdf</div><div class="ged__meta num">64 Ko</div></div>
+    </div>
+    <div class="zone-upload" role="button" tabindex="0" aria-label="Déposer un document">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+      <span>Déposer un fichier ou cliquer pour parcourir</span>
+    </div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-6);">
+    <div class="checklist" style="border:1px solid var(--rule);border-radius:var(--r-2);">
+      <div class="checklist__item is-done"><div class="checklist__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></div><div class="checklist__label">Bilan de clôture de service</div><div class="checklist__due num">22:00</div></div>
+      <div class="checklist__item"><div class="checklist__check"></div><div class="checklist__label">Contrôle stock produits ménagers</div><div class="checklist__due num">23:30</div></div>
+    </div>
+    <div class="zone-upload is-over">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+      <span>Déposez ici pour importer</span>
+    </div>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.13 Roles, Sign, Receipt, Inspection banner -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.13 Rôles · Signature · Fiche · Bandeau — <code>.roles</code> · <code>.sign</code> · <code>.receipt</code> · <code>.inspection-banner</code></h3>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-6);">
+    <div class="inspection-banner" style="position:static;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="16" height="16" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>&nbsp;Inspection DDPP en cours — données en lecture seule</div>
+    <table class="roles">
+      <thead><tr><th>Permission</th><th>Gérante</th><th>Second</th><th>Plonge</th></tr></thead>
+      <tbody>
+        <tr><td>Saisir un relevé</td><td style="text-align:center;"><span class="mark mark--ok"></span></td><td style="text-align:center;"><span class="mark mark--ok"></span></td><td style="text-align:center;"><span class="mark mark--neutral"></span></td></tr>
+        <tr><td>Valider une NC</td><td style="text-align:center;"><span class="mark mark--ok"></span></td><td style="text-align:center;"><span class="mark mark--warn"></span></td><td style="text-align:center;"><span class="mark mark--neutral"></span></td></tr>
+      </tbody>
+    </table>
+    <div class="sign"><div class="sign__line"></div><div class="sign__meta"><span class="sign__name">Amélie Ferrand — gérante</span><span class="sign__timestamp num">2026-09-16 &nbsp;08:30</span></div></div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-6);">
+    <div class="receipt">
+      <div class="receipt__head">
+        <div><div class="receipt__establishment">Le Comptoir des Halles</div><div class="receipt__meta">14 rue des Halles, 26000 Valence<br>SIRET 812 447 093 00041</div></div>
+        <div class="receipt__stamp"><div class="stamp" style="animation:none;opacity:1;font-size:10px;">RELEVÉ VALIDÉ<br><span class="num">2026-09-16</span></div></div>
+      </div>
+      <div style="font-size:var(--t-sm);color:var(--ink-2);">Fiche de température — CF n° 1 — semaine 37</div>
+    </div>
+    <div class="sign"><div class="sign__line"></div><div class="sign__meta"><span class="sign__name">Karim Bouziane — second de cuisine</span><span class="sign__timestamp num">2026-09-16 &nbsp;22:15</span></div></div>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.14 Badge, Empty, Toast -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.14 Badge · État vide · Toast — <code>.badge-count</code> · <code>.empty</code> · <code>.toast</code></h3>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-6);">
+    <div style="display:flex;gap:var(--s-4);align-items:center;">
+      <span class="badge-count">3</span>
+      <span class="badge-count">17</span>
+      <span style="font-size:var(--t-sm);color:var(--ink-3);">Compteur carré, mono, jamais pilule</span>
+    </div>
+    <div class="empty">
+      <div class="empty__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="32" height="32" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+      <div class="empty__title">Aucun relevé aujourd'hui</div>
+      <div class="empty__body">Les relevés de température apparaissent ici. Saisissez le premier relevé pour démarrer.</div>
+      <button class="btn btn--primary">Saisir un relevé</button>
+    </div>
+    <div class="toast toast--ok" style="position:static;transform:none;pointer-events:auto;">
+      <span class="mark mark--ok"></span>
+      <span class="toast__message">Relevé enregistré</span>
+      <button class="toast__action">Annuler</button>
+    </div>
+    <div class="toast toast--warn" style="position:static;transform:none;pointer-events:auto;">
+      <span class="mark mark--warn"></span>
+      <span class="toast__message">Huile mise au repos</span>
+      <button class="toast__action">Voir</button>
+    </div>
+    <div class="toast toast--danger" style="position:static;transform:none;pointer-events:auto;">
+      <span class="mark mark--danger"></span>
+      <span class="toast__message">3 tâches en retard</span>
+      <button class="toast__action">Annuler</button>
+    </div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-6);">
+    <div class="empty">
+      <div class="empty__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="32" height="32" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <div class="empty__title">Aucun document trouvé</div>
+      <div class="empty__body">Modifiez les filtres ou ajoutez un document à la GED.</div>
+    </div>
+    <div class="toast toast--ok" style="position:static;transform:none;pointer-events:auto;">
+      <span class="mark mark--ok"></span>
+      <span class="toast__message">Non-conformité clôturée</span>
+    </div>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.15 Surcouches : Panel, Modal, Palette, Lightbox -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.15 Surcouches (position statique) — <code>.panel</code> · <code>.modal</code> · <code>.palette</code> · <code>.lightbox</code></h3>
+<p class="sg-note"><code>.panel</code> = création / édition / détail de fiche (usage privilégié, 480 px). <code>.modal</code> = confirmation destructive uniquement. <code>.palette</code> = ⌘K. Ces composants sont affichés ici en position statique à des fins de démonstration.</p>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Panel (création / édition)</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);padding:0;">
+    <div class="sg-panel-static">
+      <div class="panel__head"><span>Nouveau relevé de température</span><button class="icon-btn" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+      <div class="panel__body" style="display:flex;flex-direction:column;gap:var(--s-5);">
+        <div class="field"><label class="field__label">Enceinte</label><select class="select"><option>Chambre froide n° 1</option></select></div>
+        <div class="field"><label class="field__label">Température</label><input class="input num" type="number" value="3.4"><span class="field__hint">Plage admissible : 0 °C – 8 °C</span></div>
+        <div class="field"><label class="field__label">Opérateur</label><input class="input" type="text" value="Amélie Ferrand"></div>
+      </div>
+      <div class="panel__foot"><button class="btn btn--ghost">Annuler</button><button class="btn btn--primary">Enregistrer</button></div>
+    </div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Modal (confirmation destructive)</div>
+  <div class="sg-theme-inner" style="background:var(--paper);display:flex;flex-direction:column;gap:var(--s-6);">
+    <div class="sg-modal-static">
+      <div class="modal__head"><span>Supprimer la fiche</span><button class="icon-btn" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+      <div class="modal__body" style="font-size:var(--t-sm);color:var(--ink-2);">La fiche de non-conformité #41 sera supprimée définitivement. Cette action est irréversible.</div>
+      <div class="modal__foot"><button class="btn">Annuler</button><button class="btn btn--danger">Supprimer</button></div>
+    </div>
+    <div class="palette" style="position:static;opacity:1;pointer-events:auto;transform:none;width:100%;max-width:100%;">
+      <input class="palette__input" type="search" placeholder="Rechercher un module ou une action…" readonly>
+      <ul class="palette__list">
+        <li class="palette__item is-active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="16" height="16" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Tableau de bord<span class="num" style="font-size:10px;color:var(--ink-3);">⌘1</span></li>
+        <li class="palette__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="16" height="16" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Saisir un relevé</li>
+      </ul>
+    </div>
+  </div></div>
+</div>
+</div>
+
+<!-- 4.16 TabBar, Op-chip, Nav -->
+<div class="sg-subsection">
+<h3 class="sg-subsection-title">4.16 Navigation — <code>.tabbar</code> · <code>.op-chip</code> · <code>.nav-item</code></h3>
+<div class="sg-dual">
+  <div class="sg-theme-block"><div class="sg-theme-label">Papier</div>
+  <div class="sg-theme-inner" data-theme="papier" style="background:var(--paper);">
+    <div class="op-chip" style="display:inline-flex;margin-bottom:var(--s-5);">
+      <div class="op-chip__initials">AF</div>
+      <div><div class="op-chip__name">Amélie Ferrand</div><div class="op-chip__role">Gérante</div></div>
+    </div>
+    <div style="border:1px solid var(--rule);border-radius:var(--r-2);overflow:hidden;">
+      <a class="nav-item is-active" href="#"><span class="nav-item__idx num">01</span><span class="nav-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span class="nav-item__label">Tableau de bord</span><span class="nav-item__count num">3</span></a>
+      <a class="nav-item" href="#"><span class="nav-item__idx num">02</span><span class="nav-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span><span class="nav-item__label">Relevés de température</span></a>
+      <a class="nav-item" href="#"><span class="nav-item__idx num">03</span><span class="nav-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span><span class="nav-item__label">Non-conformités</span><span class="nav-item__count num">1</span></a>
+    </div>
+    <div class="tabbar" style="position:static;display:flex;border:1px solid var(--rule);border-radius:var(--r-2);margin-top:var(--s-5);overflow:hidden;">
+      <div class="tabbar__item is-active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="22" height="22" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="tabbar__label">Tableau</span></div>
+      <div class="tabbar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="22" height="22" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg><span class="tabbar__label">Relevés</span></div>
+      <div class="tabbar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="22" height="22" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg><span class="tabbar__label">Alertes</span></div>
+    </div>
+  </div></div>
+  <div class="sg-theme-block" data-theme="nuit"><div class="sg-theme-label">Nuit</div>
+  <div class="sg-theme-inner" style="background:var(--paper);">
+    <div class="op-chip" style="display:inline-flex;margin-bottom:var(--s-5);">
+      <div class="op-chip__initials">KB</div>
+      <div><div class="op-chip__name">Karim Bouziane</div><div class="op-chip__role">Second de cuisine</div></div>
+    </div>
+    <div style="border:1px solid var(--rule);border-radius:var(--r-2);overflow:hidden;">
+      <a class="nav-item" href="#"><span class="nav-item__idx num">01</span><span class="nav-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span class="nav-item__label">Tableau de bord</span></a>
+      <a class="nav-item is-active" href="#"><span class="nav-item__idx num">04</span><span class="nav-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span><span class="nav-item__label">Plan de nettoyage</span></a>
+    </div>
+  </div></div>
+</div>
+</div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     §5 — Iconographie
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="sg-section">
+<h2 class="sg-section-title">5 · Iconographie</h2>
+<p class="sg-note">Grille 24, trait <strong>1.6</strong> constant, <code>stroke="currentColor"</code>, <code>aria-hidden="true"</code>. Couleur héritée du contexte (<code>--ink-2</code> au repos, <code>--accent</code> si actif). 12 icônes représentatives ci-dessous.</p>
+<div class="sg-icon-grid">
+  <div class="sg-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sg-icon-name">dashboard</span></div>
+  <div class="sg-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg><span class="sg-icon-name">clipboard</span></div>
+  <div class="sg-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg><span class="sg-icon-name">thermometer</span></div>
+  <div class="sg-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8l5 3-5 3V8z"/></svg><span class="sg-icon-name">truck</span></div>
+  <div class="sg-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="sg-icon-name">alert</span></div>
+  <div class="sg-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span class="sg-icon-name">shield</span></div>
+  <div class="sg-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="sg-icon-name">clock</span></div>
+  <div class="sg-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="sg-icon-name">search</span></div>
+  <div class="sg-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span class="sg-icon-name">plus</span></div>
+  <div class="sg-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span class="sg-icon-name">check</span></div>
+  <div class="sg-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><span class="sg-icon-name">x</span></div>
+  <div class="sg-icon-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg><span class="sg-icon-name">upload</span></div>
+</div>
+<p class="sg-note" style="margin-top:var(--s-5);">Liste complète attendue dans <code>src/presentation/icons.js</code> : dashboard, clipboard, thermometer, truck, tag, wheat, spray, droplet, snowflake, flame, scale, folder, alert, shield, seal, users, settings, search, plus, edit, trash, check, x, chevron-right, chevron-down, download, upload, printer, camera, clock, calendar, filter, command, logout, lock, eye, refresh, sun, moon, bell, mail, phone, map.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     §6 — À ne pas faire
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="sg-section">
+<h2 class="sg-section-title">6 · À ne pas faire — signatures « AI slop »</h2>
+<p class="sg-note">Chaque interdit est illustré à gauche et son remplacement correct à droite. Ces motifs sont détectés automatiquement par <code>tools/check-design.mjs</code>.</p>
+<div class="sg-dont">
+  <div class="sg-dont-block"><div class="sg-dont-label sg-dont-label--no">Non — <code>rounded-xl</code></div><div class="sg-dont-inner"><div style="width:64px;height:64px;background:var(--accent-wash);border-radius:16px;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-size:var(--t-sm);color:var(--ink-2);">Carte</div></div></div>
+  <div class="sg-dont-block"><div class="sg-dont-label sg-dont-label--yes">Oui — rayon max <code>--r-3</code> (6 px)</div><div class="sg-dont-inner"><div style="width:64px;height:64px;background:var(--accent-wash);border-radius:var(--r-3);border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-size:var(--t-sm);color:var(--ink-2);">Carte</div></div></div>
+  <div class="sg-dont-block"><div class="sg-dont-label sg-dont-label--no">Non — ombre portée sur une carte</div><div class="sg-dont-inner"><div style="width:100%;padding:var(--s-5);background:var(--sheet);border-radius:var(--r-2);box-shadow:0 4px 20px rgba(0,0,0,0.15);font-size:var(--t-sm);">Carte avec ombre</div></div></div>
+  <div class="sg-dont-block"><div class="sg-dont-label sg-dont-label--yes">Oui — filet 1 px (<code>--rule</code>), pas d'ombre</div><div class="sg-dont-inner"><div class="sheet" style="padding:var(--s-5);font-size:var(--t-sm);">Surface avec bordure</div></div></div>
+  <div class="sg-dont-block"><div class="sg-dont-label sg-dont-label--no">Non — badge pilule colorée</div><div class="sg-dont-inner"><div style="display:inline-flex;align-items:center;padding:2px 10px;background:var(--ok);color:var(--on-accent);border-radius:9999px;font-size:var(--t-sm);font-weight:600;">Conforme</div></div></div>
+  <div class="sg-dont-block"><div class="sg-dont-label sg-dont-label--yes">Oui — <code>.mark</code> carré + micro-libellé</div><div class="sg-dont-inner"><span class="mark mark--ok"><span class="mark__label">Conforme</span></span></div></div>
+  <div class="sg-dont-block"><div class="sg-dont-label sg-dont-label--no">Non — dégradé de texte</div><div class="sg-dont-inner"><div style="font-size:var(--t-h2);font-weight:600;background:linear-gradient(90deg,var(--accent),var(--ok));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Titre avec dégradé</div></div></div>
+  <div class="sg-dont-block"><div class="sg-dont-label sg-dont-label--yes">Oui — texte uni <code>--ink</code></div><div class="sg-dont-inner"><div style="font-size:var(--t-h2);font-weight:600;color:var(--ink);">Titre sobre et lisible</div></div></div>
+  <div class="sg-dont-block"><div class="sg-dont-label sg-dont-label--no">Non — emojis dans l'UI</div><div class="sg-dont-inner"><span style="font-size:var(--t-sm);">Relevé enregistré ✅ Parfait&nbsp;!</span></div></div>
+  <div class="sg-dont-block"><div class="sg-dont-label sg-dont-label--yes">Oui — icône SVG + ton neutre</div><div class="sg-dont-inner"><div class="toast toast--ok" style="position:static;transform:none;pointer-events:auto;"><span class="mark mark--ok"></span><span class="toast__message">Relevé enregistré</span></div></div></div>
+  <div class="sg-dont-block"><div class="sg-dont-label sg-dont-label--no">Non — couleur arc-en-ciel d'icônes</div><div class="sg-dont-inner"><div style="display:flex;gap:var(--s-3);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#10b981" stroke-width="1.6"><circle cx="12" cy="12" r="10"/></svg><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6366f1" stroke-width="1.6"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94"/></svg><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f59e0b" stroke-width="1.6"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7"/></svg></div></div></div>
+  <div class="sg-dont-block"><div class="sg-dont-label sg-dont-label--yes">Oui — une seule couleur, héritée</div><div class="sg-dont-inner"><div style="display:flex;gap:var(--s-3);color:var(--ink-2);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/></svg><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94"/></svg><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7"/></svg></div></div></div>
+</div>
+</section>
+
+</div><!-- /sg-wrap -->
+
+<!-- ── Pied ───────────────────────────────────────────────────────────────── -->
+<footer style="margin-top:var(--s-11);border-top:1px solid var(--rule-2);padding:var(--s-8) var(--s-9);background:var(--sheet);">
+<div class="sg-wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--s-6);">
+  <div>
+    <div style="font-family:var(--ff-serif);font-size:var(--t-h2);color:var(--ink);">Design system — Registre <span class="num" style="font-family:var(--ff-mono);font-size:var(--t-sm);color:var(--ink-3);">v4.0</span></div>
+    <div style="font-size:var(--t-sm);color:var(--ink-3);margin-top:var(--s-2);">Le Comptoir des Halles — TraqHACCP &nbsp;·&nbsp; <span class="num">86</span> variables dans <code>tokens.css</code></div>
+  </div>
+  <div class="callout callout--warn" style="max-width:400px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="16" height="16" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span>Toute nouvelle vue doit se conformer à <strong>docs/DESIGN.md</strong>. Vérifier avec <code>node tools/check-design.mjs</code>.</span>
+  </div>
+</div>
+</footer>
+
+</body>
+</html>

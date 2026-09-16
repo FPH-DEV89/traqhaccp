@@ -164,7 +164,12 @@ Une seule famille de gris (chaude) par thème. **Un seul accent.**
 - `.section` · `.section__head` · `.section__title` · `.section__action` · `.rule`
 - `.sheet` (surface `--sheet`, bordure 1 px `--rule`, rayon `--r-2`, **aucune ombre**) · `.sheet__head` · `.sheet__body` · `.sheet__foot`
 - `.kpi` · `.kpi__label` · `.kpi__value` (`.num` `--t-num-xl`) · `.kpi__unit` · `.kpi__delta` (`.is-up`/`.is-down`) · `.kpi__spark` (SVG inline optionnel)
-- `.callout` (+ `--info|--warn|--danger`) : avis en ligne, bordure gauche 3 px, fond `--sheet`, icône 16 px.
+- `.callout` (+ `--info|--warn|--danger`) : avis en ligne — bordure 1 px sur les **quatre**
+  côtés dans la couleur du statut, fond `--sheet`, icône 16 px, micro-libellé en capitales
+  nommant l'avis. **Jamais** de barre latérale épaisse colorée (signature IA — détectée par
+  `impeccable`), jamais de fond saturé plein.
+- Les barres de progression (`.gauge__fill`, `.checklist`, `.chrono`) s'animent par
+  `transform: scaleX(var(--p))` (origine à gauche), **jamais** par `transition: width`.
 - `.empty` (état vide composé : icône, titre, explication, action) · `.skeleton` (bloc `--paper-2` animé en opacité).
 - `.stamp` (tampon d'enregistrement : bordure 1 px accent, texte mono, date + opérateur).
 
