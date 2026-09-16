@@ -20,4 +20,9 @@ yarn-error.log*
 .env.local
 *.local
 
+# Outils d'analyse (artefacts locaux, non livrés)
+graphify-out/
+.hermes/
+specs/
+
 .vercel
