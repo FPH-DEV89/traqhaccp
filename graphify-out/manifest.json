@@ -1,0 +1,72 @@
+{
+  "manifest.json": {
+    "mtime": 1789583752.0160522,
+    "ast_hash": "e1803cc338df56608c6574e37e39af8b",
+    "semantic_hash": "e1803cc338df56608c6574e37e39af8b"
+  },
+  "src/application/usecases.js": {
+    "mtime": 1789583752.0170522,
+    "ast_hash": "72286fb52d5b2d054a769a2a42161416",
+    "semantic_hash": "72286fb52d5b2d054a769a2a42161416"
+  },
+  "src/domain/constants.js": {
+    "mtime": 1789583752.0170522,
+    "ast_hash": "7ce6a66d1e1e26e50f5fb91717e49e75",
+    "semantic_hash": "7ce6a66d1e1e26e50f5fb91717e49e75"
+  },
+  "src/domain/entities.js": {
+    "mtime": 1789583752.0170522,
+    "ast_hash": "2fd7593b4682cf7e5f60961d6e811732",
+    "semantic_hash": "2fd7593b4682cf7e5f60961d6e811732"
+  },
+  "src/infrastructure/audio_service.js": {
+    "mtime": 1789583752.0170522,
+    "ast_hash": "ad805f883dcdcb9046b0afe82c1b99b1",
+    "semantic_hash": "ad805f883dcdcb9046b0afe82c1b99b1"
+  },
+  "src/infrastructure/barcode_service.js": {
+    "mtime": 1789583752.0170522,
+    "ast_hash": "36b042123cffd4cfb229ed29e74f5655",
+    "semantic_hash": "36b042123cffd4cfb229ed29e74f5655"
+  },
+  "src/infrastructure/camera_service.js": {
+    "mtime": 1789583752.0170522,
+    "ast_hash": "7a6b0ffdbfff712a9531c84ff4eef59e",
+    "semantic_hash": "7a6b0ffdbfff712a9531c84ff4eef59e"
+  },
+  "src/infrastructure/storage_repository.js": {
+    "mtime": 1789583752.0170522,
+    "ast_hash": "31a333619ba6c005d55d9f6e200364e3",
+    "semantic_hash": "31a333619ba6c005d55d9f6e200364e3"
+  },
+  "src/presentation/store.js": {
+    "mtime": 1789583752.0180523,
+    "ast_hash": "4cdd68fb0aa5b1e493727884a907bf34",
+    "semantic_hash": "4cdd68fb0aa5b1e493727884a907bf34"
+  },
+  "sw.js": {
+    "mtime": 1789583752.0180523,
+    "ast_hash": "a0f919df829df7909e72eee3f375c3ac",
+    "semantic_hash": "a0f919df829df7909e72eee3f375c3ac"
+  },
+  "test_clean_arch.js": {
+    "mtime": 1789583752.0180523,
+    "ast_hash": "a0b036f6e5719c904a5757da5dd73ed4",
+    "semantic_hash": "a0b036f6e5719c904a5757da5dd73ed4"
+  },
+  "vercel.json": {
+    "mtime": 1789583752.0180523,
+    "ast_hash": "769b5d93d2fa390d9e6b624d0158bb91",
+    "semantic_hash": "769b5d93d2fa390d9e6b624d0158bb91"
+  },
+  "README.md": {
+    "mtime": 1789583752.0150523,
+    "ast_hash": "214e00071d15bf2297a8c767ee0e0239",
+    "semantic_hash": "214e00071d15bf2297a8c767ee0e0239"
+  },
+  "index.html": {
+    "mtime": 1789583752.0160522,
+    "ast_hash": "dba558b9fc0fc8e4fba1cff51a2c5e6f",
+    "semantic_hash": "dba558b9fc0fc8e4fba1cff51a2c5e6f"
+  }
+}

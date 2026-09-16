@@ -1,0 +1,6 @@
+{
+  "_doc": "Dette de parité pré-existante (code v3) tolérée temporairement. Chaque entrée doit disparaître au fil de la migration ; le fichier doit être vide à la livraison.",
+  "known": [
+    "onclick=\"openModal(…)\" → fonction « openModal » non définie"
+  ]
+}

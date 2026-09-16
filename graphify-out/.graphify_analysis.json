@@ -1,0 +1,425 @@
+{
+  "communities": {
+    "0": [
+      "src_application_usecases",
+      "src_domain_constants",
+      "src_domain_constants_all_14_allergens",
+      "src_domain_constants_default_brigade",
+      "src_domain_constants_default_checklist_routines",
+      "src_domain_constants_haccp_norms",
+      "src_domain_constants_nc_categories",
+      "src_domain_constants_san_doc_categories",
+      "src_domain_constants_shelf_life_presets",
+      "src_domain_entities",
+      "src_domain_entities_checklistitem",
+      "src_domain_entities_checklistitem_constructor",
+      "src_domain_entities_checklistitem_toggle",
+      "src_domain_entities_checklistroutine",
+      "src_domain_entities_checklistroutine_constructor",
+      "src_domain_entities_checklistroutine_iscomplete",
+      "src_domain_entities_checklistroutine_validate",
+      "src_domain_entities_cleaningtask",
+      "src_domain_entities_cleaningtask_constructor",
+      "src_domain_entities_cleaningtask_toggle",
+      "src_domain_entities_coolingcycle",
+      "src_domain_entities_coolingcycle_constructor",
+      "src_domain_entities_defrostcycle",
+      "src_domain_entities_defrostcycle_constructor",
+      "src_domain_entities_deliveryrecord",
+      "src_domain_entities_deliveryrecord_constructor",
+      "src_domain_entities_deliveryrecord_isrejected",
+      "src_domain_entities_dishallergens",
+      "src_domain_entities_dishallergens_constructor",
+      "src_domain_entities_nonconformity",
+      "src_domain_entities_nonconformity_constructor",
+      "src_domain_entities_phcontrolrecord",
+      "src_domain_entities_phcontrolrecord_constructor",
+      "src_domain_entities_phcontrolrecord_isconform",
+      "src_domain_entities_preparationlabel",
+      "src_domain_entities_preparationlabel_constructor",
+      "src_domain_entities_sanitarydocument",
+      "src_domain_entities_sanitarydocument_constructor",
+      "src_domain_entities_sanitarydocument_isexpired",
+      "src_domain_entities_sanitarydocument_isexpiringsoon",
+      "src_domain_entities_weightcontrolrecord",
+      "src_domain_entities_weightcontrolrecord_constructor",
+      "src_infrastructure_storage_repository",
+      "src_infrastructure_storage_repository_default_allergen_dishes",
+      "src_infrastructure_storage_repository_default_checklists_data",
+      "src_infrastructure_storage_repository_default_cleanings",
+      "src_infrastructure_storage_repository_default_coolings",
+      "src_infrastructure_storage_repository_default_defrosts",
+      "src_infrastructure_storage_repository_default_deliveries",
+      "src_infrastructure_storage_repository_default_equipments",
+      "src_infrastructure_storage_repository_default_fryers",
+      "src_infrastructure_storage_repository_default_non_conformities",
+      "src_infrastructure_storage_repository_default_ph_records",
+      "src_infrastructure_storage_repository_default_preparations",
+      "src_infrastructure_storage_repository_default_sanitary_documents",
+      "src_infrastructure_storage_repository_default_weight_records"
+    ],
+    "1": [
+      "index",
+      "index_dismissbanner",
+      "index_downloadofficialpdfreport",
+      "index_enterinspectionmode",
+      "index_exportfullhaccpcsv",
+      "index_onoperatorselectchange",
+      "index_openbackupmodal",
+      "index_opencameramodal",
+      "index_openpinmodal",
+      "index_switchtab",
+      "index_tab_allergens",
+      "index_tab_audit",
+      "index_tab_checklists",
+      "index_tab_cleaning",
+      "index_tab_cooling",
+      "index_tab_dashboard",
+      "index_tab_defrost",
+      "index_tab_documents",
+      "index_tab_nonconformities",
+      "index_tab_oil",
+      "index_tab_ph_weight",
+      "index_tab_reception",
+      "index_tab_settings",
+      "index_tab_temperatures",
+      "index_tab_traceability",
+      "readme",
+      "readme_adapters_layer",
+      "readme_clean_architecture",
+      "readme_cleaning_plan",
+      "readme_domain_layer",
+      "readme_goods_reception",
+      "readme_infrastructure_layer",
+      "readme_pwa_offline",
+      "readme_reports_audit",
+      "readme_temperature_readings",
+      "readme_traceability_dlc",
+      "readme_usecases_layer"
+    ],
+    "2": [
+      "src_infrastructure_storage_repository_localstoragehaccprepository",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_constructor",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_exportfullbackupjson",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_get",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getallergendishes",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getbrigade",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getchecklists",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getcleaningtasks",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getcoolingcycles",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getdefrostcycles",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getdeliveries",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getequipments",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getestablishment",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getfryers",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getnonconformities",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getphrecords",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getpreparations",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getsanitarydocuments",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_getweightrecords",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_importfullbackupjson",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_resettodemo",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_saveallergendishes",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_savechecklists",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_savecleaningtasks",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_savecoolingcycles",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_savedefrostcycles",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_savedeliveries",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_saveequipments",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_saveestablishment",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_savefryers",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_savenonconformities",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_savephrecords",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_savepreparations",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_savesanitarydocuments",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_saveweightrecords",
+      "src_infrastructure_storage_repository_localstoragehaccprepository_set"
+    ],
+    "3": [
+      "src_application_usecases_haccpusecases",
+      "src_application_usecases_haccpusecases_addallergendish",
+      "src_application_usecases_haccpusecases_addsanitarydocument",
+      "src_application_usecases_haccpusecases_autologstandardtemps",
+      "src_application_usecases_haccpusecases_calculatesanitaryscore",
+      "src_application_usecases_haccpusecases_constructor",
+      "src_application_usecases_haccpusecases_createpreparationlabel",
+      "src_application_usecases_haccpusecases_declarenonconformity",
+      "src_application_usecases_haccpusecases_deleteallergendish",
+      "src_application_usecases_haccpusecases_deletedelivery",
+      "src_application_usecases_haccpusecases_deletenonconformity",
+      "src_application_usecases_haccpusecases_deletephrecord",
+      "src_application_usecases_haccpusecases_deletepreparation",
+      "src_application_usecases_haccpusecases_deletesanitarydocument",
+      "src_application_usecases_haccpusecases_deleteweightrecord",
+      "src_application_usecases_haccpusecases_generateinspectionsummary",
+      "src_application_usecases_haccpusecases_logtemperature",
+      "src_application_usecases_haccpusecases_recorddelivery",
+      "src_application_usecases_haccpusecases_recordoiltest",
+      "src_application_usecases_haccpusecases_recordphmeasure",
+      "src_application_usecases_haccpusecases_recordweightmeasure",
+      "src_application_usecases_haccpusecases_resetchecklists",
+      "src_application_usecases_haccpusecases_resetcleaningplan",
+      "src_application_usecases_haccpusecases_resolvetemperatureincident",
+      "src_application_usecases_haccpusecases_startcoolingcycle",
+      "src_application_usecases_haccpusecases_startdefrostcycle",
+      "src_application_usecases_haccpusecases_togglechecklisttask",
+      "src_application_usecases_haccpusecases_togglecleaningtask",
+      "src_application_usecases_haccpusecases_updatedefroststatus",
+      "src_application_usecases_haccpusecases_validatechecklistroutine",
+      "src_domain_entities_equipment",
+      "src_domain_entities_equipment_constructor",
+      "src_domain_entities_equipment_isconform",
+      "src_domain_entities_equipment_recordtemperature",
+      "src_domain_entities_weightcontrolrecord_isconform"
+    ],
+    "4": [
+      "src_domain_entities_fryer",
+      "src_domain_entities_fryer_constructor",
+      "src_domain_entities_fryer_recordtpm",
+      "src_infrastructure_barcode_service",
+      "src_infrastructure_barcode_service_barcodeservice",
+      "src_infrastructure_barcode_service_barcodeservice_generatebarcodesvg",
+      "src_infrastructure_barcode_service_barcodeservice_generateqrbadgesvg",
+      "test_clean_arch",
+      "test_clean_arch_checklists",
+      "test_clean_arch_conformph",
+      "test_clean_arch_conformweight",
+      "test_clean_arch_dangerph",
+      "test_clean_arch_docs",
+      "test_clean_arch_eq",
+      "test_clean_arch_expireddoc",
+      "test_clean_arch_fryer",
+      "test_clean_arch_mockaudio",
+      "test_clean_arch_mockrepo",
+      "test_clean_arch_mockstoragerepository",
+      "test_clean_arch_mockstoragerepository_constructor",
+      "test_clean_arch_mockstoragerepository_get",
+      "test_clean_arch_mockstoragerepository_set",
+      "test_clean_arch_ncsafterph",
+      "test_clean_arch_score",
+      "test_clean_arch_summary",
+      "test_clean_arch_svgbarcode",
+      "test_clean_arch_svgqr",
+      "test_clean_arch_updatedchecklists",
+      "test_clean_arch_usecases",
+      "test_clean_arch_warnweight"
+    ],
+    "5": [
+      "manifest",
+      "manifest_background_color",
+      "manifest_categories",
+      "manifest_description",
+      "manifest_display",
+      "manifest_icons",
+      "manifest_lang",
+      "manifest_name",
+      "manifest_orientation",
+      "manifest_short_name",
+      "manifest_start_url",
+      "manifest_theme_color",
+      "ref_business",
+      "ref_food",
+      "ref_productivity"
+    ],
+    "6": [
+      "src_presentation_store",
+      "src_presentation_store_haccpstore",
+      "src_presentation_store_haccpstore_constructor",
+      "src_presentation_store_haccpstore_dismissnotification",
+      "src_presentation_store_haccpstore_notify",
+      "src_presentation_store_haccpstore_setactivetab",
+      "src_presentation_store_haccpstore_setinspectionmode",
+      "src_presentation_store_haccpstore_setoperator",
+      "src_presentation_store_haccpstore_setstate",
+      "src_presentation_store_haccpstore_shownotification",
+      "src_presentation_store_haccpstore_subscribe"
+    ],
+    "7": [
+      "src_infrastructure_camera_service",
+      "src_infrastructure_camera_service_cameraservice",
+      "src_infrastructure_camera_service_cameraservice_capturesnapshotdataurl",
+      "src_infrastructure_camera_service_cameraservice_constructor",
+      "src_infrastructure_camera_service_cameraservice_initbarcodedetector",
+      "src_infrastructure_camera_service_cameraservice_issupported",
+      "src_infrastructure_camera_service_cameraservice_startcamera",
+      "src_infrastructure_camera_service_cameraservice_startcontinuousscan",
+      "src_infrastructure_camera_service_cameraservice_stopcamera"
+    ],
+    "8": [
+      "src_infrastructure_audio_service",
+      "src_infrastructure_audio_service_audioservice",
+      "src_infrastructure_audio_service_audioservice_constructor",
+      "src_infrastructure_audio_service_audioservice_inittone",
+      "src_infrastructure_audio_service_audioservice_play"
+    ],
+    "9": [
+      "vercel",
+      "vercel_cleanurls",
+      "vercel_headers",
+      "vercel_version"
+    ],
+    "10": [
+      "sw",
+      "sw_assets_to_cache"
+    ]
+  },
+  "cohesion": {
+    "0": 0.05519480519480519,
+    "1": 0.07507507507507508,
+    "2": 0.14761904761904762,
+    "3": 0.06050420168067227,
+    "4": 0.06896551724137931,
+    "5": 0.13333333333333333,
+    "6": 0.2909090909090909,
+    "7": 0.3055555555555556,
+    "8": 0.5,
+    "9": 0.5,
+    "10": 1.0
+  },
+  "gods": [
+    {
+      "id": "src_infrastructure_storage_repository_localstoragehaccprepository",
+      "label": "LocalStorageHACCPRepository",
+      "degree": 37
+    },
+    {
+      "id": "src_application_usecases_haccpusecases",
+      "label": "HACCPUseCases",
+      "degree": 31
+    },
+    {
+      "id": "index_switchtab",
+      "label": "switchTab(tab)",
+      "degree": 16
+    },
+    {
+      "id": "index",
+      "label": "TraqHACCP Pro index.html Shell",
+      "degree": 11
+    },
+    {
+      "id": "readme",
+      "label": "TraqHACCP README",
+      "degree": 11
+    },
+    {
+      "id": "src_presentation_store_haccpstore",
+      "label": "HACCPStore",
+      "degree": 10
+    },
+    {
+      "id": "src_infrastructure_camera_service_cameraservice",
+      "label": "CameraService",
+      "degree": 8
+    },
+    {
+      "id": "src_domain_entities_checklistroutine",
+      "label": "ChecklistRoutine",
+      "degree": 6
+    },
+    {
+      "id": "src_domain_entities_deliveryrecord",
+      "label": "DeliveryRecord",
+      "degree": 6
+    },
+    {
+      "id": "src_domain_entities_sanitarydocument",
+      "label": "SanitaryDocument",
+      "degree": 6
+    }
+  ],
+  "surprises": [
+    {
+      "source": "TraqHACCP Pro index.html Shell",
+      "target": "Offline PWA with Local Sync and Service Worker",
+      "source_files": [
+        "index.html",
+        "README.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
+    },
+    {
+      "source": "Registre DDPP Officiel Tab",
+      "target": "Rapports & Audit exportables",
+      "source_files": [
+        "index.html",
+        "README.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
+    },
+    {
+      "source": "Plan de Nettoyage Tab",
+      "target": "Plan de nettoyage & désinfection",
+      "source_files": [
+        "index.html",
+        "README.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
+    },
+    {
+      "source": "Réception Livraisons Tab",
+      "target": "Réception des marchandises (contrôle à réception, non-conformités)",
+      "source_files": [
+        "index.html",
+        "README.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
+    },
+    {
+      "source": "Températures Tab",
+      "target": "Relevés de températures (enceintes froides, liaisons chaudes/froides)",
+      "source_files": [
+        "index.html",
+        "README.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `LocalStorageHACCPRepository` connect `LocalStorageHACCPRepository` to `HACCP Domain Constants`, `test_clean_arch.js`?",
+      "why": "High betweenness centrality (0.163) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `HACCPUseCases` connect `HACCPUseCases` to `HACCP Domain Constants`, `test_clean_arch.js`?",
+      "why": "High betweenness centrality (0.143) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `NC_CATEGORIES`, `SAN_DOC_CATEGORIES`, `SHELF_LIFE_PRESETS` to the rest of the system?",
+      "why": "61 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `HACCP Domain Constants` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.05519480519480519 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Application UI Shell` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07507507507507508 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `LocalStorageHACCPRepository` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.14761904761904762 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `HACCPUseCases` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.06050420168067227 - nodes in this community are weakly interconnected."
+    }
+  ]
+}
