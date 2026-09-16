@@ -1,6 +1,4 @@
 {
-  "_doc": "Dette de parité pré-existante (code v3) tolérée temporairement : le bouton « Ajouter un document » d'index.html appelle openModal('addDocModal'), fonction absente du socle. Le bouton est rendu fonctionnel par src/presentation/views/documents.js (vue v4) ; l'entrée ne pourra disparaître qu'après retrait du markup v3 d'index.html (hors périmètre de ce lot).",
-  "known": [
-    "onclick=\"openModal(…)\" → fonction « openModal » non définie"
-  ]
+  "_doc": "aucune dette",
+  "known": []
 }

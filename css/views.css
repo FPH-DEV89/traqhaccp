@@ -25,7 +25,7 @@
   background: var(--paper-2);
   border-bottom: 1px solid var(--rule-2);
   border-right: 1px solid var(--rule);
-  font-size: 10.5px;
+  font-size: var(--t-label);
   font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--ink-2);
@@ -85,9 +85,14 @@
 }
 .gauge__fill {
   height: 100%;
+  width: 100%;
   border-radius: var(--r-1);
   background: var(--accent);
-  transition: width var(--d-2) var(--e-out);
+  transform-origin: left center;
+  /* Progression par `transform: scaleX()` — jamais par l'animation de largeur (layout thrash) :
+     les vues posent soit `style="width:42%"`, soit `style="--p:0.42"`, les deux rendus sont bons. */
+  transform: scaleX(var(--p, 1));
+  transition: transform var(--d-2) var(--e-out);
   max-width: 100%;
 }
 .gauge__cursor {
@@ -115,7 +120,7 @@
   transform: translateX(-50%);
   margin-top: var(--s-2);
   font-family: var(--ff-mono);
-  font-size: 10px;
+  font-size: var(--t-label);
   color: var(--danger);
   white-space: nowrap;
 }
@@ -160,13 +165,17 @@
 }
 .chrono__progress {
   height: 100%;
+  width: 100%;
   border-radius: var(--r-1);
   background: var(--accent);
-  transition: width var(--d-2) var(--e-out);
+  transform-origin: left center;
+  /* Idem `.gauge__fill` : progression par `transform: scaleX(var(--p))`, jamais par l'animation de largeur. */
+  transform: scaleX(var(--p, 1));
+  transition: transform var(--d-2) var(--e-out);
 }
 .chrono--late .chrono__progress { background: var(--danger); }
 .chrono__label {
-  font-size: 10.5px;
+  font-size: var(--t-label);
   font-weight: 600;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -391,7 +400,7 @@
   font-size: var(--t-sm);
 }
 .roles th {
-  font-size: 10.5px;
+  font-size: var(--t-label);
   font-weight: 600;
   letter-spacing: 0.09em;
   text-transform: uppercase;

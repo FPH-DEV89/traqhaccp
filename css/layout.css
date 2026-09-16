@@ -14,6 +14,23 @@
   overflow: hidden;
 }
 
+/* ── Colonne de travail : barre supérieure + vue + onglets mobiles ──────── */
+.workspace {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100dvh;
+  overflow: hidden;
+}
+@media (max-width: 900px) {
+  .app { grid-template-rows: auto 1fr; }
+  .workspace { height: auto; overflow: visible; }
+}
+
+/* ── Conteneur de la vue courante (routeur) ─────────────────────────────── */
+.view { display: block; min-width: 0; }
+
 /* ── Rail de navigation ─────────────────────────────────────────────────── */
 .rail {
   width: var(--rail);
@@ -49,7 +66,7 @@
 
 .rail__meta {
   font-family: var(--ff-mono);
-  font-size: 10px;
+  font-size: var(--t-label);
   color: var(--ink-3);
   padding: var(--s-2) var(--s-6);
 }
@@ -348,7 +365,7 @@
 }
 .tabbar__item:hover, .tabbar__item.is-active { color: var(--accent); }
 .tabbar__item svg { width: 22px; height: 22px; flex-shrink: 0; }
-.tabbar__label { font-size: 10px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1; }
+.tabbar__label { font-size: var(--t-label); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1; }
 .tabbar__more { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex: 1; height: 100%; color: var(--ink-3); cursor: pointer; transition: color var(--d-1) var(--e-out); }
 
 /* ── Responsive ─────────────────────────────────────────────────────────── */

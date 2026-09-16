@@ -86,7 +86,7 @@ function blocFiltres(ctx, d) {
     </div>
     <div class="grid grid--3">
       ${kpi('Réceptions sur la période', d.liste.length, `dont ${d.refuses} refusée(s)`)}
-      ${kpi('Taux de conformité', ctx.fmt.percent(d.taux), 'emballage, DLC et décision')}
+      ${kpi('Taux de conformité', ctx.fmt.pct(d.taux), 'emballage, DLC et décision')}
       ${kpi('Fournisseurs suivis', d.fournisseurs, 'agréments au registre')}
     </div>`;
 }
