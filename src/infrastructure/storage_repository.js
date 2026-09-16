@@ -1,6 +1,10 @@
 /**
  * TraqHACCP Pro - Infrastructure Layer: Storage Repository
  * Clean Architecture - Repository Pattern with LocalStorage & Serialization
+ *
+ * Seule couche autorisée à toucher localStorage (100 % try/catch).
+ * Clés et méthodes v3 conservées telles quelles ; ajouts v4 : brigade, réglages,
+ * session, journal d'activité + migration silencieuse et idempotente v3 → v4.
  */
 
 import {
@@ -17,10 +21,17 @@ import {
   ChecklistRoutine,
   SanitaryDocument,
   PhControlRecord,
-  WeightControlRecord
+  WeightControlRecord,
+  normalizeOperator,
+  normalizeSettings
 } from '../domain/entities.js';
 
-import { DEFAULT_BRIGADE, DEFAULT_CHECKLIST_ROUTINES } from '../domain/constants.js';
+import {
+  DEFAULT_BRIGADE,
+  DEFAULT_CHECKLIST_ROUTINES,
+  DEFAULT_ESTABLISHMENT,
+  DEFAULT_SETTINGS
+} from '../domain/constants.js';
 
 const DEFAULT_SANITARY_DOCUMENTS = [
   { id: 'DOC-01', title: 'Attestation Formation Hygiène Alimentaire (14h)', category: 'formation', issuer: 'Organisme Agréé Qualiopi Agro-Conseil', fileDate: '10/01/2025', expireDate: '2028-01-10', notes: 'Attestation réglementaire pour Chef Thomas - Certificat n°HYG-8812', fileData: null, status: 'valid' },
@@ -106,9 +117,24 @@ const DEFAULT_NON_CONFORMITIES = [
   { id: 'NC-2026-01', date: '16/09/2026 08:35', category5M: 'Matériel', severity: 'Majeure', equipOrSubject: 'Chambre Froide Négative (-15.2°C)', cause: 'Porte restée mal enclenchée suite approvisionnement', action: 'Porte refermée, vérification 30 min après à -19.5°C. Pas de décongélation.', operator: 'Chef Thomas', status: 'Résolu' }
 ];
 
+/* ═══════════════════════════════════════════════════════════════════
+   V4 — structures persistées (brigade, réglages, session, journal)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/** Version du schéma des sauvegardes produites. */
+const SCHEMA_VERSION = '4.0-registre';
+
+/** Plafond du journal d'activité : les entrées les plus récentes sont conservées. */
+const JOURNAL_MAX_ENTREES = 500;
+
+/** Session vide : aucun opérateur connecté. */
+const SESSION_VIDE = { currentOperatorId: null, startedAt: null, lockedAt: null };
+
 export class LocalStorageHACCPRepository {
   constructor(storagePrefix = 'traqhaccp_v2_') {
     this.prefix = storagePrefix;
+    /** Migration v3 → v4 : exécutée une seule fois, paresseusement au premier accès v4. */
+    this._migrationEffectuee = false;
   }
 
   _get(key, fallback) {
@@ -124,8 +150,16 @@ export class LocalStorageHACCPRepository {
   _set(key, value) {
     try {
       localStorage.setItem(this.prefix + key, JSON.stringify(value));
+      return true;
     } catch (e) {
-      console.error("Storage write error", e);
+      const quota = /quota|exceed/i.test(`${e && e.name} ${e && e.message}`);
+      console.error(
+        quota
+          ? `Stockage saturé : enregistrement impossible pour « ${key} ». Exportez la sauvegarde puis libérez de l'espace.`
+          : `Écriture impossible dans le stockage pour « ${key} ».`,
+        e
+      );
+      return false;
     }
   }
 
@@ -249,26 +283,141 @@ export class LocalStorageHACCPRepository {
     this._set('weightRecords', records);
   }
 
-  getEstablishment() {
-    return this._get('establishment', {
-      name: 'Restaurant Le Bistrot Gourmand',
-      siret: '849 203 118 00012',
-      address: '14 Rue des Gastronomes, 75001 Paris',
-      manager: 'Chef Thomas'
-    });
+  /* ═══════════════════════════════════════════════════════════════════
+     Migration v3 → v4 — silencieuse, idempotente
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /**
+   * Normalise les données héritées v3 au premier accès v4.
+   * Ne lève jamais d'exception : une migration ratée laisse les données intactes.
+   */
+  _migrerV3VersV4() {
+    if (this._migrationEffectuee) return;
+    this._migrationEffectuee = true;
+    try {
+      // 1. Brigade : membres sans role / active → normalizeOperator()
+      const brigadeBrute = this._get('brigade', null);
+      const brigadeMigree = this._normaliserBrigade(
+        Array.isArray(brigadeBrute) && brigadeBrute.length ? brigadeBrute : DEFAULT_BRIGADE
+      );
+      if (JSON.stringify(brigadeBrute) !== JSON.stringify(brigadeMigree)) {
+        this._set('brigade', brigadeMigree);
+      }
+
+      // 2. Réglages : absents → DEFAULT_SETTINGS ; partiels → normalizeSettings()
+      const reglages = this._get('settings', null);
+      if (!reglages || typeof reglages !== 'object' || Array.isArray(reglages)) {
+        this._set('settings', normalizeSettings({ ...DEFAULT_SETTINGS }));
+      } else {
+        this._set('settings', normalizeSettings(reglages));
+      }
+
+      // 3. Session et journal : structures vides si absentes (jamais de perte)
+      const session = this._get('session', null);
+      if (!session || typeof session !== 'object') this._set('session', { ...SESSION_VIDE });
+      if (!Array.isArray(this._get('activityLog', null))) this._set('activityLog', []);
+    } catch (e) {
+      console.warn('Migration v3 → v4 ignorée : les données existantes restent intactes.', e);
+    }
   }
 
-  saveEstablishment(data) {
-    this._set('establishment', data);
+  /** Applique le format v4 à une brigade et garantit « au moins un gérant actif ». */
+  _normaliserBrigade(liste) {
+    const brigade = (Array.isArray(liste) ? liste : []).map(membre => normalizeOperator(membre));
+    const gerantActif = brigade.some(m => m.role === 'gerant' && m.active !== false);
+    if (!gerantActif) {
+      const premier = brigade.find(m => m.active !== false);
+      if (premier) premier.role = 'gerant';
+    }
+    return brigade;
   }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     V4 — brigade, établissement, réglages, session, journal
+     ═══════════════════════════════════════════════════════════════════ */
 
   getBrigade() {
-    return this._get('brigade', DEFAULT_BRIGADE);
+    this._migrerV3VersV4();
+    const brute = this._get('brigade', DEFAULT_BRIGADE);
+    return this._normaliserBrigade(Array.isArray(brute) && brute.length ? brute : DEFAULT_BRIGADE);
+  }
+
+  saveBrigade(brigade) {
+    const normalisee = this._normaliserBrigade(brigade);
+    this._set('brigade', normalisee);
+    return normalisee;
+  }
+
+  getSettings() {
+    this._migrerV3VersV4();
+    return normalizeSettings(this._get('settings', null));
+  }
+
+  saveSettings(settings) {
+    const complet = normalizeSettings(settings);
+    this._set('settings', complet);
+    return complet;
+  }
+
+  getSession() {
+    this._migrerV3VersV4();
+    const brute = this._get('session', null);
+    if (!brute || typeof brute !== 'object') return { ...SESSION_VIDE };
+    return {
+      currentOperatorId: brute.currentOperatorId ?? null,
+      startedAt:         brute.startedAt ?? null,
+      lockedAt:          brute.lockedAt ?? null
+    };
+  }
+
+  saveSession(session) {
+    const propre = session && typeof session === 'object' ? session : SESSION_VIDE;
+    const enregistree = {
+      currentOperatorId: propre.currentOperatorId ?? null,
+      startedAt:         propre.startedAt ?? null,
+      lockedAt:          propre.lockedAt ?? null
+    };
+    this._set('session', enregistree);
+    return enregistree;
+  }
+
+  getActivityLog() {
+    this._migrerV3VersV4();
+    const journal = this._get('activityLog', []);
+    return Array.isArray(journal) ? journal : [];
+  }
+
+  /** Ajoute une entrée au journal (plus récentes d'abord, cap 500). */
+  appendActivity(entry) {
+    if (!entry || typeof entry !== 'object') return null;
+    const entree = {
+      at:           entry.at || new Date().toISOString(),
+      operatorId:   entry.operatorId ?? null,
+      operatorName: entry.operatorName ?? '',
+      action:       entry.action ?? 'action',
+      target:       entry.target ?? '',
+      details:      entry.details ?? ''
+    };
+    const journal = [entree, ...this.getActivityLog()].slice(0, JOURNAL_MAX_ENTREES);
+    this._set('activityLog', journal);
+    return entree;
+  }
+
+  getEstablishment() {
+    const brut = this._get('establishment', null);
+    return brut && typeof brut === 'object' ? brut : { ...DEFAULT_ESTABLISHMENT };
+  }
+
+  /** Fusionne un correctif partiel dans l'établissement enregistré. */
+  saveEstablishment(patch) {
+    const enregistre = { ...this.getEstablishment(), ...(patch && typeof patch === 'object' ? patch : {}) };
+    this._set('establishment', enregistre);
+    return enregistre;
   }
 
   exportFullBackupJSON() {
     return JSON.stringify({
-      version: '3.0-clean-arch-pro',
+      version: SCHEMA_VERSION,
       exportDate: new Date().toISOString(),
       establishment: this.getEstablishment(),
       equipments: this.getEquipments(),
@@ -284,27 +433,54 @@ export class LocalStorageHACCPRepository {
       sanitaryDocuments: this.getSanitaryDocuments(),
       phRecords: this.getPhRecords(),
       weightRecords: this.getWeightRecords(),
-      brigade: this.getBrigade()
+      brigade: this.getBrigade(),
+      settings: this.getSettings(),
+      session: this.getSession(),
+      activityLog: this.getActivityLog()
     }, null, 2);
   }
 
+  /**
+   * Importe une sauvegarde JSON v3 (clés à la racine) ou v4 (objet `records`).
+   * Tolérant : n'écrase jamais une section absente ou vide du fichier.
+   */
   importFullBackupJSON(jsonString) {
     try {
-      const data = JSON.parse(jsonString);
+      const racine = JSON.parse(jsonString);
+      const data = racine && typeof racine === 'object' ? racine : {};
+      const rec = data.records && typeof data.records === 'object' ? data.records : null;
+      const lire = (...cles) => {
+        for (const cle of cles) {
+          const depuisRecords = rec && Array.isArray(rec[cle]) ? rec[cle] : null;
+          if (depuisRecords) return depuisRecords;
+          if (Array.isArray(data[cle])) return data[cle];
+        }
+        return null;
+      };
+      const ecrire = (liste, sauvegarde) => { if (liste && liste.length) sauvegarde.call(this, liste); };
+
       if (data.establishment) this.saveEstablishment(data.establishment);
-      if (data.equipments) this.saveEquipments(data.equipments);
-      if (data.deliveries) this.saveDeliveries(data.deliveries);
-      if (data.preparations) this.savePreparations(data.preparations);
-      if (data.allergenDishes) this.saveAllergenDishes(data.allergenDishes);
-      if (data.cleanings) this.saveCleaningTasks(data.cleanings);
-      if (data.fryers) this.saveFryers(data.fryers);
-      if (data.coolings) this.saveCoolingCycles(data.coolings);
-      if (data.defrosts) this.saveDefrostCycles(data.defrosts);
-      if (data.nonConformities) this.saveNonConformities(data.nonConformities);
-      if (data.checklists) this.saveChecklists(data.checklists);
-      if (data.sanitaryDocuments) this.saveSanitaryDocuments(data.sanitaryDocuments);
-      if (data.phRecords) this.savePhRecords(data.phRecords);
-      if (data.weightRecords) this.saveWeightRecords(data.weightRecords);
+      if (Array.isArray(data.brigade) && data.brigade.length) this.saveBrigade(data.brigade);
+      if (data.settings && typeof data.settings === 'object') this.saveSettings(data.settings);
+      if (data.session && typeof data.session === 'object') this.saveSession(data.session);
+      if (Array.isArray(rec && rec.activityLog) && rec.activityLog.length) this._set('activityLog', rec.activityLog);
+      else if (Array.isArray(data.activityLog) && data.activityLog.length) this._set('activityLog', data.activityLog);
+
+      ecrire(lire('equipments'), this.saveEquipments);
+      ecrire(lire('deliveries'), this.saveDeliveries);
+      ecrire(lire('preparations'), this.savePreparations);
+      ecrire(lire('allergenDishes'), this.saveAllergenDishes);
+      ecrire(lire('cleanings', 'cleaning'), this.saveCleaningTasks);
+      ecrire(lire('fryers', 'oils'), this.saveFryers);
+      ecrire(lire('coolings', 'cooling'), this.saveCoolingCycles);
+      ecrire(lire('defrosts', 'defrost'), this.saveDefrostCycles);
+      ecrire(lire('nonConformities'), this.saveNonConformities);
+      ecrire(lire('sanitaryDocuments', 'documents'), this.saveSanitaryDocuments);
+      ecrire(lire('phRecords', 'ph'), this.savePhRecords);
+      ecrire(lire('weightRecords', 'weights'), this.saveWeightRecords);
+
+      const checklists = (rec && rec.checklists) || data.checklists;
+      if (checklists && (checklists.ouverture || checklists.fermeture)) this.saveChecklists(checklists);
       return true;
     } catch (e) {
       console.error("Backup import failed", e);
@@ -314,6 +490,6 @@ export class LocalStorageHACCPRepository {
 
   resetToDemo() {
     localStorage.clear();
+    this._migrationEffectuee = false;
   }
 }
-

@@ -82,6 +82,8 @@ for (const { path, src } of jsSources) {
   while ((m = refRe.exec(src))) {
     const id = m[2] || m[4];
     if (!id) continue;
+    // id dynamique (template literal ou concaténation) : non vérifiable statiquement
+    if (id.includes('${') || id.includes('+')) continue;
     if (!idsLegacy.has(id) && !idsViews.has(id) && !idsJs.has(id)) {
       problems.push(`${path}: référence DOM orpheline → #${id} (aucun id=" ${id} " trouvé)`);
     }

@@ -1,29 +1,42 @@
 <!DOCTYPE html>
-<html lang="fr" class="h-full bg-slate-950 text-slate-100">
+<html lang="fr" data-theme="papier">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TraqHACCP Pro - Plan de Maîtrise Sanitaire (PMS Entreprise)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>TraqHACCP — Registre sanitaire</title>
+  <meta name="description" content="Registre sanitaire numérique : températures, checklists, traçabilité et plan de maîtrise sanitaire (règlement (CE) n° 852/2004).">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#059669">
+  <meta name="theme-color" content="#F2F0EA">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="TraqHACCP">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <!-- Polices (DESIGN.md §3) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+
+  <!-- Design system v4 : socle CSS (tokens → base → layout → composants → vues) -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/views.css">
+
+  <!-- Dépendances du repli legacy v3 : conservées tant que les 16 sections legacy et le
+       script inline vivent dans cette page (docs/ARCHITECTURE.md §6, §8). -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
-
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
+            sans: ['Archivo', 'system-ui', 'sans-serif'],
+            mono: ['IBM Plex Mono', 'monospace'],
           },
           colors: {
             brand: {
@@ -45,226 +58,44 @@
     }
   </script>
 
+  <!-- Styles du repli legacy : seuls les utilitaires d'impression et d'état restent
+       nécessaires aux sections v3 ; les couleurs v3 sont remplacées par les jetons. -->
   <style>
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #090d16; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #475569; }
     @media print {
-      body { background-color: #ffffff !important; color: #000000 !important; }
       .no-print { display: none !important; }
       .print-only { display: block !important; }
-      .print-card { border: 1px solid #1e293b !important; background: white !important; color: black !important; page-break-inside: avoid; }
+      .print-card { break-inside: avoid; }
     }
     .print-only { display: none; }
     .touch-ripple:active { transform: scale(0.97); }
-    .glass-panel { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); }
+    .glass-panel { background: var(--paper-2); }
+  </style>
+
+  <!-- Pont de mise en page : `.workspace` n'est pas encore défini dans css/layout.css.
+       Ces règles donnent au shell sa colonne de travail ; à retirer dès que le CSS l'inclut. -->
+  <style>
+    .workspace { display: flex; flex-direction: column; min-width: 0; min-height: 0; height: 100dvh; overflow: hidden; }
+    @media (max-width: 900px) {
+      .app { grid-template-rows: auto 1fr; }
+      .workspace { height: auto; overflow: visible; }
+    }
   </style>
 </head>
 
-<body class="h-full flex flex-col font-sans selection:bg-emerald-500 selection:text-white bg-slate-950 antialiased overflow-hidden text-slate-100">
+<body>
+  <a class="skip-link" href="#main">Aller au contenu</a>
 
-  <!-- TOP HEADER / NAV BAR -->
-  <header class="no-print bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shrink-0 z-30 shadow-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      
-      <!-- Brand & Establishment info -->
-      <div class="flex items-center space-x-3.5">
-        <div class="h-10 w-10 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/25 border border-emerald-400/30">
-          <i class="fa-solid fa-shield-halved text-xl"></i>
-        </div>
-        <div>
-          <div class="flex items-center space-x-2">
-            <span class="font-black tracking-tight text-white text-lg">Traq<span class="text-emerald-400">HACCP</span> <span class="text-xs px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">PRO 2.0</span></span>
-            <span class="hidden sm:inline-flex px-2 py-0.5 text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full">CE 852/2004</span>
-          </div>
-          <p id="headerRestoName" class="text-xs text-slate-400 font-medium truncate max-w-[180px] sm:max-w-xs">Restaurant Le Bistrot Gourmand</p>
-        </div>
-      </div>
+  <!-- Coquille v4 : le rail, la barre supérieure et la barre mobile sont injectés par
+       src/presentation/shell.js ; la vue courante par src/presentation/router.js. -->
+  <div class="app">
+    <nav id="rail" class="rail" aria-label="Navigation principale"></nav>
+    <div class="workspace">
+      <header id="topbar" class="topbar"></header>
+      <main id="main" class="main">
+        <div id="view" class="view" role="region" aria-live="polite"></div>
 
-      <!-- Right quick action bar & Operator selector -->
-      <div class="flex items-center space-x-2 sm:space-x-3">
-        <!-- Live Clock -->
-        <div class="hidden lg:flex flex-col text-right pr-2">
-          <span id="liveClock" class="font-mono text-sm font-bold text-slate-200">12:00:00</span>
-          <span id="liveDate" class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Mercredi 16 Septembre</span>
-        </div>
-
-        <!-- Operator Selector with PIN Trigger -->
-        <div class="flex items-center space-x-2 bg-slate-800/80 border border-slate-700/80 px-2.5 py-1.5 rounded-xl shadow-inner">
-          <button onclick="openPinModal()" title="S'authentifier par code PIN (Sécurité Sanitaire)" class="w-7 h-7 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/60 text-emerald-400 flex items-center justify-center font-bold text-xs transition border border-emerald-500/30 touch-ripple">
-            <i class="fa-solid fa-key"></i>
-          </button>
-          <div class="flex flex-col text-left">
-            <label for="currentOperatorSelect" class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Opérateur actif</label>
-            <select id="currentOperatorSelect" onchange="onOperatorSelectChange(this.value)" class="bg-transparent text-xs font-semibold text-slate-100 focus:outline-none cursor-pointer">
-              <!-- Dynamically filled -->
-            </select>
-          </div>
-        </div>
-
-        <!-- Scanner Caméra Modal Trigger -->
-        <button onclick="openCameraModal()" title="Scanner Caméra (Codes-barres & Étiquettes)" class="inline-flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl text-xs font-semibold transition touch-ripple">
-          <i class="fa-solid fa-camera text-sky-400"></i>
-          <span class="hidden md:inline">Scanner</span>
-        </button>
-
-        <!-- Mode Contrôle DDPP 1-Clic Trigger -->
-        <button onclick="enterInspectionMode()" title="Activer le mode Contrôle Sanitaire DDPP (Lecture seule)" class="inline-flex items-center space-x-1.5 bg-rose-950/80 hover:bg-rose-900/90 text-rose-300 border border-rose-600/40 px-3 py-2 rounded-xl text-xs font-bold transition touch-ripple shadow-sm">
-          <i class="fa-solid fa-shield-halved text-rose-400"></i>
-          <span class="hidden md:inline">Contrôle DDPP</span>
-        </button>
-
-        <!-- Backup & Sync Modal Trigger -->
-        <button onclick="openBackupModal()" title="Sauvegarde & Restauration JSON" class="hidden sm:inline-flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl text-xs font-semibold transition touch-ripple">
-          <i class="fa-solid fa-cloud-arrow-up text-cyan-400"></i>
-          <span class="hidden md:inline">Backup</span>
-        </button>
-
-        <!-- CSV Export Button -->
-        <button onclick="exportFullHACCPCSV()" title="Exporter toutes les données en CSV Excel" class="hidden sm:inline-flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl text-xs font-semibold transition touch-ripple">
-          <i class="fa-solid fa-file-excel text-emerald-400"></i>
-          <span class="hidden md:inline">Export Excel</span>
-        </button>
-
-        <!-- PDF Export Button -->
-        <button onclick="downloadOfficialPDFReport()" title="Télécharger le rapport d'inspection officiel en PDF formaté" class="hidden sm:inline-flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl text-xs font-semibold transition touch-ripple">
-          <i class="fa-solid fa-file-pdf text-rose-400"></i>
-          <span class="hidden md:inline">PDF</span>
-        </button>
-
-        <!-- Quick Audit Report Export Button -->
-        <button onclick="switchTab('audit')" class="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md shadow-emerald-600/25 transition-all touch-ripple border border-emerald-400/30">
-          <i class="fa-solid fa-file-shield"></i>
-          <span>Rapport DDPP</span>
-        </button>
-      </div>
-
-    </div>
-  </header>
-
-  <div class="flex-1 flex overflow-hidden">
-    
-    <!-- NAVIGATION SIDEBAR (Desktop & Tablet) -->
-    <nav class="no-print hidden md:flex flex-col w-64 bg-slate-900/90 border-r border-slate-800 p-3 space-y-1 select-none shrink-0 overflow-y-auto">
-      <div class="px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Modules PMS Obligatoires</div>
-
-      <button onclick="switchTab('dashboard')" data-tab="dashboard" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
-        <i class="fa-solid fa-chart-pie w-5 text-center text-sm"></i>
-        <span class="flex-1 text-left">Tableau de bord</span>
-      </button>
-
-      <button onclick="switchTab('checklists')" data-tab="checklists" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-list-check w-5 text-center text-indigo-400 text-sm"></i>
-        <span class="flex-1 text-left">Checklists Ouv. / Ferm.</span>
-      </button>
-
-      <button onclick="switchTab('temperatures')" data-tab="temperatures" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-temperature-half w-5 text-center text-amber-400 text-sm"></i>
-        <span class="flex-1 text-left">Températures</span>
-        <span id="tempBadgeCount" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">6 frigos</span>
-      </button>
-
-      <button onclick="switchTab('reception')" data-tab="reception" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-truck-ramp-box w-5 text-center text-blue-400 text-sm"></i>
-        <span class="flex-1 text-left">Réception Livraisons</span>
-      </button>
-
-      <button onclick="switchTab('traceability')" data-tab="traceability" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-tags w-5 text-center text-purple-400 text-sm"></i>
-        <span class="flex-1 text-left">DLC & Traçabilité</span>
-      </button>
-
-      <button onclick="switchTab('allergens')" data-tab="allergens" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-seedling w-5 text-center text-orange-400 text-sm"></i>
-        <span class="flex-1 text-left">14 Allergènes INCO</span>
-      </button>
-
-      <button onclick="switchTab('cleaning')" data-tab="cleaning" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-broom w-5 text-center text-teal-400 text-sm"></i>
-        <span class="flex-1 text-left">Plan de Nettoyage</span>
-      </button>
-
-      <button onclick="switchTab('oil')" data-tab="oil" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-oil-can w-5 text-center text-yellow-500 text-sm"></i>
-        <span class="flex-1 text-left">Huiles de Friture</span>
-      </button>
-
-      <button onclick="switchTab('cooling')" data-tab="cooling" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-stopwatch-20 w-5 text-center text-cyan-400 text-sm"></i>
-        <span class="flex-1 text-left">Refroidissement</span>
-      </button>
-
-      <button onclick="switchTab('defrost')" data-tab="defrost" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-snowflake w-5 text-center text-sky-400 text-sm"></i>
-        <span class="flex-1 text-left">Décongélation Sécurisée</span>
-      </button>
-
-      <button onclick="switchTab('ph-weight')" data-tab="ph-weight" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-vial-circle-check w-5 text-center text-pink-400 text-sm"></i>
-        <span class="flex-1 text-left">Contrôles pH & Poids</span>
-      </button>
-
-      <button onclick="switchTab('documents')" data-tab="documents" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-folder-open w-5 text-center text-emerald-400 text-sm"></i>
-        <span class="flex-1 text-left">GED Documents Sanitaires</span>
-      </button>
-
-      <button onclick="switchTab('nonconformities')" data-tab="nonconformities" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-triangle-exclamation w-5 text-center text-rose-400 text-sm"></i>
-        <span class="flex-1 text-left">Non-Conformités NC/AC</span>
-        <span id="ncBadgeCount" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30">1</span>
-      </button>
-
-      <div class="pt-4 px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Contrôle Officiel & Réglages</div>
-
-      <button onclick="enterInspectionMode()" data-tab="ddpp-inspection" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-rose-300 hover:text-white bg-rose-950/30 hover:bg-rose-950/60 border border-rose-500/30 shadow-sm">
-        <i class="fa-solid fa-shield-halved w-5 text-center text-rose-400 text-sm"></i>
-        <span class="flex-1 text-left font-bold">Mode Contrôle DDPP</span>
-      </button>
-
-      <button onclick="switchTab('audit')" data-tab="audit" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-clipboard-check w-5 text-center text-emerald-400 text-sm"></i>
-        <span class="flex-1 text-left">Registre DDPP Officiel</span>
-      </button>
-
-      <button onclick="switchTab('settings')" data-tab="settings" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-        <i class="fa-solid fa-sliders w-5 text-center text-slate-400 text-sm"></i>
-        <span class="flex-1 text-left">Paramètres & Brigade</span>
-      </button>
-
-      <!-- Storage Status Card at bottom -->
-      <div class="mt-auto pt-4">
-        <div class="p-3 bg-slate-950/80 rounded-2xl border border-slate-800 text-xs shadow-inner">
-          <div class="flex items-center justify-between text-slate-400 mb-1">
-            <span class="flex items-center gap-1.5"><i class="fa-solid fa-database text-emerald-400"></i> Stockage Local</span>
-            <span class="text-[10px] text-emerald-400 font-bold">100% Conforme</span>
-          </div>
-          <p class="text-[10px] text-slate-400">Clean Architecture V2. Données chiffrées localement sur ce terminal.</p>
-        </div>
-      </div>
-    </nav>
-
-    <!-- MAIN SCROLLABLE CONTENT VIEWPORT -->
-    <main class="flex-1 flex flex-col overflow-y-auto bg-slate-950 p-4 sm:p-6 lg:p-8" id="mainContent">
-
-      <!-- BANNER: SYSTEM ALERT NOTIFICATIONS -->
-      <div id="systemAlertBanner" class="hidden mb-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-200 flex items-start justify-between shadow-lg shadow-rose-950/30 animate-pulse">
-        <div class="flex items-center space-x-3">
-          <i class="fa-solid fa-triangle-exclamation text-rose-400 text-xl shrink-0"></i>
-          <div>
-            <h4 class="font-bold text-sm text-rose-300">Alerte Sanitaire HACCP</h4>
-            <p id="systemAlertText" class="text-xs text-rose-200/90 mt-0.5">Notification système.</p>
-          </div>
-        </div>
-        <button onclick="dismissBanner()" class="text-rose-400 hover:text-rose-200 p-1">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <!-- ========================================== -->
-      <!-- TAB 1: DASHBOARD / ACCUEIL                 -->
-      <!-- ========================================== -->
+        <!-- Repli de migration : les 16 sections legacy restent dans la page et sont
+             masquées par le routeur ; chaque module non encore migré s'affiche ici. -->
       <section id="tab-dashboard" class="tab-content space-y-6">
         
         <!-- Welcome Hero & Summary Cards -->
@@ -937,62 +768,6 @@
       <!-- ========================================== -->
       <!-- TAB 12: SETTINGS & BRIGADE                 -->
       <!-- ========================================== -->
-      <section id="tab-settings" class="tab-content hidden space-y-6">
-        
-        <div>
-          <h2 class="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-            <i class="fa-solid fa-sliders text-slate-400"></i>
-            Paramètres & Configuration Cuisine
-          </h2>
-          <p class="text-xs sm:text-sm text-slate-400">Personnalisez les coordonnées de l'établissement, les données de la brigade et vos sauvegardes.</p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-utensils text-emerald-400"></i> Fiche Établissement
-            </h3>
-            <div>
-              <label class="text-xs font-semibold text-slate-300 block mb-1">Nom de l'établissement :</label>
-              <input type="text" id="settingRestoName" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white" value="Restaurant Le Bistrot Gourmand">
-            </div>
-            <div>
-              <label class="text-xs font-semibold text-slate-300 block mb-1">Numéro SIRET / Agrément Sanitaire :</label>
-              <input type="text" id="settingSiret" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white" value="849 203 118 00012">
-            </div>
-            <div>
-              <label class="text-xs font-semibold text-slate-300 block mb-1">Adresse postale :</label>
-              <input type="text" id="settingAddress" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white" value="14 Rue des Gastronomes, 75001 Paris">
-            </div>
-            <div class="pt-2">
-              <button onclick="saveSettings()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md transition touch-ripple">
-                Enregistrer l'établissement
-              </button>
-            </div>
-          </div>
-
-          <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-database text-cyan-400"></i> Sauvegarde & Sécurité des Données
-            </h3>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              Exportez ou restaurez l'intégralité du PMS en fichier JSON sécurisé. En cas de contrôle ou de changement de tablette en cuisine, vos données sont restaurées immédiatement.
-            </p>
-            <div class="flex flex-wrap gap-2.5 pt-2">
-              <button onclick="downloadJsonBackup()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition flex items-center gap-1.5 touch-ripple">
-                <i class="fa-solid fa-download text-emerald-400"></i> Télécharger JSON
-              </button>
-              <button onclick="openBackupModal()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition flex items-center gap-1.5 touch-ripple">
-                <i class="fa-solid fa-upload text-cyan-400"></i> Restaurer JSON
-              </button>
-              <button onclick="restoreDemoData()" class="px-3.5 py-2 bg-rose-950/30 hover:bg-rose-900/40 text-rose-300 text-xs font-semibold rounded-xl border border-rose-800/40 transition flex items-center gap-1.5 touch-ripple">
-                <i class="fa-solid fa-rotate-left"></i> Réinitialiser Démo
-              </button>
-            </div>
-          </div>
-        </div>
-
-      </section>
 
       <!-- ========================================== -->
       <!-- TAB 10: CHECKLISTS OUVERTURE & FERMETURE   -->
@@ -1202,36 +977,12 @@
           </div>
         </div>
       </section>
-
-    </main>
+      </main>
+    </div>
   </div>
 
+  <nav id="tabbar" class="tabbar" aria-label="Navigation rapide"></nav>
 
-  <!-- BOTTOM NAVIGATION FOR MOBILE -->
-  <nav class="no-print md:hidden bg-slate-900/95 backdrop-blur-md border-t border-slate-800 shrink-0 z-30">
-    <div class="grid grid-cols-5 h-16 text-[10px] font-medium text-slate-400">
-      <button onclick="switchTab('dashboard')" class="mobile-nav-btn flex flex-col items-center justify-center text-emerald-400" data-tab="dashboard">
-        <i class="fa-solid fa-chart-pie text-lg mb-1"></i>
-        <span>Accueil</span>
-      </button>
-      <button onclick="switchTab('temperatures')" class="mobile-nav-btn flex flex-col items-center justify-center hover:text-white" data-tab="temperatures">
-        <i class="fa-solid fa-temperature-half text-lg mb-1"></i>
-        <span>T° C</span>
-      </button>
-      <button onclick="switchTab('reception')" class="mobile-nav-btn flex flex-col items-center justify-center hover:text-white" data-tab="reception">
-        <i class="fa-solid fa-truck-ramp-box text-lg mb-1"></i>
-        <span>Livr.</span>
-      </button>
-      <button onclick="switchTab('traceability')" class="mobile-nav-btn flex flex-col items-center justify-center hover:text-white" data-tab="traceability">
-        <i class="fa-solid fa-tags text-lg mb-1"></i>
-        <span>DLC</span>
-      </button>
-      <button onclick="switchTab('cleaning')" class="mobile-nav-btn flex flex-col items-center justify-center hover:text-white" data-tab="cleaning">
-        <i class="fa-solid fa-broom text-lg mb-1"></i>
-        <span>PND</span>
-      </button>
-    </div>
-  </nav>
 
   <!-- ======================================================== -->
   <!-- MODALS SYSTEM (CLEAN DOM)                               -->
@@ -3865,6 +3616,27 @@
     }
 
     window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+
+  <!-- Hooks DOM de la coquille v3 : le script inline ci-dessus les lit encore
+       (restaurant, horloge, sélecteur d'opérateur, bandeau, réglages). Ils disparaissent
+       avec lui à la dernière vague de migration. -->
+  <div class="visually-hidden" aria-hidden="true">
+    <span id="headerRestoName"></span>
+    <span id="liveClock"></span>
+    <span id="ncBadgeCount"></span>
+    <div id="systemAlertBanner"><span id="systemAlertText"></span></div>
+    <select id="currentOperatorSelect" tabindex="-1" aria-label="Sélecteur d'opérateur v3"></select>
+    <input id="settingRestoName" type="text" readonly tabindex="-1">
+    <input id="settingSiret" type="text" readonly tabindex="-1">
+    <input id="settingAddress" type="text" readonly tabindex="-1">
+  </div>
+
+  <!-- Amorçage v4 : après le script inline v3 (dernier arrivé, dernier servi pour
+       `window.switchTab`). boot() monte la coquille puis le routeur (context.js §8). -->
+  <script type="module">
+    import { boot } from './src/presentation/context.js';
+    boot();
   </script>
 
 </body>
