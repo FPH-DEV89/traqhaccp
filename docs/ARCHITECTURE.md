@@ -221,7 +221,76 @@ function switchTab(id) {
 - `window.switchTab`, `window.saveSettings`, `window.restoreDemoData` restent exposés
   jusqu'à la suppression du legacy (compatibilité des `onclick`).
 
-## 7. Vérification obligatoire
+## 8. Démarrage, graphe de modules, repli legacy
+
+### 8.1 Séquence de démarrage (contrat figé)
+
+`index.html` ne contient **qu'un seul** script : les imports et l'appel au boot.
+
+```html
+<script type="module">
+  import { boot } from './src/presentation/context.js';
+  boot();
+</script>
+```
+
+`src/presentation/context.js` (racine de composition) :
+```js
+export const app = { repository, audio, useCases, account, settings, store, ui, icon, fmt, exports, nav: NAV };
+export function boot() {
+  initShell(app);            // shell.js : injecte rail + topbar dans #rail / #topbar
+  initRouter(app);           // router.js : registre VIEWS, raccourcis, hash, module courant
+  app.ready = true;
+}
+```
+- `boot()` est idempotent (garde `if (app.ready) return;`).
+- Ordre imposé : `initShell` **avant** `initRouter` (le routeur utilise les éléments du shell).
+- `ui.js` et `icons.js` sont **auto-suffisants** : ils ne dépendent ni du shell ni du routeur.
+- Aucun module ne s'auto-exécute au chargement (pas d'effet de bord à l'import), sauf
+  `context.js` qui construit `app` (instanciation pure, sans DOM).
+- `app.fmt` : `temp(v)`, `pct(v)`, `date(iso)`, `time(iso)`, `dt(iso)`, `relative(iso)`,
+  `quantity(v, unit)`, `signed(v)` — typographie française (virgule décimale, espace
+  insécable avant `°C` et `%`).
+
+### 8.2 Repli legacy pendant la migration
+
+`router.js` migre module par module. Pour un module absent de `VIEWS`, il masque `#view`,
+affiche `#tab-<id>` et appelle les fonctions de rendu v3 :
+
+```js
+const LEGACY_RENDER = {
+  dashboard:        ['renderDashboard'],
+  checklists:       ['setChecklistRoutineTab', 'renderChecklists'],
+  temperatures:     ['renderEquipmentCards'],
+  reception:        ['renderReceptionsTable'],
+  traceability:     ['renderPreparationCards'],
+  allergens:        ['renderAllergenFilterButtons', 'renderAllergensMatrix'],
+  cleaning:         ['renderCleaningTasks'],
+  oil:              ['renderFryersList'],
+  cooling:          ['renderCoolingCycles'],
+  defrost:          ['renderDefrostCycles'],
+  'ph-weight':      ['renderPhRecords', 'renderWeightRecords'],
+  documents:        ['renderSanitaryDocs'],
+  nonconformities:  ['renderNonConformitiesTable'],
+  audit:            ['renderAuditView'],
+  'ddpp-inspection':['renderDdppInspectionView'],
+  settings:         [],
+};
+```
+`renderSanitaryDocs` et `setChecklistRoutineTab` attendent des arguments : le repli les
+appelle sans argument (comportement v3 par défaut) — `filterDocs()` peut être appelé avec
+`''`. Si une fonction est absente (`undefined`), le routeur l'ignore silencieusement.
+Le repli doit rester **fonctionnel jusqu'à la dernière vague** : ne supprime jamais une
+fonction v3 tant que son module n'est pas migré et vérifié.
+
+### 8.3 Fin de migration
+
+Quand les 17 modules existent : supprimer les 16 sections `.tab-content`, tout le script
+inline v3, `LEGACY_RENDER`, le CDN Tailwind et Font Awesome ; écrire
+`docs/MIGRATION_COMPLETE` (ce fichier active les contrôles stricts : `check-design` sur
+`index.html`, détection de doublons d'id, `parity-baseline.json` vidé).
+
+## 9. Vérification obligatoire
 
 - `node tools/check-parity.mjs` : tout `getElementById(x)` du legacy doit trouver `id="x"`
   dans une section legacy **ou** dans un module de vue ; tout `data-action`/`onclick` doit

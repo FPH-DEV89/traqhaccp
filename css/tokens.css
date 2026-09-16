@@ -1,0 +1,140 @@
+/*
+ * css/tokens.css — Variables CSS du design system « REGISTRE »
+ * TraqHACCP v4 · docs/DESIGN.md §4 §5 §6
+ *
+ * ⚠ SEUL fichier autorisé à contenir des valeurs littérales #hex / rgba().
+ *   Tout autre fichier CSS doit utiliser var(--…) exclusivement.
+ *
+ * Thème actif : data-theme posé par le JS (pas de bascule automatique).
+ * Le thème « papier » est le défaut.
+ */
+
+/* ── Thème papier (défaut) ──────────────────────────────────────────────── */
+:root,
+[data-theme="papier"] {
+
+  /* Couleurs */
+  --paper:       #F2F0EA;   /* fond application */
+  --paper-2:     #EAE7DF;   /* fond alterné, entêtes de tableau */
+  --sheet:       #FBFAF7;   /* surface des composants */
+  --ink:         #1A1C1E;   /* texte principal */
+  --ink-2:       #4C5257;   /* texte secondaire */
+  --ink-3:       #6F757B;   /* libellés, unités, métadonnées */
+  --rule:        #DDD9CF;   /* filet 1 px */
+  --rule-2:      #C3BEB1;   /* filet accentué, séparateur de groupe */
+  --accent:      #0E4F55;   /* pétrole — LA couleur de marque */
+  --accent-2:    #0A3B40;   /* accent survol / appui */
+  --accent-wash: #E3EDED;   /* fond teinté accent (sélection, actif) */
+  --ok:          #1D6B3F;
+  --warn:        #8A5A00;
+  --danger:      #9E241C;
+  --on-accent:   #F7FBFA;
+
+  /* Ombres (uniquement sh-1 panel et sh-2 modal) */
+  --sh-1: 0 12px 40px -18px rgba(26,28,30,.35);
+  --sh-2: 0 20px 56px -20px rgba(26,28,30,.40), 0 2px 8px -4px rgba(26,28,30,.14);
+}
+
+/* ── Thème nuit ─────────────────────────────────────────────────────────── */
+[data-theme="nuit"] {
+
+  /* Couleurs */
+  --paper:       #141413;
+  --paper-2:     #1A1918;
+  --sheet:       #1C1B19;
+  --ink:         #E9E6E0;
+  --ink-2:       #ABA8A1;
+  --ink-3:       #8A867F;
+  --rule:        #2E2C29;
+  --rule-2:      #423F3A;
+  --accent:      #5FB3B0;
+  --accent-2:    #7CC5C2;
+  --accent-wash: #14312F;
+  --ok:          #4FA96E;
+  --warn:        #C79A3A;
+  --danger:      #D9645A;
+  --on-accent:   #0C1613;
+
+  /* Ombres (thème nuit : plus douces) */
+  --sh-1: 0 12px 40px -18px rgba(0,0,0,.55);
+  --sh-2: 0 20px 56px -20px rgba(0,0,0,.60), 0 2px 8px -4px rgba(0,0,0,.28);
+}
+
+/* ── Espacement ─────────────────────────────────────────────────────────── */
+:root {
+  --s-1:  2px;
+  --s-2:  4px;
+  --s-3:  6px;
+  --s-4:  8px;
+  --s-5:  12px;
+  --s-6:  16px;
+  --s-7:  20px;
+  --s-8:  24px;
+  --s-9:  32px;
+  --s-10: 40px;
+  --s-11: 56px;
+
+  /* Rayons */
+  --r-1: 2px;
+  --r-2: 3px;
+  --r-3: 6px;
+
+  /* Grille / shell */
+  --rail:        232px;   /* largeur du rail de navigation */
+  --topbar:      56px;    /* hauteur de la barre supérieure */
+  --content-max: 1240px;  /* largeur max du contenu */
+  --row:         40px;    /* hauteur de ligne de tableau */
+  --ctl:         32px;    /* hauteur de contrôle (bouton, input dense) */
+  --ctl-lg:      36px;    /* input de formulaire */
+  --touch:       44px;    /* cible tactile minimale (tablette) */
+
+  /* Profondeur (z-index) */
+  --z-rail:     20;
+  --z-topbar:   30;
+  --z-panel:    40;
+  --z-modal:    50;
+  --z-toast:    60;
+  --z-lightbox: 70;
+
+  /* Durées */
+  --d-1: 120ms;
+  --d-2: 180ms;
+  --d-3: 240ms;
+
+  /* Easings */
+  --e-out: cubic-bezier(.2,.7,.3,1);
+
+  /* Familles de polices */
+  --ff-serif: 'Instrument Serif', Georgia, serif;
+  --ff-sans:  'Archivo', system-ui, sans-serif;
+  --ff-mono:  'IBM Plex Mono', 'Courier New', monospace;
+
+  /* Tailles de police (token seul — graisse + hauteur de ligne dans base.css) */
+  --t-display: 30px;
+  --t-h1:      21px;
+  --t-h2:      15px;
+  --t-h3:      13px;
+  --t-body:    13.5px;
+  --t-sm:      12px;
+  --t-label:   10.5px;
+  --t-num:     13.5px;
+  --t-num-lg:  20px;
+  --t-num-xl:  34px;
+}
+
+/* ── Surcharge impression — couleurs papier blanc ───────────────────────── */
+/* Seule zone autorisée (avec les thèmes) à contenir des valeurs hex/rgba   */
+@media print {
+  :root,
+  [data-theme="papier"],
+  [data-theme="nuit"] {
+    --paper:   #fff;
+    --paper-2: #f0f0f0;
+    --sheet:   #fff;
+    --ink:     #1A1C1E;
+    --ink-2:   #4C5257;
+    --ink-3:   #6F757B;
+    --rule:    #ccc;
+    --rule-2:  #999;
+  }
+}

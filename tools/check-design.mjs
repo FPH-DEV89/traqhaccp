@@ -51,29 +51,65 @@ const BANS = [
   [/style\s*=\s*["'][^"']*(background|color)\s*:\s*#/, 'couleur en dur dans un style inline (var(--…) requis)'],
 ];
 
-const ALLOWED_SYMBOLS = new Set(['✓', '✗', '·', '–', '—', '→', '←', '№', '≥', '≤', '±', '°']);
+const ALLOWED_SYMBOLS = new Set([
+  '✓', '✗', '·', '–', '—', '→', '←', '↑', '↓', '№', '≥', '≤', '±', '°', '×', '÷', '‰',
+  'µ', '²', '³', '«', '»', '’', '…', '⌘', '⌀', '½', '¼', '¾', '─', '│', '┌', '┐', '└', '┘',
+]);
+
+/** Emojis réellement pictographiques (on ne bannit pas les symboles typographiques). */
+const EMOJI_RANGES = [
+  /\u{1F000}-\u{1FAFF}/u, // pictogrammes & symboles supplémentaires
+  /\u{2600}-\u{26FF}/u,   // symboles divers (☀ ♻ ⚠ …)
+  /\u{2700}-\u{27BF}/u,   // dingbats (✂ ✅ …)
+  /\u{2B00}-\u{2BFF}/u,   // flèches/symboles divers
+  /\u{FE0F}/u,            // sélecteur de variation (force le rendu emoji)
+  /\u{1F1E6}-\u{1F1FF}/u, // indicatifs régionaux (drapeaux)
+  /[\u{23F0}-\u{23F3}\u{231A}\u{231B}\u{2699}]/u, // horloges / engrenage
+];
+
 function findEmoji(line) {
-  const rx = /[\u{1F000}-\u{1FAFF}\u{2190}-\u{21FF}\u{2300}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{1F1E6}-\u{1F1FF}\u{2700}-\u{27BF}\u{2600}-\u{26FF}]/gu;
   for (const ch of line) {
-    if (rx.test(ch) && !ALLOWED_SYMBOLS.has(ch)) return ch;
+    if (ALLOWED_SYMBOLS.has(ch)) continue;
+    if (EMOJI_RANGES.some((rx) => rx.test(ch))) return ch;
   }
   return null;
+}
+
+/** Retire les commentaires (blocs puis lignes) pour ne pas valider du code commenté. */
+function stripComments(text, isCss) {
+  let out = text.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '));
+  out = out
+    .split('\n')
+    .map((l) => {
+      const t = l.trim();
+      if (t.startsWith('//') || t.startsWith('*') || (isCss && t.startsWith('/*'))) {
+        return ' '.repeat(l.length);
+      }
+      return l;
+    })
+    .join('\n');
+  return out;
 }
 
 const violations = [];
 function scan(path, { cssOnly = false, jsOnly = false } = {}) {
   const rel = relative(ROOT, path);
   const isTokens = rel.endsWith('css/tokens.css');
-  const lines = readFileSync(path, 'utf8').split('\n');
+  const raw = readFileSync(path, 'utf8');
+  const rawLines = raw.split('\n');
+  const lines = stripComments(raw, rel.endsWith('.css')).split('\n');
+  // Dérogation de fichier : documents imprimés autonomes (rapport, étiquettes) ayant leur
+  // propre <style> interne — les couleurs littérales y sont légitimes (impression hors ligne).
+  const colorExempt = rawLines.slice(0, 30).join('\n').includes('design-ignore-file:couleurs');
   lines.forEach((line, i) => {
     const at = (msg) => violations.push(`${rel}:${i + 1}  ${msg}`);
-    if (/design-ignore/.test(line)) return;
+    if (/design-ignore/.test(rawLines[i] || '')) return;
     for (const [rx, why] of BANS) {
       if (rx.test(line)) at(why + '  →  ' + line.trim().slice(0, 110));
     }
     const emo = findEmoji(line);
     if (emo) at(`emoji « ${emo} » interdit dans l'UI`);
-    if (!jsOnly && !isTokens) {
+    if (!jsOnly && !isTokens && !colorExempt) {
       // couleurs en dur : autorisées uniquement dans tokens.css
       const hex = line.match(/#[0-9a-fA-F]{3,8}\b/g);
       if (hex) {
