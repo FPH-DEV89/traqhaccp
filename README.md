@@ -115,14 +115,19 @@ Ce que `npm test` enchaîne : `check-syntax` (syntaxe de tous les modules ES), `
 (design system et surface des vues), `check-parity` (aucune référence orpheline, dette vide via
 `tools/parity-baseline.json`), `check-css-coverage`, `check-norms-consistency` et `test-domain`.
 
-## Déploiement — GitHub Pages
+## Déploiement — Vercel (référence) + GitHub Pages
 
-Site 100 % statique, servi depuis la **branche `main`** :
+Site 100 % statique. **URL de référence :**
+`https://traqhaccpcleanarchitecture.vercel.app/`
 
-1. pousser le dépôt sur GitHub (`git push origin main`) ;
-2. dépôt → **Settings → Pages → Build and deployment → Source : Deploy from a branch** ;
-3. choisir la branche **`main`**, dossier **`/ (root)`**, puis **Save** ;
-4. l'application est publiée sur `https://<compte>.github.io/<dépôt>/` (le fichier
+**Vercel** (principal) : projet relié au dépôt, chaque `git push origin main`
+redéploie automatiquement ; `vercel.json` active les URLs propres et le `no-store` du
+service worker.
+
+**GitHub Pages** (miroir de secours) :
+1. **Settings → Pages → Deploy from a branch** ;
+2. branche **`main`**, dossier **`/ (root)`**, puis **Save** ;
+3. miroir publié sur `https://fph-dev89.github.io/traqhaccp/` (le fichier
    `.nojekyll` présent à la racine empêche Jekyll de filtrer les fichiers).
 
 Chemins relatifs uniquement (`./src/…`, `./assets/…`) : le site fonctionne aussi bien à la
