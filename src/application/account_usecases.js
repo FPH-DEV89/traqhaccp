@@ -99,10 +99,12 @@ export class AccountUseCases {
   can(permission) {
     if (!permission) return false;
     const courant = this.getCurrentOperator();
-    if (!courant) {
-      if (PERMISSIONS_RESERVEES.includes(permission)) return false;
-      return hasPermission(ROLE_ACCES_LIBRE, permission);
-    }
+    // Mode « accès libre » (aucun opérateur identifié) : décision produit du 16/09/2026 —
+    // l'application n'impose pas de mur d'authentification, toutes les actions sont donc
+    // ouvertes tant que personne n'est identifié (cohérent avec `_verifier`, qui autorise
+    // déjà l'écriture dans ce cas). Dès qu'un opérateur est sélectionné dans la barre
+    // supérieure, ses permissions de rôle s'appliquent strictement.
+    if (!courant) return true;
     return hasPermission(courant.role, permission);
   }
 

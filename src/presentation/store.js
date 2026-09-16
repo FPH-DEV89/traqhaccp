@@ -77,12 +77,20 @@ export class HACCPStore {
 
   /** État courant pour les vues (l'état + les services injectés). */
   getState() {
+    const etat = this.state;
     return {
-      ...this.state,
+      ...etat,
+      // Contrat des vues (docs/ARCHITECTURE.md §5) : `settings` est l'INSTANCE
+      // SettingsUseCases (getSettings/updateThresholds/listEquipments…), jamais l'objet de
+      // données. Les vues reconstruisent fréquemment leur contexte par
+      // `{ ...ctx, ...store.getState() }` : exposer l'instance ici empêche les données
+      // de réglages d'écraser le service métier (bug corrigé le 16/09/2026).
+      settings: this.settings,
+      settingsUseCases: this.settings,
+      settingsData: etat.settings,
       repository: this.repository,
       useCases: this.useCases,
       account: this.account,
-      settingsUseCases: this.settings,
     };
   }
 

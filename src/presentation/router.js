@@ -72,7 +72,26 @@ function idEtat() {
 /** Contexte des vues : état du store + services de présentation. */
 function contexte() {
   const etat = app.store.getState();
-  return { ...etat, store: app.store, ui, icon: app.icon, fmt: app.fmt, nav: NAV, router: { switchTab } };
+  return {
+    ...etat,
+    state: etat,
+    store: app.store,
+    // Instances métier attendues par les vues (docs/ARCHITECTURE.md §4-§5 et specs/_API-CHEATSHEET.md).
+    // `settings` est l'instance SettingsUseCases, pas l'objet de données : les vues appellent
+    // getSettings()/updateThresholds()… ; les données restent lisibles via `etat.settings`.
+    repository: app.repository,
+    useCases: app.useCases,
+    account: app.account,
+    settings: app.settings,
+    settingsUseCases: app.settings,
+    settingsData: etat.settings,
+    exports: app.exports,
+    ui,
+    icon: app.icon,
+    fmt: app.fmt,
+    nav: NAV,
+    router: { switchTab },
+  };
 }
 const racine = () => document.getElementById('view');
 /** État vide : le module demandé n'a pas de vue branchée (id inconnu, module futur). */
