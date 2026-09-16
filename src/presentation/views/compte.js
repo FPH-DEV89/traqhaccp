@@ -25,7 +25,7 @@ const CHAMPS = [
   ['address', 'Adresse', 'text'], ['postal', 'Code postal', 'text', '5 chiffres.'], ['city', 'Ville', 'text'],
   ['phone', 'Téléphone', 'text'], ['email', 'E-mail', 'text'], ['manager', 'Responsable', 'text', 'Responsable de la sécurité sanitaire.'],
   ['agreement', "N° d'agrément sanitaire", 'text', 'Déclaration ou agrément DDPP.'], ['seats', 'Couverts', 'number', 'Couverts servis par jour.'],
-  ['openedYear', "Année d'ouverture", 'number'],
+  ['openedYear', "Année d'ouverture", 'annee'],
 ];
 const COURTS = {
   'users.manage': 'Utilisateurs', 'settings.edit': 'Réglages', 'settings.manage': 'Réglages', 'equipment.manage': 'Équipements',
@@ -44,6 +44,12 @@ const texte = (valeur) => (valeur === null || valeur === undefined ? '' : String
 const nombre = (valeur) => {
   const n = Number(valeur);
   return valeur === '' || valeur === null || valeur === undefined || !Number.isFinite(n) ? texte(valeur) : FORMAT_NOMBRE.format(n);
+};
+/** Année : entier brut, sans séparateur de milliers (« 2019 », jamais « 2 019 »). */
+const annee = (valeur) => {
+  if (valeur === '' || valeur === null || valeur === undefined) return T_VIDE;
+  const n = Number(valeur);
+  return Number.isFinite(n) ? String(Math.trunc(n)) : texte(valeur);
 };
 function dateHeure(valeur) {
   if (!valeur) return T_VIDE;
@@ -120,7 +126,7 @@ function segmentation() {
 function ficheLecture(ctx, fiche, errors) {
   const peut = peutGererUtilisateurs(ctx);
   const lignes = CHAMPS.map(([cle, libelle, type]) => {
-    const valeur = type === 'number' ? nombre(fiche[cle]) : texte(fiche[cle]);
+    const valeur = type === 'number' ? nombre(fiche[cle]) : (type === 'annee' ? annee(fiche[cle]) : texte(fiche[cle]));
     const rendu = texte(valeur) ? esc(valeur) : `<span class="field__hint">${T_VIDE}</span>`;
     return `<div class="field"><span class="field__label">${esc(libelle)}</span><div>${rendu}</div>${champErreur(cle, erreurChamp(errors, cle))}</div>`;
   }).join('');
@@ -138,7 +144,7 @@ function ficheEdition(ctx, fiche, errors) {
       saisie = `<select class="select" data-champ="${cle}" aria-label="${esc(libelle)}"><option value="">— Choisir —</option>`
         + liste.map((a) => `<option value="${esc(a)}"${a === valeur ? ' selected' : ''}>${esc(a)}</option>`).join('') + '</select>';
     } else {
-      saisie = `<input class="input" type="${type === 'number' ? 'number' : 'text'}" value="${esc(valeur)}" data-champ="${cle}" aria-label="${esc(libelle)}">`;
+      saisie = `<input class="input" type="${type === 'number' || type === 'annee' ? 'number' : 'text'}" value="${esc(valeur)}" data-champ="${cle}" aria-label="${esc(libelle)}">`;
     }
     const aide = indication ? `<span class="field__hint">${esc(indication)}</span>` : '';
     return `<div class="field"><label class="field__label">${esc(libelle)}</label>${saisie}${aide}${champErreur(cle, erreurChamp(errors, cle))}</div>`;

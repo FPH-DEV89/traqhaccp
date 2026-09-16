@@ -176,7 +176,7 @@ function rendreRail() {
       ${groupe.items.map((item) => ligneNav(item, total[item.id])).join('')}
     </div>`).join('')}
     <div class="rail__group">
-      <p class="rail__meta">Version ${esc(APP_VERSION)} · <span data-role="dernier">dernier enregistrement —</span></p>
+      <p class="rail__meta">Version ${esc(APP_VERSION)}<br><span data-role="dernier">dernier enregistrement —</span></p>
       <div class="row row--sm row--tight">
         <button class="icon-btn" type="button" data-action="palette" aria-label="Rechercher un module (Ctrl+K)">${icon('search', 18)}</button>
         <button class="icon-btn" type="button" data-action="reglages" aria-label="Réglages et compte">${icon('settings', 18)}</button>

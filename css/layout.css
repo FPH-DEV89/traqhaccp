@@ -69,6 +69,9 @@
   font-size: var(--t-label);
   color: var(--ink-3);
   padding: var(--s-2) var(--s-6);
+  /* Les métadonnées du rail peuvent tenir sur deux lignes : jamais de troncature. */
+  white-space: normal;
+  line-height: 1.45;
 }
 
 .rail__group { padding-top: var(--s-4); }

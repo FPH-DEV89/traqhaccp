@@ -146,7 +146,7 @@ export const NAV = [
     { id: 'ddpp-inspection', idx: '15', icon: 'shield',      title: 'Mode inspection',      desc: 'Consultation lecture seule' },
   ]},
   { group: 'Administration', items: [
-    { id: 'compte',          idx: '16', icon: 'users',       title: 'Compte et établissement', desc: 'Fiche établissement, utilisateurs, rôles' },
+    { id: 'compte',          idx: '16', icon: 'users',       title: 'Compte',          desc: 'Fiche établissement, utilisateurs, rôles' },
     { id: 'reglages',        idx: '17', icon: 'settings',    title: 'Réglages',             desc: 'Normes, équipements, préférences, sauvegardes' },
   ]},
 ];

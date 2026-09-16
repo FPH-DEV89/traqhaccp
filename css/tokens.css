@@ -80,7 +80,7 @@
   --r-3: 6px;
 
   /* Grille / shell */
-  --rail:        232px;   /* largeur du rail de navigation */
+  --rail:        248px;   /* largeur du rail de navigation */
   --topbar:      56px;    /* hauteur de la barre supérieure */
   --content-max: 1240px;  /* largeur max du contenu */
   --row:         40px;    /* hauteur de ligne de tableau */
