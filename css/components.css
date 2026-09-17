@@ -170,7 +170,7 @@
   display: flex; align-items: center; justify-content: space-between;
   padding: var(--s-5) var(--s-6); border-bottom: 1px solid var(--rule);
 }
-.sheet__body { padding: var(--s-6); }
+.sheet__body { padding: var(--s-6); overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .sheet__foot {
   display: flex; align-items: center; justify-content: flex-end;
   gap: var(--s-4); padding: var(--s-5) var(--s-6); border-top: 1px solid var(--rule);
@@ -437,7 +437,112 @@ tr.is-selected td { background: var(--accent-wash); }
 [aria-invalid="true"].select,
 [aria-invalid="true"].textarea { border-color: var(--danger); }
 
+/* ---- Pavé tactile cuisine (Keypad) --------------------------------------- */
+.keypad {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+.keypad__display {
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  padding: var(--s-4) var(--s-6);
+  font-family: var(--ff-mono);
+  font-size: var(--t-h2);
+  font-weight: 600;
+  text-align: right;
+  color: var(--ink);
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.keypad__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-3);
+}
+
+.keypad__btn {
+  height: 52px;
+  min-height: var(--touch);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: var(--sheet);
+  color: var(--ink);
+  font-family: var(--ff-mono);
+  font-size: var(--t-h3);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: background var(--d-1) var(--e-out);
+}
+
+.keypad__btn:active, .keypad__btn:hover {
+  background: var(--paper-2);
+}
+
+.keypad__btn--action {
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
+.keypad__btn--action:active, .keypad__btn--action:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.keypad__btn--danger {
+  color: var(--danger);
+}
+
+/* Raccourcis rapides de température */
+.quick-adjust {
+  display: flex;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: var(--s-2);
+}
+
+.quick-adjust__btn {
+  height: 36px;
+  min-height: var(--touch);
+  padding: 0 var(--s-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: var(--paper);
+  color: var(--ink-2);
+  font-family: var(--ff-mono);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  transition: background var(--d-1) var(--e-out), color var(--d-1) var(--e-out);
+}
+
+.quick-adjust__btn:active, .quick-adjust__btn:hover {
+  background: var(--accent-wash);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 /* ---- Cibles tactiles ------------------------------------------------------ */
 @media (pointer: coarse) {
   .btn, .seg__item, .palette__item { min-height: var(--touch); }
+  .icon-btn { min-width: var(--touch); min-height: var(--touch); }
+  .checklist__check { min-width: var(--touch); min-height: var(--touch); }
 }

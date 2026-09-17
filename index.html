@@ -11,11 +11,11 @@
 <link rel="manifest" href="manifest.json">
 
 <!-- Design system : l'ordre des feuilles compte (tokens → base → layout → composants → vues). -->
-<link rel="stylesheet" href="css/tokens.css">
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/layout.css">
-<link rel="stylesheet" href="css/components.css">
-<link rel="stylesheet" href="css/views.css">
+<link rel="stylesheet" href="css/tokens.css?v=4.1.0">
+<link rel="stylesheet" href="css/base.css?v=4.1.0">
+<link rel="stylesheet" href="css/layout.css?v=4.1.0">
+<link rel="stylesheet" href="css/components.css?v=4.1.0">
+<link rel="stylesheet" href="css/views.css?v=4.1.0">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -52,7 +52,16 @@
 
   // PWA : le registre doit rester consultable hors-ligne (harnais réseau dégradé).
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      if (reg && reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }).catch(() => {});
+    let rechargement = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!rechargement) {
+        rechargement = true;
+        window.location.reload();
+      }
+    });
   }
 </script>
 </body>

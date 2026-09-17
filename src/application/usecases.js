@@ -44,6 +44,25 @@ export class HACCPUseCases {
     }
   }
 
+  setExactTemperature(equipId, targetTemp, operatorName) {
+    const equipments = this.repository.getEquipments();
+    const eq = equipments.find(e => e.id === equipId);
+    if (!eq) throw new Error("Équipement introuvable");
+
+    const newTemp = parseFloat(parseFloat(targetTemp).toFixed(1));
+    eq.recordTemperature(newTemp, operatorName);
+    this.repository.saveEquipments(equipments);
+
+    const isConform = eq.isConform();
+    if (!isConform) {
+      this.audio.play('warning');
+      return { success: true, isConform: false, equipment: eq };
+    } else {
+      this.audio.play('success');
+      return { success: true, isConform: true, equipment: eq };
+    }
+  }
+
   resolveTemperatureIncident(equipId, actionTaken, comment, operatorName) {
     const equipments = this.repository.getEquipments();
     const eq = equipments.find(e => e.id === equipId);

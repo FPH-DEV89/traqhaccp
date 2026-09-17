@@ -147,6 +147,7 @@ function ligneEquipement(eq, ctx) {
     <td>${creneaux}</td>
     <td class="kpi__spark">${sparkline(eq)}</td>
     <td><span class="row">
+      <button class="btn btn--sm btn--ghost" type="button" data-action="keypad" data-equip="${echapper(eq.id)}" aria-label="Pavé tactile pour ${echapper(eq.name)}" title="Saisie tactile (Quick Keypad)">${ctx.icon('edit', 14)} Pavé</button>
       <button class="icon-btn" type="button" data-action="step-down" data-equip="${echapper(eq.id)}" aria-label="Diminuer de 0,1 degré">−</button>
       <input class="input num" type="number" inputmode="decimal" step="0.1" value="${Number.isFinite(temp) ? temp.toFixed(1) : ''}" data-role="temp-input" data-equip="${echapper(eq.id)}" aria-label="Température mesurée de ${echapper(eq.name)}">
       <button class="icon-btn" type="button" data-action="step-up" data-equip="${echapper(eq.id)}" aria-label="Augmenter de 0,1 degré">+</button>
@@ -182,10 +183,12 @@ export function render(ctx) {
   return `${tete}${kpis}${barre}${alerte}<section class="section">
     <div class="section__head"><h2 class="section__title">Enceintes suivies</h2><span class="section__action muted">Plage cible · dernier relevé · créneaux · 7 jours</span></div>
     <div class="sheet"><div class="sheet__body">
-      <table class="table table--compact table--zebra">
-        <thead><tr><th>Équipement</th><th>Plage cible</th><th>Dernière valeur</th><th>Écart</th><th>État</th><th>Créneaux</th><th>Tendance 7 j</th><th>Saisie rapide</th><th>Opérateur</th></tr></thead>
-        <tbody>${eqs.map((eq) => ligneEquipement(eq, ctx)).join('')}</tbody>
-      </table>
+      <div class="table--scroll">
+        <table class="table table--compact table--zebra">
+          <thead><tr><th>Équipement</th><th>Plage cible</th><th>Dernière valeur</th><th>Écart</th><th>État</th><th>Créneaux</th><th>Tendance 7 j</th><th>Saisie rapide</th><th>Opérateur</th></tr></thead>
+          <tbody>${eqs.map((eq) => ligneEquipement(eq, ctx)).join('')}</tbody>
+        </table>
+      </div>
     </div></div>
   </section>`;
 }
@@ -246,6 +249,119 @@ function reinitialiser(ctx) {
   ctx.repository.saveEquipments(equipements(ctx));
 }
 
+function ouvrirKeypad(ctx, root, equipId) {
+  const eq = trouver(ctx, equipId);
+  if (!eq) return;
+  const p = plage(eq);
+  let valeurCourante = Number.isFinite(Number(eq.current)) ? String(Number(eq.current).toFixed(1)) : '3.0';
+
+  let presets = ['+2.0', '+3.0', '+4.0'];
+  if (eq.type === 'froid_neg') {
+    presets = ['-18.0', '-19.0', '-20.0'];
+    if (!Number.isFinite(Number(eq.current))) valeurCourante = '-18.0';
+  } else if (eq.type === 'chaud') {
+    presets = ['+63.0', '+65.0', '+70.0'];
+    if (!Number.isFinite(Number(eq.current))) valeurCourante = '65.0';
+  }
+
+  const corps = `<div class="keypad">
+    <div class="keypad__display" id="keypad-val">${echapper(valeurCourante)} °C</div>
+    <div class="quick-adjust">
+      ${presets.map((v) => `<button type="button" class="quick-adjust__btn" data-key-val="${v}">${v} °C</button>`).join('')}
+    </div>
+    <div class="keypad__grid">
+      <button type="button" class="keypad__btn" data-key="1">1</button>
+      <button type="button" class="keypad__btn" data-key="2">2</button>
+      <button type="button" class="keypad__btn" data-key="3">3</button>
+      <button type="button" class="keypad__btn" data-key="4">4</button>
+      <button type="button" class="keypad__btn" data-key="5">5</button>
+      <button type="button" class="keypad__btn" data-key="6">6</button>
+      <button type="button" class="keypad__btn" data-key="7">7</button>
+      <button type="button" class="keypad__btn" data-key="8">8</button>
+      <button type="button" class="keypad__btn" data-key="9">9</button>
+      <button type="button" class="keypad__btn" data-key="sign">±</button>
+      <button type="button" class="keypad__btn" data-key="0">0</button>
+      <button type="button" class="keypad__btn" data-key="dot">.</button>
+    </div>
+  </div>`;
+
+  let panneauKeypad = null;
+
+  ctx.ui.modal({
+    id: 'temp-keypad',
+    title: `Relevé : ${eq.name}`,
+    body: corps,
+    actions: [
+      {
+        label: 'Effacer',
+        kind: 'ghost',
+        onClick: () => {
+          valeurCourante = '';
+          const aff = panneauKeypad ? panneauKeypad.querySelector('#keypad-val') : null;
+          if (aff) aff.textContent = '— °C';
+          return false;
+        },
+      },
+      {
+        label: 'Enregistrer',
+        kind: 'primary',
+        onClick: () => {
+          const num = parseFloat(valeurCourante.replace(',', '.'));
+          if (!Number.isFinite(num)) {
+            ctx.ui.toast({ status: 'warn', message: 'Valeur de température invalide.' });
+            return false;
+          }
+          let res = null;
+          try {
+            res = ctx.useCases.setExactTemperature(eq.id, num, nomOperateur(ctx));
+          } catch (e) {
+            ctx.ui.toast({ status: 'danger', message: 'Relevé impossible pour cet équipement.' });
+            return false;
+          }
+          const cible = (res && res.equipment) || eq;
+          if (res && res.isConform === false) {
+            ctx.ui.toast({ status: 'danger', message: `Écart enregistré sur ${cible.name} (${ctx.fmt.temp(num)}).`, duration: 6000 });
+            ouvrirCorrective(ctx, cible);
+          } else {
+            ctx.ui.toast({ status: 'ok', message: `Relevé enregistré : ${cible.name} — ${ctx.fmt.temp(num)}` });
+          }
+          rafraichir(root, ctx);
+          return true;
+        },
+      },
+    ],
+    onMount: (el) => {
+      panneauKeypad = el;
+      const aff = el.querySelector('#keypad-val');
+      const majAffichage = () => {
+        if (aff) aff.textContent = (valeurCourante || '0') + ' °C';
+      };
+      el.addEventListener('click', (e) => {
+        const btnVal = e.target.closest('[data-key-val]');
+        if (btnVal) {
+          valeurCourante = btnVal.getAttribute('data-key-val').replace('+', '');
+          majAffichage();
+          return;
+        }
+        const btnKey = e.target.closest('[data-key]');
+        if (!btnKey) return;
+        const key = btnKey.getAttribute('data-key');
+        if (key === 'dot') {
+          if (!valeurCourante.includes('.')) valeurCourante += '.';
+        } else if (key === 'sign') {
+          if (valeurCourante.startsWith('-')) valeurCourante = valeurCourante.slice(1);
+          else if (valeurCourante.length) valeurCourante = '-' + valeurCourante;
+          else valeurCourante = '-';
+        } else {
+          if (valeurCourante === '0') valeurCourante = key;
+          else valeurCourante += key;
+        }
+        majAffichage();
+      });
+    },
+  });
+}
+
 function ouvrirCorrective(ctx, eq) {
   const op = nomOperateur(ctx);
   const p = plage(eq);
@@ -296,6 +412,7 @@ function validerCorrective(ctx, eq, el) {
 }
 
 const ACTIONS = {
+  'keypad': (el, root, ctx) => ouvrirKeypad(ctx, root, el.dataset.equip),
   'step-down': (el, root, ctx) => enregistrer(ctx, root, el.dataset.equip, -0.1),
   'step-up': (el, root, ctx) => enregistrer(ctx, root, el.dataset.equip, 0.1),
   'auto-standard': (el, root, ctx) => {

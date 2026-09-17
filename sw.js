@@ -9,7 +9,7 @@
  *     sans elles, et mettre en cache des réponses opaques ferait échouer `addAll`.
  * Aucun build : les chemins ci-dessous correspondent aux fichiers réellement présents.
  */
-const CACHE_NAME = 'traqhaccp-v4-layout-20260917';
+const CACHE_NAME = 'traqhaccp-v4-mobile-responsive-20260917-v2';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -82,6 +82,12 @@ self.addEventListener('activate', (evenement) => {
   })());
 });
 
+self.addEventListener('message', (evenement) => {
+  if (evenement.data && evenement.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener('fetch', (evenement) => {
   const requete = evenement.request;
   if (requete.method !== 'GET') return;
@@ -100,14 +106,14 @@ async function reseauDAbord(requete) {
     if (reponse && reponse.ok) cache.put(requete, reponse.clone());
     return reponse;
   } catch (erreur) {
-    return (await cache.match(requete)) || (await cache.match('./index.html')) || Response.error();
+    return (await cache.match(requete, { ignoreSearch: true })) || (await cache.match('./index.html')) || Response.error();
   }
 }
 
 /** Cache d'abord (assets) : réseau en secours, puis page d'entrée hors-ligne. */
 async function cacheDAbord(requete) {
   const cache = await caches.open(CACHE_NAME);
-  const enCache = await cache.match(requete);
+  const enCache = await cache.match(requete, { ignoreSearch: true });
   if (enCache) return enCache;
   try {
     const reponse = await fetch(requete);

@@ -11,7 +11,7 @@ export class AudioService {
 
   _initTone() {
     try {
-      if (window.Tone && !this.synth) {
+      if (typeof window !== 'undefined' && window.Tone && !this.synth) {
         window.Tone.start();
         this.synth = new window.Tone.Synth().toDestination();
         this.synth.volume.value = -10;
@@ -23,6 +23,19 @@ export class AudioService {
 
   play(type = 'success') {
     try {
+      // Vibration haptique sur mobile (Android / navigateurs supportés)
+      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+        if (type === 'success') {
+          navigator.vibrate(50);
+        } else if (type === 'warning') {
+          navigator.vibrate([70, 50, 70]);
+        } else if (type === 'danger') {
+          navigator.vibrate([100, 50, 100, 50, 200]);
+        } else if (type === 'beep') {
+          navigator.vibrate(30);
+        }
+      }
+
       this._initTone();
       if (this.synth) {
         if (type === 'success') {

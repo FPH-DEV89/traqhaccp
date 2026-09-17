@@ -23,11 +23,6 @@
   height: 100dvh;
   overflow: hidden;
 }
-@media (max-width: 900px) {
-  /* `.app` est déjà en rangée unique (cf. bloc mobile en fin de feuille) — ne rien redéclarer ici :
-     deux `grid-template-rows` sous le même @media se recouvrent en silence (gate check-css-cascade). */
-  .workspace { height: auto; overflow: visible; }
-}
 
 /* ── Conteneur de la vue courante (routeur) ─────────────────────────────── */
 .view { display: block; min-width: 0; }
@@ -379,17 +374,36 @@
   .grid--split { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 760px) {
-  .grid--2, .grid--3, .grid--4, .grid--split { grid-template-columns: 1fr; }
-}
-
 @media (max-width: 900px) {
   .app { grid-template-columns: 1fr; grid-template-rows: 1fr; height: auto; min-height: 100dvh; overflow: visible; }
   .rail { display: none; }
-  .topbar { position: sticky; top: 0; }
+  .topbar { position: sticky; top: 0; padding: 0 var(--s-5); gap: var(--s-4); }
+  .topbar__clock { display: none; }
+  .op-chip__name, .op-chip__role { display: none; }
+  .op-chip { padding: var(--s-1); }
   .workspace { height: auto; min-height: 100dvh; overflow: visible; }
-  .main { padding: var(--s-5); padding-bottom: calc(var(--s-11) + env(safe-area-inset-bottom, 0px)); overflow-y: visible; }
+  .main { padding: var(--s-5); padding-bottom: calc(var(--s-11) + env(safe-area-inset-bottom, 0px)); overflow-y: visible; max-width: 100vw; overflow-x: hidden; }
+  .view { max-width: 100vw; overflow-x: hidden; }
   .tabbar { display: flex; }
   .hide-mobile { display: none; }
   .container { padding-inline: var(--s-5); }
+}
+
+@media (max-width: 760px) {
+  .grid--2, .grid--3, .grid--4, .grid--split { grid-template-columns: 1fr; }
+  .modal { align-items: flex-end; padding: 0; }
+  .modal__panel { max-width: 100%; border-radius: var(--r-3) var(--r-3) 0 0; max-height: 90dvh; }
+  .modal__head { padding: var(--s-5) var(--s-6); }
+  .modal__body { padding: var(--s-6); }
+  .modal__foot { padding: var(--s-5) var(--s-6); }
+}
+
+@media (max-width: 480px) {
+  .topbar { padding: 0 var(--s-4); gap: var(--s-2); }
+  .topbar__left { min-width: 0; flex: 1; }
+  .topbar__right { gap: var(--s-2); }
+  .topbar__id { max-width: 140px; font-size: var(--t-xs); }
+  .main { padding: var(--s-4); padding-bottom: calc(var(--s-11) + env(safe-area-inset-bottom, 0px)); }
+  .container { padding-inline: var(--s-4); }
+  .btn { padding-inline: var(--s-4); }
 }
