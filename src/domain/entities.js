@@ -63,7 +63,7 @@ export class DeliveryRecord {
 }
 
 export class PreparationLabel {
-  constructor({ id, name, batch, fabDate, dlcDate, durationDays = 3, quantity, allergens = [], operator, photo = null }) {
+  constructor({ id, name, batch, fabDate, dlcDate, durationDays = 3, quantity, allergens = [], operator, photo = null, destinationClient = '', destinationRecipe = '' }) {
     this.id = id || 'PR-' + Date.now().toString().slice(-5);
     this.name = name;
     this.batch = batch || 'LOT-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.floor(100 + Math.random() * 900);
@@ -82,6 +82,8 @@ export class PreparationLabel {
     this.allergens = Array.isArray(allergens) ? allergens : [];
     this.operator = operator;
     this.photo = photo;
+    this.destinationClient = destinationClient;
+    this.destinationRecipe = destinationRecipe;
   }
 }
 

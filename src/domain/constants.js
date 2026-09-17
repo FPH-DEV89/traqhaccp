@@ -130,7 +130,7 @@ export const NAV = [
     { id: 'dashboard',       idx: '01', icon: 'dashboard',   title: 'Accueil & Cuisine',    desc: "Vue d'ensemble et gestes du jour" },
     { id: 'temperatures',    idx: '02', icon: 'thermometer', title: 'Températures',         desc: 'Relevés des enceintes froides et chaudes' },
     { id: 'cleaning',        idx: '03', icon: 'spray',       title: 'Plan de nettoyage',    desc: 'Tâches, fréquences et validation' },
-    { id: 'traceability',    idx: '04', icon: 'tag',         title: 'DLC & Traçabilité',    desc: 'Étiquetage, préparations, entames' },
+    { id: 'traceability',    idx: '04', icon: 'tag',         title: 'Traçabilité Étiquettes', desc: 'Photos des étiquettes, client et recette' },
     { id: 'reception',       idx: '05', icon: 'truck',       title: 'Réceptions',            desc: 'Contrôle arrivages et bons de livraison' },
     { id: 'checklists',      idx: '06', icon: 'clipboard',   title: 'Checklists routine',   desc: 'Ouverture et fermeture de service' },
     { id: 'oil',             idx: '07', icon: 'droplet',     title: 'Huiles de friture',    desc: 'TPM, filtration et renouvellement' },

@@ -78,10 +78,10 @@ const DEFAULT_DELIVERIES = [
 ];
 
 const DEFAULT_PREPARATIONS = [
-  { id: 'PR-101', name: 'Sauce Émulsionnée Béarnaise', batch: 'LOT-20260916-01', fabDate: '16/09/2026', dlcDate: '17/09/2026', durationDays: 1, quantity: '1.2 L', allergens: ['Œufs', 'Lait (lactose compris)'], operator: 'Marie D.', photo: null },
-  { id: 'PR-102', name: 'Fond Blanc de Volaille Maison', batch: 'LOT-20260915-44', fabDate: '15/09/2026', dlcDate: '18/09/2026', durationDays: 3, quantity: '10 L', allergens: ['Céleri'], operator: 'Chef Thomas', photo: null },
-  { id: 'PR-103', name: 'Tartare de Thon Rouge Mariné', batch: 'LOT-20260916-89', fabDate: '16/09/2026', dlcDate: '17/09/2026', durationDays: 1, quantity: '6 portions', allergens: ['Poissons', 'Graines de sésame', 'Soja'], operator: 'Chef Thomas', photo: null },
-  { id: 'PR-104', name: 'Mousse Chocolat Grand Cru', batch: 'LOT-20260915-12', fabDate: '15/09/2026', dlcDate: '17/09/2026', durationDays: 2, quantity: '15 pots', allergens: ['Œufs', 'Lait (lactose compris)'], operator: 'Sarah M.', photo: null }
+  { id: 'PR-101', name: 'Crème Entière 35% (Étiquette Isigny)', batch: 'LOT-20260916-01', fabDate: '16/09/2026', dlcDate: '24/09/2026', durationDays: 8, quantity: '5 L', allergens: ['Lait (lactose compris)'], operator: 'Marie D.', destinationClient: 'Table 4 / Buffet Mariage Martin', destinationRecipe: 'Sauce Émulsionnée Béarnaise', photo: null },
+  { id: 'PR-102', name: 'Filets de Poulet Fermier Label Rouge', batch: 'LOT-20260915-44', fabDate: '15/09/2026', dlcDate: '20/09/2026', durationDays: 5, quantity: '10 kg', allergens: [], operator: 'Chef Thomas', destinationClient: 'Buffet Entreprise Sotech', destinationRecipe: 'Fond Blanc & Suprêmes Rôtis', photo: null },
+  { id: 'PR-103', name: 'Thon Rouge de Ligne (Marée Fraîche)', batch: 'LOT-20260916-89', fabDate: '16/09/2026', dlcDate: '18/09/2026', durationDays: 2, quantity: '4 kg', allergens: ['Poissons'], operator: 'Chef Thomas', destinationClient: 'Client Dupont - Commande #12', destinationRecipe: 'Tartare de Thon Mariné', photo: null },
+  { id: 'PR-104', name: 'Chocolat Noir Valrhona 70%', batch: 'LOT-20260915-12', fabDate: '15/09/2026', dlcDate: '15/12/2026', durationDays: 90, quantity: '3 kg', allergens: ['Lait (lactose compris)'], operator: 'Sarah M.', destinationClient: 'Tous clients', destinationRecipe: 'Mousse Chocolat Grand Cru', photo: null }
 ];
 
 const DEFAULT_ALLERGEN_DISHES = [

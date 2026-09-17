@@ -78,7 +78,7 @@ function toutesLesPreparations(ctx) {
 function preparationsFiltrees(ctx) {
   const texte = filtreTexte.trim().toLowerCase();
   const liste = toutesLesPreparations(ctx).filter((p) => {
-    if (texte && !`${p.name || ''} ${p.batch || ''}`.toLowerCase().includes(texte)) return false;
+    if (texte && !`${p.name || ''} ${p.batch || ''} ${p.destinationClient || ''} ${p.destinationRecipe || ''}`.toLowerCase().includes(texte)) return false;
     if (filtre48) { const heures = heuresRestantes(p); if (heures === null || heures >= 48) return false; }
     return true;
   });
@@ -94,15 +94,29 @@ function donnees(ctx) {
 function blocFiltres(ctx, d) {
   const seg = (actif, action, valeur, label) => `<button class="seg__item${actif ? ' is-active' : ''}" type="button" data-action="${action}" data-valeur="${valeur}">${label}</button>`;
   const kpi = (label, valeur, unite) => `<div class="kpi"><span class="kpi__label">${label}</span><span class="kpi__value">${valeur}</span><span class="kpi__unit">${unite}</span></div>`;
-  return `<div class="toolbar">
-    <button class="btn btn--primary" type="button" data-action="nouvelle-preparation">${ctx.icon('plus', 16)} Nouvelle préparation</button>
-    <button class="btn btn--ghost" type="button" data-action="export-csv">${ctx.icon('download', 16)} Export CSV</button>
-    <label class="field"><span class="field__label">Recherche</span><input class="input" type="search" data-saisie="recherche" value="${echapper(filtreTexte)}" placeholder="Nom ou n° de lot"></label>
-    <div class="seg">${seg(!filtre48, 'filtre-48h', 'toutes', 'Toutes')}${seg(filtre48, 'filtre-48h', '48h', 'DLC < 48 h')}</div>
-    <div class="seg">${seg(!triParDlc, 'tri-dlc', 'recentes', 'Plus récentes')}${seg(triParDlc, 'tri-dlc', 'dlc', 'Tri par DLC')}</div></div>
+  return `<div class="stack stack--sm">
+    <div class="trace-action-card" data-action="nouvelle-preparation" role="button" tabindex="0" aria-label="Prendre en photo une étiquette produit">
+      <div class="trace-action-card__icon">${ctx.icon('camera', 28)}</div>
+      <div class="trace-action-card__title">Prendre une étiquette en photo</div>
+      <p class="trace-action-card__sub">Photographiez l'étiquette de votre produit acheté et indiquez le client ou la recette pour la traçabilité.</p>
+      <button class="btn btn--primary" type="button" data-action="nouvelle-preparation">${ctx.icon('plus', 16)} Nouvelle étiquette</button>
+    </div>
+
+    <div class="toolbar">
+      <div class="row row--sm" style="flex: 1; min-width: 220px;">
+        <label class="field" style="width: 100%;"><span class="field__label">Rechercher</span><input class="input" type="search" data-saisie="recherche" value="${echapper(filtreTexte)}" placeholder="Client, recette, produit, lot..."></label>
+      </div>
+      <div class="seg">${seg(!filtre48, 'filtre-48h', 'toutes', 'Toutes')}${seg(filtre48, 'filtre-48h', '48h', 'DLC &lt; 48 h')}</div>
+      <div class="seg">${seg(!triParDlc, 'tri-dlc', 'recentes', 'Récentes')}${seg(triParDlc, 'tri-dlc', 'dlc', 'DLC')}</div>
+      <button class="btn btn--ghost btn--sm" type="button" data-action="export-csv">${ctx.icon('download', 16)} Export CSV</button>
+    </div>
+
     <div class="grid grid--3">
-      ${kpi('Préparations suivies', d.liste.length, 'étiquettes actives')}${kpi('DLC à 48 h ou moins', d.dans48h, 'à écouler')}
-      ${kpi('DLC à 1 jour ou moins', d.alertes, 'priorité service')}</div>`;
+      ${kpi('Étiquettes enregistrées', d.liste.length, 'produits tracés')}
+      ${kpi('DLC sous 48 h', d.dans48h, 'à surveiller')}
+      ${kpi('Urgentes (≤ 1 j)', d.alertes, 'priorité')}
+    </div>
+  </div>`;
 }
 /** Jours restants en chiffres monospacés : .is-danger ≤ 1 j, .is-warn ≤ 3 j. */
 function celluleJours(ctx, preparation) {
@@ -115,35 +129,76 @@ function celluleJours(ctx, preparation) {
 /** Allergènes présents : une .mark par allergène, limitée à 4 + compteur. */
 function celluleAllergenes(ctx, preparation) {
   const liste = Array.isArray(preparation.allergens) ? preparation.allergens : [];
-  if (!liste.length) return '<span class="muted">aucun</span>';
+  if (!liste.length) return '<span class="muted">aucun allergène</span>';
   const marques = liste.slice(0, 4).map((reference) => `<span class="mark mark--neutral"><span class="mark__label">${echapper(libelleAllergene(reference))}</span></span>`).join(' ');
   return marques + (liste.length > 4 ? ` <span class="unit">+${liste.length - 4}</span>` : '');
 }
 function blocListe(ctx, d) {
-  if (!d.liste.length) return ctx.ui.empty({ icon: 'tag', title: 'Aucune préparation sur ce filtre', actionLabel: 'Nouvelle préparation', onAction: () => ouvrirPanneau(ctx), body: 'Modifie la recherche ou enregistre une première préparation étiquetée.' });
-  const lignes = d.liste.map((p) => {
-    const photo = p.photo ? `<button class="btn btn--ghost btn--sm" type="button" data-action="voir-photo" data-id="${echapper(p.id)}">Voir</button>` : '<span class="muted">—</span>';
-    return `<tr data-id="${echapper(p.id)}">
-      <td>${echapper(p.name || '—')}</td><td><span class="num">${echapper(p.batch || '—')}</span></td><td>${dateLisible(ctx, p.fabDate)}</td><td>${dateLisible(ctx, p.dlcDate)}</td>
-      <td>${celluleJours(ctx, p)}</td><td>${celluleAllergenes(ctx, p)}</td><td>${photo}</td><td>${echapper(p.operator || '—')}</td>
-      <td><button class="btn btn--ghost btn--sm" type="button" data-action="apercu-etiquette" data-id="${echapper(p.id)}">Étiquette</button>
-        <button class="btn btn--ghost btn--sm btn--danger" type="button" data-action="supprimer-preparation" data-id="${echapper(p.id)}">Supprimer</button></td></tr>`;
+  if (!d.liste.length) {
+    return ctx.ui.empty({
+      icon: 'tag',
+      title: 'Aucune étiquette trouvée',
+      actionLabel: 'Prendre en photo une étiquette',
+      onAction: () => ouvrirPanneau(ctx),
+      body: 'Photographiez votre première étiquette produit pour assurer la traçabilité client et recette en cas de contrôle.',
+    });
+  }
+
+  const cartes = d.liste.map((p) => {
+    const photoHtml = p.photo
+      ? `<img class="trace-card__photo-thumb" src="${echapper(p.photo)}" alt="Photo étiquette ${echapper(p.name)}" data-action="voir-photo" data-id="${echapper(p.id)}">`
+      : `<button class="btn btn--ghost btn--sm" type="button" data-action="ajouter-photo-directe" data-id="${echapper(p.id)}">${ctx.icon('camera', 14)} Photo</button>`;
+
+    const destClient = p.destinationClient
+      ? `<div class="trace-dest-item"><span class="trace-dest-item__label">Client :</span><span class="trace-dest-item__value">${echapper(p.destinationClient)}</span></div>`
+      : '<div class="trace-dest-item"><span class="trace-dest-item__label">Client :</span><span class="muted">Non spécifié</span></div>';
+
+    const destRecette = p.destinationRecipe
+      ? `<div class="trace-dest-item"><span class="trace-dest-item__label">Recette :</span><span class="trace-dest-item__value">${echapper(p.destinationRecipe)}</span></div>`
+      : '<div class="trace-dest-item"><span class="trace-dest-item__label">Recette :</span><span class="muted">Non spécifiée</span></div>';
+
+    return `<article class="trace-card" data-id="${echapper(p.id)}">
+      <div class="trace-card__header">
+        <div style="flex: 1; min-width: 0;">
+          <h3 class="trace-card__title">${echapper(p.name || 'Produit sans nom')}</h3>
+          <div class="trace-card__date">Lot ${echapper(p.batch || '—')} · Enregistré le ${dateLisible(ctx, p.fabDate)}</div>
+        </div>
+        ${photoHtml}
+      </div>
+
+      <div class="trace-card__destinations">
+        ${destClient}
+        ${destRecette}
+      </div>
+
+      <div class="row row--wrap row--tight" style="gap: var(--s-3); align-items: center;">
+        <span class="field__label" style="margin: 0;">DLC :</span>
+        <span class="num">${dateLisible(ctx, p.dlcDate)}</span>
+        <span style="margin-left: auto;">${celluleJours(ctx, p)}</span>
+      </div>
+
+      <div class="trace-card__meta">
+        <div>${celluleAllergenes(ctx, p)}</div>
+        <div class="trace-card__actions">
+          <button class="btn btn--ghost btn--sm" type="button" data-action="apercu-etiquette" data-id="${echapper(p.id)}">${ctx.icon('printer', 14)} Fiche</button>
+          <button class="btn btn--ghost btn--sm btn--danger" type="button" data-action="supprimer-preparation" data-id="${echapper(p.id)}" aria-label="Supprimer">${ctx.icon('trash', 14)}</button>
+        </div>
+      </div>
+    </article>`;
   }).join('');
-  return `<div class="table--scroll"><table class="table table--compact table--zebra">
-      <thead><tr><th>Préparation</th><th>Lot</th><th>Fabrication</th><th>DLC</th><th>Jours restants</th><th>Allergènes présents</th><th>Photo</th><th>Opérateur</th><th>Actions</th></tr></thead>
-      <tbody>${lignes}</tbody></table></div>`;
+
+  return `<div class="trace-cards-list">${cartes}</div>`;
 }
 // ── Contrat de vue ────────────────────────────────────────────────────────────
-export const meta = { id: 'traceability', idx: '05', icon: 'tag', title: 'DLC et traçabilité', desc: 'Étiquetage, décongélation, préparations', permissions: null };
+export const meta = { id: 'traceability', idx: '04', icon: 'tag', title: 'Traçabilité & Étiquettes', desc: 'Photos des étiquettes et traçabilité client / recette', permissions: null };
 export function render(ctx) {
   const d = donnees(ctx);
-  const bareme = SHELF_LIFE_PRESETS.map((p) => `J+${p.value}`).join(' / ');
   return `<header class="page-head">
-      <span class="page-head__idx">05</span><h1 class="page-head__title">DLC et traçabilité</h1>
-      <p class="page-head__desc">Préparations maison : DLC calculées depuis le barème sanitaire, allergènes INCO et étiquettes 70 × 50 mm.</p></header>
+      <span class="page-head__idx">01</span><h1 class="page-head__title">Traçabilité &amp; Étiquettes</h1>
+      <p class="page-head__desc">Photographiez les étiquettes de vos produits et associez-les à vos clients ou recettes pour assurer le suivi sanitaire en cas d'alerte.</p></header>
     <div data-zone="filtres">${blocFiltres(ctx, d)}</div>
-    <section class="section"><div class="section__head"><h2 class="section__title">Préparations étiquetées</h2>
-      <span class="unit">Barème ${bareme} — ${d.liste.length} préparation(s)</span></div>
+    <section class="section" style="margin-top: var(--s-6);"><div class="section__head"><h2 class="section__title">Historique des étiquettes</h2>
+      <span class="unit">${d.liste.length} produit(s) tracé(s)</span></div>
       <div data-zone="liste">${blocListe(ctx, d)}</div></section>`;
 }
 // ── Panneau « Nouvelle préparation » ─────────────────────────────────────────
@@ -156,23 +211,36 @@ function identifiantLot(ctx, iso) {
 }
 function blocFormulaire(ctx) {
   const aujourdhui = new Date().toISOString().slice(0, 10);
-  const maintenant = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   const bareme = SHELF_LIFE_PRESETS.map((p) => `<option value="${p.value}">${echapper(p.label)}</option>`).join('');
-  const unites = UNITES.map((u) => `<option value="${u}">${u}</option>`).join('');
-  const cases = ALL_14_ALLERGENS.map((a) => `<label class="checkbox"><input type="checkbox" name="allergene" value="${a.id}"><span>${echapper(a.short)}</span></label>`).join('');
+  const photoApercu = photoEnAttente ? `<div style="text-align: center; margin-top: var(--s-3);"><img src="${echapper(photoEnAttente)}" alt="Aperçu étiquette" style="max-height: 180px; max-width: 100%; border-radius: var(--r-2); border: 1px solid var(--rule);"></div>` : '';
   return `<div class="stack">
-    ${blocChamp('prep-nom', 'Dénomination de la préparation', '<input class="input" id="prep-nom" name="nom" placeholder="Ex. bœuf bourguignon">', 'nom')}
-    <div class="grid grid--2">
-      ${blocChamp('prep-categorie', 'Catégorie DLC (pilote la durée de vie)', `<select class="select" id="prep-categorie" name="categorie">${bareme}</select>`, 'categorie')}
-      ${blocChamp('prep-lot', 'N° de lot', `<input class="input" id="prep-lot" name="lot" value="${echapper(identifiantLot(ctx, aujourdhui))}">`, 'lot')}
-      ${blocChamp('prep-fabrication', 'Date de fabrication', `<input class="input" type="date" id="prep-fabrication" name="fabrication" value="${aujourdhui}">`, 'fabrication')}
-      ${blocChamp('prep-heure', 'Heure de fabrication', `<input class="input" type="time" id="prep-heure" name="heureFabrication" value="${maintenant}">`, 'heureFabrication')}
-      ${blocChamp('prep-quantite', 'Quantité produite', '<input class="input" type="number" step="0.1" inputmode="decimal" id="prep-quantite" name="quantite" value="1">', 'quantite')}
-      ${blocChamp('prep-unite', 'Unité de conditionnement', `<select class="select" id="prep-unite" name="unite">${unites}</select>`, 'unite')}</div>
-    <div data-zone="dlc">${blocDlc(aujourdhui, SHELF_LIFE_PRESETS[0].value)}</div>
-    <div class="field"><span class="field__label">Allergènes présents (14 allergènes INCO)</span><div class="grid grid--3">${cases}</div></div>
-    ${blocChamp('prep-conservation', 'Consigne de conservation', `<textarea class="textarea" id="prep-conservation" name="conservation">${echapper(consigneParDefaut())}</textarea>`, 'conservation')}
-    <div><button class="btn btn--ghost" type="button" data-action="photo-preparation">${ctx.icon('camera', 16)} Joindre une photo</button><div data-zone="apercu-photo"></div></div></div>`;
+    <div style="background: var(--paper-2); padding: var(--s-5); border-radius: var(--r-2); border: 1px solid var(--rule); text-align: center;">
+      <button class="btn btn--primary btn--lg" type="button" data-action="photo-preparation" style="width: 100%; justify-content: center; height: 48px;">
+        ${ctx.icon('camera', 20)} Prendre en photo l'étiquette
+      </button>
+      <div data-zone="apercu-photo">${photoApercu}</div>
+    </div>
+
+    ${blocChamp('prep-nom', 'Nom du produit / Ingrédient acheté', '<input class="input" id="prep-nom" name="nom" placeholder="Ex: Crème fraîche 35%, Viande hachée, Farine T55..." autofocus>', 'nom')}
+    
+    <div style="border-left: 3px solid var(--accent); padding-left: var(--s-4); display: flex; flex-direction: column; gap: var(--s-4);">
+      ${blocChamp('prep-client', 'Pour quel Client ou Événement ?', '<input class="input" id="prep-client" name="destinationClient" placeholder="Ex: M. Dupont / Table 4 / Buffet Mariage Martin">', 'destinationClient')}
+      ${blocChamp('prep-recette', 'Pour quelle Recette ou Plat servi ?', '<input class="input" id="prep-recette" name="destinationRecipe" placeholder="Ex: Sauce béarnaise du jour, Pâtisserie X...">', 'destinationRecipe')}
+    </div>
+
+    <details style="border: 1px solid var(--rule); border-radius: var(--r-2); padding: var(--s-4);">
+      <summary style="font-weight: 500; cursor: pointer; color: var(--ink-2); font-size: var(--t-sm);">Détails optionnels (Lot, DLC, Durée de conservation)</summary>
+      <div class="stack stack--sm" style="margin-top: var(--s-4);">
+        <div class="grid grid--2">
+          ${blocChamp('prep-categorie', 'Durée indicative DLC', `<select class="select" id="prep-categorie" name="categorie">${bareme}</select>`, 'categorie')}
+          ${blocChamp('prep-lot', 'N° de lot (si visible)', `<input class="input" id="prep-lot" name="lot" value="${echapper(identifiantLot(ctx, aujourdhui))}">`, 'lot')}
+          ${blocChamp('prep-fabrication', 'Date d\'achat / utilisation', `<input class="input" type="date" id="prep-fabrication" name="fabrication" value="${aujourdhui}">`, 'fabrication')}
+          ${blocChamp('prep-heure', 'Heure', `<input class="input" type="time" id="prep-heure" name="heureFabrication" value="${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}">`, 'heureFabrication')}
+        </div>
+        <div data-zone="dlc">${blocDlc(aujourdhui, SHELF_LIFE_PRESETS[0].value)}</div>
+      </div>
+    </details>
+  </div>`;
 }
 /** DLC calculée affichée dans le formulaire : fabrication + durée du barème sélectionné. */
 const blocDlc = (fabrication, duree) => `<div class="callout callout--info">DLC calculée : ${echapper(ajouterJours(fabrication, duree))} (fabrication + ${echapper(String(duree))} jour(s) — barème SHELF_LIFE_PRESETS).</div>`;
@@ -218,25 +286,37 @@ function enregistrer(ctx, candidat, imprimer) {
   const racine = racineDe(candidat);
   if (!racine) { ctx.ui.toast({ status: 'warn', message: 'Formulaire indisponible' }); return; }
   const nom = valeurChamp(racine, 'nom');
-  if (!nom) return signalerErreur(racine, 'nom', 'Indique la dénomination de la préparation.');
+  if (!nom) return signalerErreur(racine, 'nom', 'Indiquez le nom du produit acheté.');
+  const destinationClient = valeurChamp(racine, 'destinationClient');
+  const destinationRecipe = valeurChamp(racine, 'destinationRecipe');
   const iso = frVersIso(valeurChamp(racine, 'fabrication'));
   const duree = Number(valeurChamp(racine, 'categorie')) || SHELF_LIFE_PRESETS[0].value;
   const quantite = nombreChamp(racine, 'quantite');
   const unite = valeurChamp(racine, 'unite') || UNITES[0];
   const lot = valeurChamp(racine, 'lot') || identifiantLot(ctx, iso);
-  const allergenes = [...racine.querySelectorAll('[name="allergene"]:checked')].map((el) => el.value);
   const operateur = nomOperateur(ctx);
   const data = {
-    name: nom, batch: lot, fabDate: isoVersFr(iso), dlcDate: ajouterJours(iso, duree), durationDays: duree,
-    quantity: quantite === null ? '—' : `${quantite.toLocaleString('fr-FR')} ${unite}`, allergens: allergenes, operator: operateur,
-    fabTime: valeurChamp(racine, 'heureFabrication'), unit: unite, category: String(duree),
-    conservation: valeurChamp(racine, 'conservation') || consigneParDefaut(), photo: photoEnAttente,
+    name: nom,
+    destinationClient: destinationClient,
+    destinationRecipe: destinationRecipe,
+    batch: lot,
+    fabDate: isoVersFr(iso),
+    dlcDate: ajouterJours(iso, duree),
+    durationDays: duree,
+    quantity: quantite === null ? '—' : `${quantite.toLocaleString('fr-FR')} ${unite}`,
+    allergens: [],
+    operator: operateur,
+    fabTime: valeurChamp(racine, 'heureFabrication'),
+    unit: unite,
+    category: String(duree),
+    conservation: consigneParDefaut(),
+    photo: photoEnAttente,
   };
   const resultat = ctx.useCases.createPreparationLabel(data, operateur);
   conserverComplements(ctx, (resultat && resultat.preparation) || resultat, data, lot);
   ctx.ui.closeOverlay();
   photoEnAttente = '';
-  ctx.ui.toast({ status: 'ok', message: `Préparation ${lot} enregistrée — DLC ${data.dlcDate}` });
+  ctx.ui.toast({ status: 'ok', message: `Étiquette « ${nom} » enregistrée pour la traçabilité` });
   if (imprimer) ouvrirEtiquette(ctx, (resultat && resultat.preparation) || resultat, lot);
 }
 /** Conserve les compléments descriptifs saisis (hors contrat PreparationRecord). */
@@ -246,7 +326,7 @@ function conserverComplements(ctx, preparation, data, lot) {
   const liste = depot.getPreparations() || [];
   const cible = liste.find((p) => p.id === (preparation && preparation.id)) || liste.slice().reverse().find((p) => p.batch === lot);
   if (!cible) return;
-  ['fabTime', 'unit', 'category', 'conservation', 'photo'].forEach((cle) => { cible[cle] = data[cle]; });
+  ['destinationClient', 'destinationRecipe', 'fabTime', 'unit', 'category', 'conservation', 'photo'].forEach((cle) => { cible[cle] = data[cle]; });
   depot.savePreparations(liste);
 }
 const chercherPreparation = (ctx, id) => toutesLesPreparations(ctx).find((p) => p.id === id) || null;
@@ -268,17 +348,24 @@ function imprimer(ctx, preparation) {
 }
 function ouvrirEtiquette(ctx, preparation, lot) {
   const cible = preparation && preparation.id ? preparation : toutesLesPreparations(ctx).slice().reverse().find((p) => p.batch === lot);
-  if (!cible) { ctx.ui.toast({ status: 'warn', message: 'Préparation introuvable' }); return; }
-  const marque = (reference) => `<span class="mark mark--neutral"><span class="mark__label">${echapper(libelleAllergene(reference))}</span></span>`;
-  const allergenes = (Array.isArray(cible.allergens) ? cible.allergens : []).map(marque).join(' ');
+  if (!cible) { ctx.ui.toast({ status: 'warn', message: 'Fiche introuvable' }); return; }
+  const photoSection = cible.photo ? `<div style="text-align:center;"><img src="${echapper(cible.photo)}" alt="Photo étiquette" style="max-height: 200px; max-width: 100%; border-radius: var(--r-2); border: 1px solid var(--rule); cursor: pointer;" data-action="voir-photo" data-id="${echapper(cible.id)}"></div>` : '';
   const corps = `<div class="stack">
-      <div class="receipt"><iframe title="Aperçu de l'étiquette 70 × 50 mm" width="265" height="189" srcdoc="${echapper(etiquetteHtml(ctx, cible))}"></iframe></div>
-      <p class="field__hint">Étiquette 70 × 50 mm à l'échelle 1:1 — lot ${echapper(cible.batch || '—')}, DLC ${dateLisible(ctx, cible.dlcDate)}, fabricée le ${dateLisible(ctx, cible.fabDate)}.</p>
-      <div class="field"><span class="field__label">Allergènes figurant sur l'étiquette</span><div>${allergenes || '<span class="muted">aucun allergène déclaré</span>'}</div></div>
-      <div class="field"><span class="field__label">Consigne de conservation</span><p class="field__hint">${echapper(cible.conservation || consigneParDefaut())}</p></div></div>`;
+      ${photoSection}
+      <div class="callout callout--info">
+        <div style="font-weight: 600; font-size: var(--t-body);">${echapper(cible.name || 'Produit')}</div>
+        <div style="font-size: var(--t-sm); margin-top: var(--s-1);">Lot : <span class="num">${echapper(cible.batch || '—')}</span> · DLC : <span class="num">${dateLisible(ctx, cible.dlcDate)}</span></div>
+      </div>
+      <div class="trace-card__destinations" style="font-size: var(--t-sm);">
+        <div class="trace-dest-item"><span class="trace-dest-item__label">Client :</span><span class="trace-dest-item__value">${echapper(cible.destinationClient || 'Non spécifié')}</span></div>
+        <div class="trace-dest-item"><span class="trace-dest-item__label">Recette :</span><span class="trace-dest-item__value">${echapper(cible.destinationRecipe || 'Non spécifiée')}</span></div>
+        <div class="trace-dest-item"><span class="trace-dest-item__label">Date :</span><span class="trace-dest-item__value">${dateLisible(ctx, cible.fabDate)}</span></div>
+        <div class="trace-dest-item"><span class="trace-dest-item__label">Opérateur :</span><span class="trace-dest-item__value">${echapper(cible.operator || '—')}</span></div>
+      </div>
+      <div class="field"><span class="field__label">Consigne sanitaire</span><p class="field__hint">${echapper(cible.conservation || consigneParDefaut())}</p></div></div>`;
   ctx.ui.panel({
-    id: 'traceability-etiquette', title: "Aperçu de l'étiquette", subtitle: cible.name || '', body: corps,
-    actions: [{ label: "Imprimer l'étiquette", kind: 'primary', onClick: () => imprimer(ctx, cible) }, { label: 'Fermer', kind: 'ghost', onClick: () => ctx.ui.closeOverlay() }],
+    id: 'traceability-etiquette', title: "Fiche de traçabilité", subtitle: cible.name || '', body: corps,
+    actions: [{ label: 'Fermer', kind: 'ghost', onClick: () => ctx.ui.closeOverlay() }],
   });
 }
 function ouvrirPhoto(ctx, id) {
@@ -324,6 +411,25 @@ const ACTIONS = {
   'tri-dlc': (el, root, ctx) => { triParDlc = el.dataset.valeur === 'dlc'; rafraichir(root, ctx); },
   'apercu-etiquette': (el, root, ctx) => ouvrirEtiquette(ctx, chercherPreparation(ctx, el.dataset.id)),
   'voir-photo': (el, root, ctx) => ouvrirPhoto(ctx, el.dataset.id),
+  'ajouter-photo-directe': (el, root, ctx) => {
+    const id = el.dataset.id;
+    if (!ctx.ui || typeof ctx.ui.camera !== 'function') return;
+    ctx.ui.camera({
+      onCapture: (source) => {
+        const photoData = typeof source === 'string' ? source : (source && source.dataUrl) || '';
+        if (!photoData) return;
+        const depot = ctx.repository;
+        const preps = depot.getPreparations() || [];
+        const p = preps.find((item) => item.id === id);
+        if (p) {
+          p.photo = photoData;
+          depot.savePreparations(preps);
+          ctx.ui.toast({ status: 'ok', message: 'Photo ajoutée au produit' });
+          rafraichirListe(root, root.__contexte || ctx);
+        }
+      }
+    });
+  },
   'photo-preparation': (el, root, ctx) => ouvrirCamera(ctx),
   'supprimer-preparation': (el, root, ctx) => { supprimer(ctx, el.dataset.id, root); },
 };

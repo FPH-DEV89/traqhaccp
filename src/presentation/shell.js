@@ -14,8 +14,8 @@ import { ui } from './ui.js';
 import { icon } from './icons.js';
 import { NAV, APP_VERSION, DEFAULT_ESTABLISHMENT } from '../domain/constants.js';
 
-const BARRE_MOBILE = ['dashboard', 'temperatures', 'cleaning', 'traceability', 'compte'];
-const LIBELLES_COURTS = { dashboard: 'Accueil', temperatures: 'Relevés', cleaning: 'Nettoyage', traceability: 'DLC', checklists: 'Routine', nonconformities: 'Alertes', compte: 'Compte' };
+const BARRE_MOBILE = ['traceability', 'compte'];
+const LIBELLES_COURTS = { dashboard: 'Accueil', temperatures: 'Relevés', cleaning: 'Nettoyage', traceability: 'Étiquettes', checklists: 'Routine', nonconformities: 'Alertes', compte: 'Établissement' };
 const ROLE_LABELS = { gerant: 'Gérante', patron: 'Direction', second: 'Second de cuisine', chef: 'Chef de cuisine', cuisine: 'Cuisine', patisserie: 'Pâtisserie', plonge: 'Plonge', salle: 'Salle', serveur: 'Service', polyvalent: 'Polyvalent' };
 const NC_FERMEES = ['Résolu', 'Résolue', 'Clôturée', 'Traité', 'Traitée', 'Annulée'];
 const DELAI_PIN = 400;

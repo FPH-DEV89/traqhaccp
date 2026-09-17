@@ -399,10 +399,12 @@
 }
 
 @media (max-width: 480px) {
-  .topbar { padding: 0 var(--s-4); gap: var(--s-2); }
+  .topbar { padding: 0 var(--s-3); gap: var(--s-2); }
   .topbar__left { min-width: 0; flex: 1; }
-  .topbar__right { gap: var(--s-2); }
+  .topbar__right { gap: var(--s-1); }
   .topbar__id { max-width: 140px; font-size: var(--t-xs); }
+  .topbar [data-action="palette"],
+  .topbar [data-action="verrou"] { display: none; }
   .main { padding: var(--s-4); padding-bottom: calc(var(--s-11) + env(safe-area-inset-bottom, 0px)); }
   .container { padding-inline: var(--s-4); }
   .btn { padding-inline: var(--s-4); }

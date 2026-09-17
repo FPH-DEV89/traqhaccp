@@ -23,7 +23,7 @@ export class HACCPStore {
 
     this.state = {
       // --- état historique (compatibilité legacy) ---
-      activeTab: 'dashboard',
+      activeTab: 'traceability',
       currentOperator: null,
       establishment: repository.getEstablishment(),
       notification: null,

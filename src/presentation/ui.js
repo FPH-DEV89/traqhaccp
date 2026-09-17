@@ -210,12 +210,30 @@ export function camera(options = {}) {
     let flux = null, fini = false;
     const finir = (valeur) => { if (!fini) { fini = true; resoudre(valeur); } };
     const arreter = () => { if (flux) flux.getTracks().forEach((piste) => piste.stop()); };
-    const el = noeud(`<div class="modal" role="dialog" aria-modal="true"><div class="modal__panel"><div class="modal__head"><span>Prise de photo</span><button class="icon-btn" type="button" data-ui-close aria-label="Fermer">${icon('x', 18)}</button></div><div class="modal__body"><video autoplay playsinline></video></div><div class="modal__foot"><button class="btn btn--ghost" type="button" data-ui-close>Annuler</button><button class="btn btn--primary" type="button" data-capture disabled>Prendre la photo</button></div></div></div>`);
+    const el = noeud(`<div class="modal" role="dialog" aria-modal="true"><div class="modal__panel"><div class="modal__head"><span>Prise de photo</span><button class="icon-btn" type="button" data-ui-close aria-label="Fermer">${icon('x', 18)}</button></div><div class="modal__body"><video autoplay playsinline style="max-height: 50vh; width: 100%; object-fit: contain; background: var(--paper-2);"></video><div class="stack stack--xs" style="margin-top: var(--s-3); text-align: center;"><label class="btn btn--ghost" style="cursor: pointer;">${icon('upload', 16)} Choisir depuis la galerie / Appareil<input type="file" accept="image/*" capture="environment" data-file-pick style="display: none;"></label></div></div><div class="modal__foot"><button class="btn btn--ghost" type="button" data-ui-close>Annuler</button><button class="btn btn--primary" type="button" data-capture disabled>Prendre la photo</button></div></div></div>`);
     const video = el.querySelector('video');
     const declencheur = el.querySelector('[data-capture]');
+    const fileInput = el.querySelector('[data-file-pick]');
     const fiche = { ouvert: null };
     const fermerSur = () => { arreter(); fermer(fiche.ouvert); };
     [...el.querySelectorAll('[data-ui-close]')].forEach((bouton) => bouton.addEventListener('click', fermerSur));
+    
+    if (fileInput) {
+      fileInput.addEventListener('change', (ev) => {
+        const file = ev.target.files && ev.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target.result;
+          finir(dataUrl);
+          arreter();
+          fermer(fiche.ouvert);
+          if (options.onCapture) options.onCapture(dataUrl);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
     declencheur.addEventListener('click', () => {
       const toile = document.createElement('canvas');
       toile.width = video.videoWidth || 640;
@@ -229,10 +247,18 @@ export function camera(options = {}) {
     });
     fiche.ouvert = empiler({ id: 'ui-camera', element: el, bloquante: true, onClose: () => finir(null) });
     const medias = globalThis.navigator && globalThis.navigator.mediaDevices;
-    if (!medias || typeof medias.getUserMedia !== 'function') { fermerSur(); toast({ status: 'warn', message: 'Appareil photo indisponible sur cet appareil.' }); return; }
+    if (!medias || typeof medias.getUserMedia !== 'function') {
+      video.style.display = 'none';
+      declencheur.style.display = 'none';
+      return;
+    }
     medias.getUserMedia({ video: { facingMode: 'environment' } })
       .then((courant) => { flux = courant; video.srcObject = courant; declencheur.disabled = false; })
-      .catch(() => { fermerSur(); toast({ status: 'warn', message: "Accès à l'appareil photo refusé ou indisponible." }); });
+      .catch(() => {
+        video.style.display = 'none';
+        declencheur.style.display = 'none';
+        toast({ status: 'warn', message: "Accès caméra direct indisponible. Vous pouvez importer une photo ci-dessous." });
+      });
   });
 }
 
