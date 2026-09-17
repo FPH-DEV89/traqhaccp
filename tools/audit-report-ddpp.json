@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-09-17T19:36:16.345Z",
+  "standard": "CE 852/2004 - Paquet Hygiène",
+  "auditType": "Audit Périodique Automatisé",
+  "status": "CONFORME_AVEC_REMARQUES",
+  "metrics": {
+    "integrityCheck": "PASSED",
+    "tamperResistantLogs": true,
+    "traceabilityCoverageRate": "100%",
+    "nonConformityResolutionRate": "100%"
+  },
+  "criticalControlPoints": [
+    {
+      "ccp": "CCP1 - Chaîne du froid",
+      "limit": "<= 4°C (pos) / <= -18°C (neg)",
+      "status": "OK"
+    },
+    {
+      "ccp": "CCP2 - Refroidissement rapide",
+      "limit": "+63°C à +10°C en moins de 2h",
+      "status": "OK"
+    },
+    {
+      "ccp": "CCP3 - Cuisson à cœur",
+      "limit": ">= +63°C",
+      "status": "OK"
+    },
+    {
+      "ccp": "CCP4 - Contrôle des huiles de friture",
+      "limit": "<= 25% composés polaires",
+      "status": "OK"
+    }
+  ]
+}

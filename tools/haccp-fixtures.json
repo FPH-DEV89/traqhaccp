@@ -1,0 +1,96 @@
+{
+  "generatedAt": "2026-09-17T19:36:15.777Z",
+  "equipments": [
+    {
+      "id": "frigo-positif-1",
+      "name": "Chambre Froide Positive 1",
+      "targetTemp": 3,
+      "minTemp": 0,
+      "maxTemp": 4
+    },
+    {
+      "id": "frigo-viandes",
+      "name": "Frigo Viandes",
+      "targetTemp": 2,
+      "minTemp": 0,
+      "maxTemp": 3
+    },
+    {
+      "id": "congelateur-1",
+      "name": "Congélateur Négatif",
+      "targetTemp": -20,
+      "minTemp": -25,
+      "maxTemp": -18
+    }
+  ],
+  "temperatureLogs": [
+    {
+      "equipmentId": "frigo-positif-1",
+      "temp": 2.8,
+      "timestamp": "2026-09-17T07:30:00Z",
+      "status": "CONFORME",
+      "operator": "Chef Jean"
+    },
+    {
+      "equipmentId": "frigo-viandes",
+      "temp": 2.1,
+      "timestamp": "2026-09-17T07:32:00Z",
+      "status": "CONFORME",
+      "operator": "Chef Jean"
+    },
+    {
+      "equipmentId": "congelateur-1",
+      "temp": -19.4,
+      "timestamp": "2026-09-17T07:35:00Z",
+      "status": "CONFORME",
+      "operator": "Chef Jean"
+    },
+    {
+      "equipmentId": "frigo-viandes",
+      "temp": 5.5,
+      "timestamp": "2026-09-17T11:45:00Z",
+      "status": "NON_CONFORME",
+      "operator": "Commis Alex",
+      "alert": "Température critique > 3°C"
+    }
+  ],
+  "traceability": [
+    {
+      "id": "LOT-SAUMON-2026",
+      "product": "Filet de Saumon Label Rouge",
+      "supplier": "Marée Fraîche SAS",
+      "lot": "MF-2026-9921",
+      "receptionDate": "2026-09-17",
+      "dlcOriginale": "2026-09-22",
+      "dlcSecondaire": "2026-09-19",
+      "temperatureReception": 1.8,
+      "conforme": true
+    }
+  ],
+  "cleanings": [
+    {
+      "zone": "Plan de travail boucherie",
+      "scheduled": "Quotidien",
+      "doneAt": "2026-09-17T06:45:00Z",
+      "doneBy": "Alex",
+      "validated": true
+    },
+    {
+      "zone": "Friteuses",
+      "scheduled": "Hebdomadaire",
+      "doneAt": null,
+      "doneBy": null,
+      "validated": false
+    }
+  ],
+  "nonConformities": [
+    {
+      "id": "NC-2026-01",
+      "date": "2026-09-17",
+      "source": "frigo-viandes",
+      "defect": "Température relevée à 5.5°C au lieu de <= 3°C",
+      "actionCorrective": "Transfert d’urgence des denrées en CF1 et appel technicien froid",
+      "resolved": true
+    }
+  ]
+}
