@@ -94,7 +94,7 @@ function stripComments(text, isCss) {
 const violations = [];
 function scan(path, { cssOnly = false, jsOnly = false } = {}) {
   const rel = relative(ROOT, path);
-  const isTokens = rel.endsWith('css/tokens.css');
+  const isTokens = rel.replace(/\\/g, '/').endsWith('css/tokens.css');
   const raw = readFileSync(path, 'utf8');
   const rawLines = raw.split('\n');
   const lines = stripComments(raw, rel.endsWith('.css')).split('\n');
