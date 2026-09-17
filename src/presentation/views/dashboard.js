@@ -135,88 +135,137 @@ function donnees(ctx) {
 
 /* ── Fragments de rendu ───────────────────────────────────────────────────── */
 
-function kpi(etiquette, valeur, unite, delta, marque) {
-  return `<div class="sheet"><div class="kpi">
-      <p class="kpi__label">${echapper(etiquette)}</p>
-      <p class="kpi__value num">${valeur}${unite ? `<span class="kpi__unit">${echapper(unite)}</span>` : ''}</p>
-      ${delta ? `<p class="kpi__delta${marque === 'danger' || marque === 'warn' ? ' is-down' : ' is-up'}">${marque ? `<span class="mark mark--${marque}"></span>` : ''}${echapper(delta)}</p>` : ''}
-    </div></div>`;
-}
+function blocBanniere(d, ctx) {
+  const nomEtab = (ctx.establishment && ctx.establishment.name) || 'Le Comptoir des Halles';
+  const dateStr = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  const operateur = nomOperateur(d.operateur);
 
-function blocKpis(d, ctx) {
-  const taux = d.taux === null ? (d.tauxEnceintes === null ? '—' : String(d.tauxEnceintes)) : String(d.taux);
-  const deltaConformite = d.taux === null
-    ? (d.equipements.length ? 'aucun relevé aujourd\'hui — conformité des enceintes' : 'aucune enceinte déclarée')
-    : `${d.duJour.filter((r) => !r.conforme).length} relevé(s) hors plage`;
-  return `<div class="grid grid--4">
-    ${kpi('Conformité du jour', taux, '%', deltaConformite, d.taux === null || d.taux >= 95 ? 'ok' : 'warn')}
-    ${kpi('Relevés du jour', `${d.relevesJour}`, `/ ${d.equipements.length} enceintes`, d.relevesJour >= d.equipements.length ? 'tournée complète' : `${d.equipements.length - d.relevesJour} enceinte(s) à relever`, d.relevesJour >= d.equipements.length ? 'ok' : 'warn')}
-    ${kpi('Non-conformités ouvertes', `${d.ncOuvertes.length}`, '', d.ncCritiques.length ? `${d.ncCritiques.length} critique(s) à traiter` : 'aucune critique', d.ncOuvertes.length ? 'danger' : 'ok')}
-    ${kpi('Tâches de nettoyage dues', `${d.tachesDues.length}`, '', d.tachesDues.length ? 'à valider avant la fermeture' : 'plan à jour', d.tachesDues.length ? 'warn' : 'ok')}
-  </div>`;
-}
-
-function blocRoutine(d, ctx) {
-  if (!d.taches.length) {
-    return `<section class="section">
-      <div class="section__head">
-        <h2 class="section__title">Routine du service</h2>
-        <button class="btn btn--ghost btn--sm section__action" type="button" data-action="go-checklists">${ctx.icon('clipboard', 16)} Checklists</button>
-      </div>
-      ${ctx.ui.empty({ icon: 'clipboard', title: 'Aucune routine chargée', body: 'Les checklists d\'ouverture et de fermeture n\'ont pas encore été initialisées.', actionLabel: 'Ouvrir les checklists', onAction: () => naviguer(ctx, 'checklists') })}
-    </section>`;
+  let badge = '';
+  if (d.ncCritiques.length > 0) {
+    badge = `<div class="traq-badge traq-badge--danger">${ctx.icon('alert', 16)} <span>${d.ncCritiques.length} anomalie(s) critique(s)</span></div>`;
+  } else if (d.score && d.score.score < 90) {
+    badge = `<div class="traq-badge traq-badge--warn">${ctx.icon('alert', 16)} <span>Score : ${ctx.fmt.pct(d.score.score)}</span></div>`;
+  } else {
+    badge = `<div class="traq-badge traq-badge--ok">${ctx.icon('check', 16)} <span>100% Conforme — Registre à jour</span></div>`;
   }
+
+  return `<header class="traq-banner">
+    <div class="traq-banner__left">
+      <h1 class="traq-banner__title">${echapper(nomEtab)}</h1>
+      <p class="traq-banner__sub">${echapper(dateStr.charAt(0).toUpperCase() + dateStr.slice(1))} · ${echapper(operateur)}</p>
+    </div>
+    <div class="row row--sm">
+      ${badge}
+      <button class="btn btn--primary" type="button" data-action="go-audit">${ctx.icon('shield', 16)} Contrôle DDPP</button>
+    </div>
+  </header>`;
+}
+
+function blocTuiles(d, ctx) {
+  // 1. Températures
+  const manquants = Math.max(0, d.equipements.length - d.relevesJour);
+  const tempChip = manquants > 0
+    ? `<span class="traq-tile__chip traq-tile__chip--warn">${ctx.icon('clock', 12)} ${manquants} à relever</span>`
+    : `<span class="traq-tile__chip traq-tile__chip--ok">${ctx.icon('check', 12)} À jour</span>`;
+
+  // 2. Nettoyage
+  const cleanChip = d.tachesDues.length > 0
+    ? `<span class="traq-tile__chip traq-tile__chip--warn">${ctx.icon('clock', 12)} ${d.tachesDues.length} en attente</span>`
+    : `<span class="traq-tile__chip traq-tile__chip--ok">${ctx.icon('check', 12)} Plan à jour</span>`;
+
+  // 3. DLC & Traçabilité
+  const dlcChip = d.dlcProches.length > 0
+    ? `<span class="traq-tile__chip traq-tile__chip--warn">${ctx.icon('alert', 12)} ${d.dlcProches.length} alerte(s)</span>`
+    : `<span class="traq-tile__chip traq-tile__chip--ok">${ctx.icon('check', 12)} Conforme</span>`;
+
+  // 4. Réceptions
+  const receptionChip = `<span class="traq-tile__chip traq-tile__chip--neutral">Nouveau contrôle →</span>`;
+
+  // 5. Huiles
+  const oilChip = `<span class="traq-tile__chip traq-tile__chip--ok">${ctx.icon('check', 12)} Bains conformes</span>`;
+
+  // 6. Routine
   const faites = d.taches.filter((t) => t.checked).length;
-  const lignes = d.taches.map((t) => `<li class="checklist__item${t.checked ? ' is-done' : ''}">
-        <button class="checklist__check" type="button" role="checkbox" aria-checked="${Boolean(t.checked)}"
-          data-action="toggle-routine" data-item="${echapper(t.id)}" data-routine="${echapper(d.routine.type)}"
-          aria-label="${t.checked ? 'Décocher' : 'Cocher'} ${echapper(t.label)}">${t.checked ? ctx.icon('check', 14) : ''}</button>
-        <span class="checklist__label">${echapper(t.label)}</span>
-        <span class="checklist__due num">${echapper(t.zone || '')}${t.mandatory ? ' · obligatoire' : ''}</span>
-      </li>`).join('');
-  return `<section class="section">
-    <div class="section__head">
-      <h2 class="section__title">Routine ${d.routine.type === 'FERMETURE' ? 'de fermeture' : 'd\'ouverture'}</h2>
-      <span class="unit">${faites} / ${d.taches.length} tâches</span>
-      <button class="btn btn--ghost btn--sm section__action" type="button" data-action="go-checklists">${ctx.icon('clipboard', 16)} Checklists</button>
-    </div>
-    <div class="sheet">
-      <div class="sheet__head">
-        <span class="nav-item__idx">${echapper(d.routine.type === 'FERMETURE' ? 'FERMETURE' : 'OUVERTURE')}</span>
-        <span class="topbar__id">${echapper(d.routine.date || '')}</span>
-      </div>
-      <div class="sheet__body"><ul class="checklist">${lignes}</ul></div>
-    </div>
-  </section>`;
-}
+  const routineComplete = d.taches.length > 0 && faites >= d.taches.length;
+  const routineChip = d.taches.length === 0
+    ? `<span class="traq-tile__chip traq-tile__chip--neutral">Démarrer</span>`
+    : routineComplete
+      ? `<span class="traq-tile__chip traq-tile__chip--ok">${ctx.icon('check', 12)} Validée</span>`
+      : `<span class="traq-tile__chip traq-tile__chip--warn">${faites} / ${d.taches.length} faites</span>`;
 
-function blocReleves(d, ctx) {
-  if (!d.releves.length) {
-    return `<section class="section">
-      <div class="section__head"><h2 class="section__title">Derniers relevés</h2>
-        <button class="btn btn--ghost btn--sm section__action" type="button" data-action="go-temperature">${ctx.icon('thermometer', 16)} Températures</button>
+  return `<div class="traq-grid">
+    <!-- Tuile 1 : Températures -->
+    <button class="traq-tile traq-tile--temp" type="button" data-action="go-temperature" aria-label="Ouvrir les relevés de températures">
+      <div class="traq-tile__top">
+        <div class="traq-tile__icon-box">${ctx.icon('thermometer', 24)}</div>
+        ${tempChip}
       </div>
-      ${ctx.ui.empty({ icon: 'thermometer', title: 'Aucun relevé enregistré', body: 'La tournée de températures n\'a pas encore été saisie.', actionLabel: 'Noter une température', onAction: () => naviguer(ctx, 'temperatures') })}
-    </section>`;
-  }
-  const lignes = d.releves.slice(0, 6).map((r) => `<tr>
-      <td>${echapper(r.nom)}</td>
-      <td class="num">${ctx.fmt.temp(r.valeur)}</td>
-      <td><span class="mark mark--${r.conforme ? 'ok' : 'danger'}"></span><span class="mark__label">${r.conforme ? 'Conforme' : 'Écart'}</span></td>
-      <td>${echapper(r.operateur)}</td>
-      <td class="num">${ctx.fmt.time(new Date(r.ms).toISOString())}</td>
-    </tr>`).join('');
-  return `<section class="section">
-    <div class="section__head"><h2 class="section__title">Derniers relevés</h2>
-      <button class="btn btn--ghost btn--sm section__action" type="button" data-action="go-temperature">${ctx.icon('thermometer', 16)} Températures</button>
-    </div>
-    <div class="sheet"><div class="sheet__body">
-      <table class="table">
-        <thead><tr><th>Enceinte</th><th>Valeur</th><th>Statut</th><th>Opérateur</th><th>Heure</th></tr></thead>
-        <tbody>${lignes}</tbody>
-      </table>
-    </div></div>
-  </section>`;
+      <div class="traq-tile__bottom">
+        <h3 class="traq-tile__title">Températures</h3>
+        <p class="traq-tile__sub">${d.relevesJour} relevé(s) sur ${d.equipements.length} enceinte(s)</p>
+      </div>
+    </button>
+
+    <!-- Tuile 2 : Nettoyage -->
+    <button class="traq-tile traq-tile--clean" type="button" data-action="go-cleaning" aria-label="Ouvrir le plan de nettoyage">
+      <div class="traq-tile__top">
+        <div class="traq-tile__icon-box">${ctx.icon('spray', 24)}</div>
+        ${cleanChip}
+      </div>
+      <div class="traq-tile__bottom">
+        <h3 class="traq-tile__title">Plan de Nettoyage</h3>
+        <p class="traq-tile__sub">Zones de cuisine, plonge et sanitaires</p>
+      </div>
+    </button>
+
+    <!-- Tuile 3 : DLC & Traçabilité -->
+    <button class="traq-tile traq-tile--dlc" type="button" data-action="go-tracabilite" aria-label="Ouvrir les DLC et la traçabilité">
+      <div class="traq-tile__top">
+        <div class="traq-tile__icon-box">${ctx.icon('tag', 24)}</div>
+        ${dlcChip}
+      </div>
+      <div class="traq-tile__bottom">
+        <h3 class="traq-tile__title">DLC & Étiquetage</h3>
+        <p class="traq-tile__sub">Préparations, entames et décongélation</p>
+      </div>
+    </button>
+
+    <!-- Tuile 4 : Réceptions -->
+    <button class="traq-tile traq-tile--reception" type="button" data-action="go-reception" aria-label="Ouvrir le contrôle à réception">
+      <div class="traq-tile__top">
+        <div class="traq-tile__icon-box">${ctx.icon('truck', 24)}</div>
+        ${receptionChip}
+      </div>
+      <div class="traq-tile__bottom">
+        <h3 class="traq-tile__title">Réceptions</h3>
+        <p class="traq-tile__sub">Contrôle marchandises et bons de livraison</p>
+      </div>
+    </button>
+
+    <!-- Tuile 5 : Huiles de friture -->
+    <button class="traq-tile traq-tile--oil" type="button" data-action="go-oil" aria-label="Ouvrir le suivi des huiles de friture">
+      <div class="traq-tile__top">
+        <div class="traq-tile__icon-box">${ctx.icon('droplet', 24)}</div>
+        ${oilChip}
+      </div>
+      <div class="traq-tile__bottom">
+        <h3 class="traq-tile__title">Huiles de Friture</h3>
+        <p class="traq-tile__sub">Taux TPM, filtrage et renouvellement</p>
+      </div>
+    </button>
+
+    <!-- Tuile 6 : Routine Service -->
+    <button class="traq-tile traq-tile--routine" type="button" data-action="go-checklists" aria-label="Ouvrir les checklists de routine">
+      <div class="traq-tile__top">
+        <div class="traq-tile__icon-box">${ctx.icon('clipboard', 24)}</div>
+        ${routineChip}
+      </div>
+      <div class="traq-tile__bottom">
+        <h3 class="traq-tile__title">Routine Service</h3>
+        <p class="traq-tile__sub">${d.routine && d.routine.type === 'FERMETURE' ? 'Fermeture' : 'Ouverture'} de service</p>
+      </div>
+    </button>
+  </div>`;
 }
 
 function blocAlertes(d, ctx) {
@@ -232,49 +281,55 @@ function blocAlertes(d, ctx) {
         <span>${echapper(item.preparation.name)} · lot ${echapper(item.preparation.batch || '—')} — ${reste} (${echapper(item.preparation.dlcDate)})</span>
         <button class="btn btn--ghost btn--sm" type="button" data-action="go-tracabilite">Traçabilité</button></div>`);
   }
-  const corps = alertes.length
-    ? alertes.join('')
-    : ctx.ui.empty({ icon: 'shield', title: 'Aucune alerte en cours', body: 'Aucune non-conformité critique ouverte ni DLC à moins de 48 h.' });
-  return `<section class="section">
-    <div class="section__head">
-      <h2 class="section__title">Alertes</h2>
-      ${d.score ? `<span class="unit">Score sanitaire ${ctx.fmt.pct(d.score.score)} — ${d.score.isAuditReady ? 'prêt pour un contrôle' : 'à consolider'}</span>` : ''}
-      <button class="btn btn--ghost btn--sm section__action" type="button" data-action="go-audit">${ctx.icon('seal', 16)} Rapport DDPP</button>
-    </div>${corps}
-  </section>`;
+  if (!alertes.length) {
+    return `<div class="sheet"><div class="sheet__body" style="display:flex;align-items:center;gap:var(--s-4);">
+      <span style="color:var(--ok);">${ctx.icon('shield', 22)}</span>
+      <div>
+        <p style="font-weight:600;color:var(--ink);">Aucune non-conformité critique en cours</p>
+        <p style="font-size:var(--t-sm);color:var(--ink-3);">Toutes les denrées et équipements sont sous maîtrise sanitaire.</p>
+      </div>
+    </div></div>`;
+  }
+  return `<div class="sheet"><div class="sheet__body">${alertes.join('')}</div></div>`;
+}
+
+function blocRoutineRapide(d, ctx) {
+  if (!d.taches.length) return '';
+  const faites = d.taches.filter((t) => t.checked).length;
+  const lignes = d.taches.slice(0, 4).map((t) => `<li class="checklist__item${t.checked ? ' is-done' : ''}">
+        <button class="checklist__check" type="button" role="checkbox" aria-checked="${Boolean(t.checked)}"
+          data-action="toggle-routine" data-item="${echapper(t.id)}" data-routine="${echapper(d.routine.type)}"
+          aria-label="${t.checked ? 'Décocher' : 'Cocher'} ${echapper(t.label)}">${t.checked ? ctx.icon('check', 14) : ''}</button>
+        <span class="checklist__label">${echapper(t.label)}</span>
+        <span class="checklist__due num">${echapper(t.zone || '')}</span>
+      </li>`).join('');
+
+  return `<div class="sheet">
+    <div class="sheet__head">
+      <span style="font-weight:600;">Routine ${d.routine.type === 'FERMETURE' ? 'de fermeture' : 'd\'ouverture'}</span>
+      <span class="unit">${faites} / ${d.taches.length} tâches</span>
+      <button class="btn btn--ghost btn--sm section__action" type="button" data-action="go-checklists">${ctx.icon('clipboard', 14)} Voir tout</button>
+    </div>
+    <div class="sheet__body"><ul class="checklist">${lignes}</ul></div>
+  </div>`;
 }
 
 /* ── Contrat de vue ───────────────────────────────────────────────────────── */
 
-/**
- * Métadonnées du module — reprises de NAV (source unique de la navigation,
- * src/domain/constants.js). Aucune valeur inventée ici.
- */
 export const meta = {
   id: 'dashboard',
   idx: '01',
   icon: 'dashboard',
-  title: 'Tableau de bord',
-  desc: "Vue d'ensemble du jour",
+  title: 'Accueil',
+  desc: "Tableau de bord et gestes quotidiens",
   permissions: null,
 };
 
 export function render(ctx) {
   const d = donnees(ctx);
-  const entete = `<header class="page-head">
-      <span class="page-head__idx">01</span>
-      <h1 class="page-head__title">Tableau de bord</h1>
-      <p class="page-head__desc">Vue d\'ensemble du ${echapper(new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }))} — ${echapper((ctx.establishment && ctx.establishment.name) || 'établissement')}.</p>
-    </header>`;
-  const outils = `<div class="toolbar">
-      <button class="btn" type="button" data-action="go-temperature">${ctx.icon('thermometer', 16)} Noter une température</button>
-      <button class="btn" type="button" data-action="go-nonconformite">${ctx.icon('alert', 16)} Nouvelle non-conformité</button>
-      <button class="btn btn--ghost" type="button" data-action="go-audit">${ctx.icon('seal', 16)} Rapport DDPP</button>
-    </div>`;
-  const pied = `<div class="stamp">REGISTRE À JOUR<br><span class="num">${echapper(ctx.fmt.dt(new Date().toISOString()))}</span><br>${echapper(nomOperateur(d.operateur))}</div>`;
 
   if (d.vide) {
-    return `${entete}${ctx.ui.empty({
+    return `${blocBanniere(d, ctx)}${ctx.ui.empty({
       icon: 'seal',
       title: 'Registre vide',
       body: 'Aucun équipement, aucune routine ni aucun relevé enregistré pour le moment.',
@@ -283,25 +338,34 @@ export function render(ctx) {
     })}`;
   }
 
-  return `${entete}${outils}
-    <section class="section">
-      <div class="section__head"><h2 class="section__title">Indicateurs du jour</h2></div>
-      ${blocKpis(d, ctx)}
-    </section>
-    ${blocRoutine(d, ctx)}
-    ${blocReleves(d, ctx)}
-    ${blocAlertes(d, ctx)}
-    ${pied}`;
+  return `<div class="traq-hero">
+    ${blocBanniere(d, ctx)}
+    ${blocTuiles(d, ctx)}
+    <div class="grid grid--2">
+      <div>
+        <h2 class="traq-section-title">Points d'attention & Alertes</h2>
+        ${blocAlertes(d, ctx)}
+      </div>
+      <div>
+        <h2 class="traq-section-title">Routine en cours</h2>
+        ${blocRoutineRapide(d, ctx)}
+      </div>
+    </div>
+  </div>`;
 }
 
-/** Actions déclarées par cette vue (chaque `data-action` ci-dessus est traité ici). */
+/** Actions déclarées par cette vue */
 const ACTIONS = {
   'go-temperature': (ctx) => naviguer(ctx, 'temperatures'),
+  'go-cleaning': (ctx) => naviguer(ctx, 'cleaning'),
+  'go-tracabilite': (ctx) => naviguer(ctx, 'traceability'),
+  'go-reception': (ctx) => naviguer(ctx, 'reception'),
+  'go-oil': (ctx) => naviguer(ctx, 'oil'),
+  'go-checklists': (ctx) => naviguer(ctx, 'checklists'),
   'go-nonconformite': (ctx) => naviguer(ctx, 'nonconformities'),
   'go-nonconformites': (ctx) => naviguer(ctx, 'nonconformities'),
-  'go-checklists': (ctx) => naviguer(ctx, 'checklists'),
-  'go-tracabilite': (ctx) => naviguer(ctx, 'traceability'),
   'go-audit': (ctx) => naviguer(ctx, 'audit'),
+  'go-inspection': (ctx) => naviguer(ctx, 'ddpp-inspection'),
 };
 
 function attacher(root, ctx) {

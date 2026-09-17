@@ -193,7 +193,7 @@
 }
 
 .page-head__idx { font-family: var(--ff-mono); font-size: var(--t-sm); color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.page-head__title { font-family: var(--ff-serif); font-size: var(--t-display); font-weight: 400; line-height: 1.08; letter-spacing: -0.015em; color: var(--ink); text-wrap: balance; }
+.page-head__title { font-family: var(--ff-sans); font-size: var(--t-display); font-weight: 700; line-height: 1.15; letter-spacing: -0.015em; color: var(--ink); text-wrap: balance; }
 .page-head__desc { font-size: var(--t-sm); color: var(--ink-2); line-height: 1.45; }
 
 /* ── Grilles ────────────────────────────────────────────────────────────── */

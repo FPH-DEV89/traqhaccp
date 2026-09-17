@@ -126,27 +126,29 @@ export const NC_CATEGORIES = [
  * @type {Array<{ group: string, items: Array<{ id: string, idx: string, icon: string, title: string, desc: string }> }>}
  */
 export const NAV = [
-  { group: 'Registre', items: [
-    { id: 'dashboard',       idx: '01', icon: 'dashboard',   title: 'Tableau de bord',      desc: "Vue d'ensemble du jour" },
-    { id: 'checklists',      idx: '02', icon: 'clipboard',   title: 'Checklists',           desc: 'Ouverture et fermeture de service' },
-    { id: 'temperatures',    idx: '03', icon: 'thermometer', title: 'Températures',         desc: 'Relevés des enceintes froides et chaudes' },
-    { id: 'reception',       idx: '04', icon: 'truck',       title: 'Réception',            desc: 'Contrôle marchandises et agréments' },
-    { id: 'traceability',    idx: '05', icon: 'tag',         title: 'DLC et traçabilité',   desc: 'Étiquetage, décongélation, préparations' },
-    { id: 'allergens',       idx: '06', icon: 'wheat',       title: 'Allergènes',           desc: 'Matrice INCO des 14 allergènes' },
-    { id: 'cleaning',        idx: '07', icon: 'spray',       title: 'Plan de nettoyage',    desc: 'Tâches, fréquences et validation' },
-    { id: 'oil',             idx: '08', icon: 'droplet',     title: 'Huiles de friture',    desc: 'TPM, filtration et mise au repos' },
+  { group: 'Quotidien', items: [
+    { id: 'dashboard',       idx: '01', icon: 'dashboard',   title: 'Accueil & Cuisine',    desc: "Vue d'ensemble et gestes du jour" },
+    { id: 'temperatures',    idx: '02', icon: 'thermometer', title: 'Températures',         desc: 'Relevés des enceintes froides et chaudes' },
+    { id: 'cleaning',        idx: '03', icon: 'spray',       title: 'Plan de nettoyage',    desc: 'Tâches, fréquences et validation' },
+    { id: 'traceability',    idx: '04', icon: 'tag',         title: 'DLC & Traçabilité',    desc: 'Étiquetage, préparations, entames' },
+    { id: 'reception',       idx: '05', icon: 'truck',       title: 'Réceptions',            desc: 'Contrôle arrivages et bons de livraison' },
+    { id: 'checklists',      idx: '06', icon: 'clipboard',   title: 'Checklists routine',   desc: 'Ouverture et fermeture de service' },
+    { id: 'oil',             idx: '07', icon: 'droplet',     title: 'Huiles de friture',    desc: 'TPM, filtration et renouvellement' },
+  ]},
+  { group: 'Contrôles spécifiques', items: [
+    { id: 'nonconformities', idx: '08', icon: 'alert',       title: 'Non-conformités',      desc: 'Écarts, actions correctives et clôture' },
     { id: 'cooling',         idx: '09', icon: 'snowflake',   title: 'Refroidissement',      desc: 'Cycle 63 °C → 10 °C en 2 h' },
     { id: 'defrost',         idx: '10', icon: 'flame',       title: 'Décongélation',        desc: 'Cycles et températures de décongélation' },
-    { id: 'ph-weight',       idx: '11', icon: 'scale',       title: 'pH et poids',          desc: 'Contrôles spécialisés' },
-    { id: 'documents',       idx: '12', icon: 'folder',      title: 'Documents sanitaires', desc: 'GED : agréments, HACCP, contrats' },
-    { id: 'nonconformities', idx: '13', icon: 'alert',       title: 'Non-conformités',      desc: 'Écarts, actions correctives et clôture' },
+    { id: 'allergens',       idx: '11', icon: 'wheat',       title: 'Allergènes',           desc: 'Matrice INCO des 14 allergènes' },
+    { id: 'ph-weight',       idx: '12', icon: 'scale',       title: 'pH et poids',          desc: 'Contrôles spécialisés' },
+    { id: 'documents',       idx: '13', icon: 'folder',      title: 'Documents GED',        desc: 'Agréments, HACCP, contrats, analyses' },
   ]},
   { group: 'Contrôle officiel', items: [
     { id: 'audit',           idx: '14', icon: 'seal',        title: 'Registre DDPP',        desc: 'Registre officiel consolidé' },
     { id: 'ddpp-inspection', idx: '15', icon: 'shield',      title: 'Mode inspection',      desc: 'Consultation lecture seule' },
   ]},
   { group: 'Administration', items: [
-    { id: 'compte',          idx: '16', icon: 'users',       title: 'Compte',          desc: 'Fiche établissement, utilisateurs, rôles' },
+    { id: 'compte',          idx: '16', icon: 'users',       title: 'Compte & Brigade',     desc: 'Fiche établissement, utilisateurs, rôles' },
     { id: 'reglages',        idx: '17', icon: 'settings',    title: 'Réglages',             desc: 'Normes, équipements, préférences, sauvegardes' },
   ]},
 ];

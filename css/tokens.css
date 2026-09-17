@@ -9,55 +9,86 @@
  * Le thème « papier » est le défaut.
  */
 
-/* ── Thème papier (défaut) ──────────────────────────────────────────────── */
+/* ── Thème papier / clair (défaut moderne style Traqfood) ───────────────── */
 :root,
 [data-theme="papier"] {
 
   /* Couleurs */
-  --paper:       #F2F0EA;   /* fond application */
-  --paper-2:     #EAE7DF;   /* fond alterné, entêtes de tableau */
-  --sheet:       #FBFAF7;   /* surface des composants */
-  --ink:         #1A1C1E;   /* texte principal */
-  --ink-2:       #4C5257;   /* texte secondaire */
-  --ink-3:       #6F757B;   /* libellés, unités, métadonnées */
-  --rule:        #DDD9CF;   /* filet 1 px */
-  --rule-2:      #C3BEB1;   /* filet accentué, séparateur de groupe */
-  --accent:      #0E4F55;   /* pétrole — LA couleur de marque */
-  --accent-2:    #0A3B40;   /* accent survol / appui */
-  --accent-wash: #E3EDED;   /* fond teinté accent (sélection, actif) */
-  --ok:          #1D6B3F;
-  --warn:        #8A5A00;
-  --danger:      #9E241C;
-  --on-accent:   #F7FBFA;
+  --paper:       #F8FAFC;   /* fond application clair et propre */
+  --paper-2:     #F1F5F9;   /* fond alterné, entêtes de tableau */
+  --sheet:       #FFFFFF;   /* surface des composants blanc pur */
+  --ink:         #0F172A;   /* texte principal ardoise foncée */
+  --ink-2:       #475569;   /* texte secondaire */
+  --ink-3:       #64748B;   /* libellés, unités, métadonnées */
+  --rule:        #E2E8F0;   /* filet discret 1 px */
+  --rule-2:      #CBD5E1;   /* filet accentué, séparateur */
+  --accent:      #0284C7;   /* bleu azur pro — marque Traqfood */
+  --accent-2:    #0369A1;   /* accent survol / appui */
+  --accent-wash: #E0F2FE;   /* fond teinté sélection active */
+  --ok:          #10B981;   /* vert conforme */
+  --warn:        #F59E0B;   /* ambre alerte */
+  --danger:      #EF4444;   /* rouge anomalie */
+  --on-accent:   #FFFFFF;
 
-  /* Ombres (uniquement sh-1 panel et sh-2 modal) */
-  --sh-1: 0 12px 40px -18px rgba(26,28,30,.35);
-  --sh-2: 0 20px 56px -20px rgba(26,28,30,.40), 0 2px 8px -4px rgba(26,28,30,.14);
+  /* Couleurs des pôles d'action Traqfood */
+  --tile-temp:        #2563EB;
+  --tile-temp-bg:     #EFF6FF;
+  --tile-clean:       #D97706;
+  --tile-clean-bg:    #FFFBEB;
+  --tile-dlc:         #E11D48;
+  --tile-dlc-bg:      #FFF1F2;
+  --tile-reception:   #7C3AED;
+  --tile-reception-bg: #F5F3FF;
+  --tile-oil:         #EA580C;
+  --tile-oil-bg:      #FFF7ED;
+  --tile-routine:     #059669;
+  --tile-routine-bg:  #ECFDF5;
+
+  /* Ombres douces et modernes */
+  --sh-1: 0 4px 12px -2px rgba(15,23,42,.08), 0 2px 4px -2px rgba(15,23,42,.04);
+  --sh-2: 0 12px 28px -4px rgba(15,23,42,.12), 0 4px 10px -2px rgba(15,23,42,.06);
+  --sh-tile: 0 1px 3px 0 rgba(15,23,42,.06), 0 1px 2px -1px rgba(15,23,42,.06);
+  --sh-tile-hover: 0 10px 20px -3px rgba(15,23,42,.08), 0 4px 6px -4px rgba(15,23,42,.04);
 }
 
 /* ── Thème nuit ─────────────────────────────────────────────────────────── */
 [data-theme="nuit"] {
 
   /* Couleurs */
-  --paper:       #141413;
-  --paper-2:     #1A1918;
-  --sheet:       #1C1B19;
-  --ink:         #E9E6E0;
-  --ink-2:       #ABA8A1;
-  --ink-3:       #8A867F;
-  --rule:        #2E2C29;
-  --rule-2:      #423F3A;
-  --accent:      #5FB3B0;
-  --accent-2:    #7CC5C2;
-  --accent-wash: #14312F;
-  --ok:          #4FA96E;
-  --warn:        #C79A3A;
-  --danger:      #D9645A;
-  --on-accent:   #0C1613;
+  --paper:       #0F172A;
+  --paper-2:     #1E293B;
+  --sheet:       #1E293B;
+  --ink:         #F8FAFC;
+  --ink-2:       #CBD5E1;
+  --ink-3:       #94A3B8;
+  --rule:        #334155;
+  --rule-2:      #475569;
+  --accent:      #38BDF8;
+  --accent-2:    #0EA5E9;
+  --accent-wash: #082F49;
+  --ok:          #34D399;
+  --warn:        #FBBF24;
+  --danger:      #F87171;
+  --on-accent:   #0F172A;
 
-  /* Ombres (thème nuit : plus douces) */
-  --sh-1: 0 12px 40px -18px rgba(0,0,0,.55);
-  --sh-2: 0 20px 56px -20px rgba(0,0,0,.60), 0 2px 8px -4px rgba(0,0,0,.28);
+  --tile-temp:        #60A5FA;
+  --tile-temp-bg:     #172554;
+  --tile-clean:       #FBBF24;
+  --tile-clean-bg:    #451A03;
+  --tile-dlc:         #FB7185;
+  --tile-dlc-bg:      #4C0519;
+  --tile-reception:   #A78BFA;
+  --tile-reception-bg: #2E1065;
+  --tile-oil:         #FB923C;
+  --tile-oil-bg:      #431407;
+  --tile-routine:     #34D399;
+  --tile-routine-bg:  #064E3B;
+
+  /* Ombres thème nuit */
+  --sh-1: 0 4px 12px -2px rgba(0,0,0,.5);
+  --sh-2: 0 12px 28px -4px rgba(0,0,0,.6);
+  --sh-tile: 0 1px 3px 0 rgba(0,0,0,.4);
+  --sh-tile-hover: 0 8px 20px -2px rgba(0,0,0,.6);
 }
 
 /* ── Espacement ─────────────────────────────────────────────────────────── */
@@ -105,9 +136,9 @@
   --e-out: cubic-bezier(.2,.7,.3,1);
 
   /* Familles de polices */
-  --ff-serif: 'Instrument Serif', Georgia, serif;
-  --ff-sans:  'Archivo', system-ui, sans-serif;
-  --ff-mono:  'IBM Plex Mono', 'Courier New', monospace;
+  --ff-serif: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ff-sans:  'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ff-mono:  'JetBrains Mono', 'IBM Plex Mono', 'Courier New', monospace;
 
   /* Tailles de police (token seul — graisse + hauteur de ligne dans base.css) */
   --t-display: 30px;
