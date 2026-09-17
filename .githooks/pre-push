@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Hook pre-push TraqHACCP — les gates tournent AVANT que le code ne parte, pas après.
+#
+# Pourquoi : les deux bugs du 16-17/09/2026 étaient tous les deux invisibles aux vérifications
+# existantes (npm test était vert). Une note dans un document n'aurait rien empêché ; un hook
+# qui renvoie un code de sortie non nul, oui.
+#
+# Installation (déjà faite sur ce dépôt) : git config core.hooksPath .githooks
+# Contournement volontaire et tracé : GATE_SKIP=1 git push
+set -uo pipefail
+
+if [ "${GATE_SKIP:-0}" = "1" ]; then
+  echo "⚠️  gates ignorés (GATE_SKIP=1) — tu assumes."
+  exit 0
+fi
+
+cd "$(dirname "$0")/.." || exit 1
+
+echo "── Gates pré-push ───────────────────────────────────────────────"
+echec=0
+
+if ! node tools/check-css-cascade.mjs css; then
+  echo "   ↑ contradictions de cascade : fusionner les blocs ou assumer l'écrasement."
+  echec=1
+fi
+
+# Gate CONSULTATIF : un artefact de documentation périmé ne doit pas empêcher la livraison de code.
+# Il s'affiche, mais ne bloque pas (--advisory). Bloquant à l'usage : `npm run gate:artifact`,
+# à lancer AVANT de lire le graphe comme carte du projet. Un gate qui bloque sans raison
+# valable est un gate qu'on finit par désactiver — donc un gate mort.
+node tools/check-artifact-fresh.mjs --tool graphify --advisory || true
+
+if ! node tools/test-gates.mjs; then
+  echo "   ↑ les gates eux-mêmes sont cassés : les réparer AVANT de se fier à leur silence."
+  echec=1
+fi
+
+if [ "$echec" -ne 0 ]; then
+  echo "── Push bloqué. (BUGS.md : ces deux pannes sont documentées.)"
+  exit 1
+fi
+
+echo "── OK — aucun des bugs connus du 16-17/09 n'est re-livrable. ────"
+exit 0

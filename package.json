@@ -10,6 +10,18 @@
     "test:domain": "node tools/test-domain.mjs",
     "check:norms": "node tools/check-norms-consistency.mjs",
     "lint:design": "impeccable detect css src/presentation/views",
-    "serve": "python3 -m http.server 8899"
+    "serve": "python3 -m http.server 8899",
+    "gate:css": "node tools/check-css-cascade.mjs css",
+    "gate:artifact": "node tools/check-artifact-fresh.mjs --tool graphify",
+    "gate:artifact:warn": "node tools/check-artifact-fresh.mjs --tool graphify --advisory",
+    "gate:paint": "node tools/audit-ui-paint.mjs",
+    "gate:selftest": "node tools/test-gates.mjs",
+    "gate": "npm run gate:css && npm run gate:artifact && npm run gate:selftest"
+  },
+  "gates": {
+    "_comment": "Gates exécutables issus des bugs du 16-17/09/2026. gate = ce qui tourne avant push (rapide, sans navigateur). gate:paint exige un serveur local (npm run serve) ou APP_URL.",
+    "css-cascade": "Deux declarations contradictoires du meme selecteur sous le meme @media — la derniere gagne en silence.",
+    "artifact-fresh": "Artefact genere (graphify-out/) plus vieux que HEAD : regenerer avant de s'en servir.",
+    "ui-paint": "Ecran peint et atteignable (elementFromPoint), pas seulement present dans le DOM."
   }
 }

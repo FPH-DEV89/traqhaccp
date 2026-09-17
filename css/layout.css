@@ -24,7 +24,8 @@
   overflow: hidden;
 }
 @media (max-width: 900px) {
-  .app { grid-template-rows: auto 1fr; }
+  /* `.app` est déjà en rangée unique (cf. bloc mobile en fin de feuille) — ne rien redéclarer ici :
+     deux `grid-template-rows` sous le même @media se recouvrent en silence (gate check-css-cascade). */
   .workspace { height: auto; overflow: visible; }
 }
 
