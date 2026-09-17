@@ -9,7 +9,7 @@
  *     sans elles, et mettre en cache des réponses opaques ferait échouer `addAll`.
  * Aucun build : les chemins ci-dessous correspondent aux fichiers réellement présents.
  */
-const CACHE_NAME = 'traqhaccp-v4-mobile-responsive-20260917-v2';
+const CACHE_NAME = 'traqhaccp-v4-traqfood-tiles-20260917-v4';
 
 const ASSETS_TO_CACHE = [
   './',
