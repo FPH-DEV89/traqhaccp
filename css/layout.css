@@ -383,9 +383,10 @@
 }
 
 @media (max-width: 900px) {
-  .app { grid-template-columns: 1fr; grid-template-rows: var(--topbar) 1fr; overflow-y: auto; }
+  .app { grid-template-columns: 1fr; grid-template-rows: 1fr; height: auto; min-height: 100dvh; overflow: visible; }
   .rail { display: none; }
   .topbar { position: sticky; top: 0; }
+  .workspace { height: auto; min-height: 100dvh; overflow: visible; }
   .main { padding: var(--s-5); padding-bottom: calc(var(--s-11) + env(safe-area-inset-bottom, 0px)); overflow-y: visible; }
   .tabbar { display: flex; }
   .hide-mobile { display: none; }
