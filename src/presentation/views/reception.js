@@ -179,7 +179,18 @@ function ouvrirPanneau(ctx) {
   panneau = null; photoEnAttente = '';
   ctx.ui.panel({
     id: 'reception-nouvelle', title: 'Nouvelle réception', subtitle: 'Contrôle à réception des marchandises', body: blocFormulaire(ctx),
-    onMount: (racine) => { panneau = racine || null; brancherVerdict(ctx, panneau); },
+    onMount: (racine) => {
+      panneau = racine || null;
+      brancherVerdict(ctx, panneau);
+      if (racine) {
+        racine.addEventListener('click', (evenement) => {
+          const el = evenement.target.closest && evenement.target.closest('[data-action]');
+          if (!el || !racine.contains(el)) return;
+          const action = ACTIONS[el.dataset.action];
+          if (action) action(el, racine, ctx);
+        });
+      }
+    },
     onClose: () => { panneau = null; photoEnAttente = ''; },
     actions: [
       { label: 'Enregistrer la réception', kind: 'primary', onClick: (cible) => enregistrer(ctx, cible) },
@@ -270,10 +281,25 @@ function ouvrirDetail(ctx, id) {
       ${ligne('T° camion', Number.isFinite(Number(r.truckTemp)) ? echapper(ctx.fmt.temp(Number(r.truckTemp))) : '—')}
       ${ligne("N° d'agrément", echapper(r.sanitaryApproval || '—'))}${ligne('Opérateur', echapper(r.operator || '—'))}
       ${ligne('Observations', echapper(r.notes || '—'))}
-      <div>${r.photo ? ctx.ui.photo(r.photo, 'Photo à réception') : '<p class="field__hint">Aucune photo jointe à cette réception.</p>'}</div>
+      <div>${r.photo ? `<div style="text-align: center;"><img src="${echapper(r.photo)}" alt="Photo à réception" style="max-height: 180px; max-width: 100%; border-radius: var(--r-2); border: 1px solid var(--rule); cursor: pointer;" data-action="voir-photo-detail" data-id="${echapper(r.id)}"></div>` : '<p class="field__hint">Aucune photo jointe à cette réception.</p>'}</div>
       ${r.actionCorrective ? `<div class="callout callout--warn">Action corrective : ${echapper(r.actionCorrective)}</div>` : ''}
     </div>`;
-  ctx.ui.panel({ id: 'reception-detail', title: 'Détail de la réception', subtitle: String(r.supplier || ''), body: corps, actions: [{ label: 'Fermer', kind: 'ghost', onClick: () => ctx.ui.closeOverlay() }] });
+  ctx.ui.panel({
+    id: 'reception-detail', title: 'Détail de la réception', subtitle: String(r.supplier || ''), body: corps,
+    onMount: (racine) => {
+      if (racine) {
+        racine.addEventListener('click', (evenement) => {
+          const el = evenement.target.closest && evenement.target.closest('[data-action]');
+          if (!el || !racine.contains(el)) return;
+          if (el.dataset.action === 'voir-photo-detail') {
+            const cible = chercherReception(ctx, el.dataset.id);
+            if (cible && cible.photo) ctx.ui.photo(cible.photo, `Réception ${cible.supplier || ''}`);
+          }
+        });
+      }
+    },
+    actions: [{ label: 'Fermer', kind: 'ghost', onClick: () => ctx.ui.closeOverlay() }],
+  });
 }
 async function supprimer(ctx, id, root) {
   const r = chercherReception(ctx, id);
@@ -296,7 +322,11 @@ function ouvrirCamera(ctx) {
     onCapture: (source) => {
       photoEnAttente = typeof source === 'string' ? source : (source && source.dataUrl) || '';
       const zone = panneau && panneau.querySelector('[data-zone="apercu-photo"]');
-      if (zone) zone.innerHTML = photoEnAttente ? ctx.ui.photo(photoEnAttente, 'Photo à réception') : '';
+      if (zone) {
+        zone.innerHTML = photoEnAttente
+          ? `<div style="text-align: center; margin-top: var(--s-3);"><img src="${echapper(photoEnAttente)}" alt="Aperçu photo réception" style="max-height: 180px; max-width: 100%; border-radius: var(--r-2); border: 1px solid var(--rule);"></div>`
+          : '';
+      }
       ctx.ui.toast({ status: 'ok', message: 'Photo jointe à la réception' });
     },
   });

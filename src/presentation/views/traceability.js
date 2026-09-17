@@ -258,7 +258,18 @@ function ouvrirPanneau(ctx) {
   panneau = null; photoEnAttente = '';
   ctx.ui.panel({
     id: 'preparation-nouvelle', title: 'Nouvelle préparation', subtitle: 'Étiquetage, DLC et allergènes', body: blocFormulaire(ctx),
-    onMount: (racine) => { panneau = racine || null; brancherDlc(ctx, panneau); },
+    onMount: (racine) => {
+      panneau = racine || null;
+      brancherDlc(ctx, panneau);
+      if (racine) {
+        racine.addEventListener('click', (evenement) => {
+          const el = evenement.target.closest && evenement.target.closest('[data-action]');
+          if (!el || !racine.contains(el)) return;
+          const action = ACTIONS[el.dataset.action];
+          if (action) action(el, racine, ctx);
+        });
+      }
+    },
     onClose: () => { panneau = null; photoEnAttente = ''; },
     actions: [
       { label: 'Enregistrer', kind: 'primary', onClick: (cible) => enregistrer(ctx, cible, false) },
@@ -365,16 +376,23 @@ function ouvrirEtiquette(ctx, preparation, lot) {
       <div class="field"><span class="field__label">Consigne sanitaire</span><p class="field__hint">${echapper(cible.conservation || consigneParDefaut())}</p></div></div>`;
   ctx.ui.panel({
     id: 'traceability-etiquette', title: "Fiche de traçabilité", subtitle: cible.name || '', body: corps,
+    onMount: (racine) => {
+      if (racine) {
+        racine.addEventListener('click', (evenement) => {
+          const el = evenement.target.closest && evenement.target.closest('[data-action]');
+          if (!el || !racine.contains(el)) return;
+          const action = ACTIONS[el.dataset.action];
+          if (action) action(el, racine, ctx);
+        });
+      }
+    },
     actions: [{ label: 'Fermer', kind: 'ghost', onClick: () => ctx.ui.closeOverlay() }],
   });
 }
 function ouvrirPhoto(ctx, id) {
   const preparation = chercherPreparation(ctx, id);
   if (!preparation || !preparation.photo) { ctx.ui.toast({ status: 'warn', message: 'Aucune photo pour cette préparation' }); return; }
-  ctx.ui.panel({
-    id: 'preparation-photo', title: 'Photo de la préparation', subtitle: preparation.name || '', body: ctx.ui.photo(preparation.photo, `Lot ${preparation.batch || '—'}`),
-    actions: [{ label: 'Fermer', kind: 'ghost', onClick: () => ctx.ui.closeOverlay() }],
-  });
+  ctx.ui.photo(preparation.photo, `${preparation.name || 'Étiquette'} — Lot ${preparation.batch || '—'}`);
 }
 function ouvrirCamera(ctx) {
   if (!ctx.ui || typeof ctx.ui.camera !== 'function') { ctx.ui.toast({ status: 'warn', message: 'Appareil photo indisponible' }); return; }
@@ -382,7 +400,11 @@ function ouvrirCamera(ctx) {
     onCapture: (source) => {
       photoEnAttente = typeof source === 'string' ? source : (source && source.dataUrl) || '';
       const zone = panneau && panneau.querySelector('[data-zone="apercu-photo"]');
-      if (zone) zone.innerHTML = photoEnAttente ? ctx.ui.photo(photoEnAttente, 'Photo de la préparation') : '';
+      if (zone) {
+        zone.innerHTML = photoEnAttente
+          ? `<div style="text-align: center; margin-top: var(--s-3);"><img src="${echapper(photoEnAttente)}" alt="Aperçu étiquette" style="max-height: 180px; max-width: 100%; border-radius: var(--r-2); border: 1px solid var(--rule);"></div>`
+          : '';
+      }
       ctx.ui.toast({ status: 'ok', message: 'Photo jointe à la préparation' });
     },
   });

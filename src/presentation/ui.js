@@ -209,8 +209,10 @@ export function camera(options = {}) {
   return new Promise((resoudre) => {
     let flux = null, fini = false;
     const finir = (valeur) => { if (!fini) { fini = true; resoudre(valeur); } };
-    const arreter = () => { if (flux) flux.getTracks().forEach((piste) => piste.stop()); };
-    const el = noeud(`<div class="modal" role="dialog" aria-modal="true"><div class="modal__panel"><div class="modal__head"><span>Prise de photo</span><button class="icon-btn" type="button" data-ui-close aria-label="Fermer">${icon('x', 18)}</button></div><div class="modal__body"><video autoplay playsinline style="max-height: 50vh; width: 100%; object-fit: contain; background: var(--paper-2);"></video><div class="stack stack--xs" style="margin-top: var(--s-3); text-align: center;"><label class="btn btn--ghost" style="cursor: pointer;">${icon('upload', 16)} Choisir depuis la galerie / Appareil<input type="file" accept="image/*" capture="environment" data-file-pick style="display: none;"></label></div></div><div class="modal__foot"><button class="btn btn--ghost" type="button" data-ui-close>Annuler</button><button class="btn btn--primary" type="button" data-capture disabled>Prendre la photo</button></div></div></div>`);
+    const arreter = () => { if (flux) flux.getTracks().forEach((piste) => piste.stop()); flux = null; };
+    const el = noeud(`<div class="modal" role="dialog" aria-modal="true"><div class="modal__panel"><div class="modal__head"><span>Prise de photo</span><button class="icon-btn" type="button" data-ui-close aria-label="Fermer">${icon('x', 18)}</button></div><div class="modal__body"><video autoplay playsinline muted style="max-height: 50vh; width: 100%; object-fit: contain; background: var(--paper-2);"></video><div class="stack stack--xs" style="margin-top: var(--s-3); text-align: center;"><label class="btn btn--ghost" style="cursor: pointer;">${icon('upload', 16)} Choisir depuis la galerie / Appareil<input type="file" accept="image/*" capture="environment" data-file-pick style="display: none;"></label></div></div><div class="modal__foot"><button class="btn btn--ghost" type="button" data-ui-close>Annuler</button><button class="btn btn--primary" type="button" data-capture disabled>Prendre la photo</button></div></div></div>`);
+    const pan = el.querySelector('.modal__panel');
+    if (pan) pan.classList.add('is-open');
     const video = el.querySelector('video');
     const declencheur = el.querySelector('[data-capture]');
     const fileInput = el.querySelector('[data-file-pick]');
@@ -245,19 +247,36 @@ export function camera(options = {}) {
       fermer(fiche.ouvert);
       if (options.onCapture) options.onCapture(dataUrl);
     });
-    fiche.ouvert = empiler({ id: 'ui-camera', element: el, bloquante: true, onClose: () => finir(null) });
+    fiche.ouvert = empiler({ id: 'ui-camera', element: el, bloquante: true, onClose: () => { arreter(); finir(null); } });
+    if (pan) pan.classList.add('is-open');
+
     const medias = globalThis.navigator && globalThis.navigator.mediaDevices;
     if (!medias || typeof medias.getUserMedia !== 'function') {
       video.style.display = 'none';
       declencheur.style.display = 'none';
+      toast({ status: 'info', message: "Accès caméra direct non supporté sur ce navigateur (HTTPS requis). Veuillez importer une photo ci-dessous." });
       return;
     }
-    medias.getUserMedia({ video: { facingMode: 'environment' } })
-      .then((courant) => { flux = courant; video.srcObject = courant; declencheur.disabled = false; })
+    const contraintes = {
+      video: {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      },
+      audio: false
+    };
+    medias.getUserMedia(contraintes)
+      .catch(() => medias.getUserMedia({ video: true, audio: false }))
+      .then((courant) => {
+        flux = courant;
+        video.srcObject = courant;
+        video.play().catch(() => {});
+        declencheur.disabled = false;
+      })
       .catch(() => {
         video.style.display = 'none';
         declencheur.style.display = 'none';
-        toast({ status: 'warn', message: "Accès caméra direct indisponible. Vous pouvez importer une photo ci-dessous." });
+        toast({ status: 'warn', message: "Accès caméra direct indisponible ou refusé. Vous pouvez importer une photo ci-dessous." });
       });
   });
 }

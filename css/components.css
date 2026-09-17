@@ -310,7 +310,8 @@ tr.is-selected td { background: var(--accent-wash); }
   opacity: 0; transform: translateY(4px);
   transition: opacity var(--d-2) var(--e-out), transform var(--d-2) var(--e-out);
 }
-.modal__panel.is-open { opacity: 1; transform: translateY(0); }
+.modal__panel.is-open,
+.modal.is-open .modal__panel { opacity: 1; transform: translateY(0); }
 .modal--sm .modal__panel { max-width: 420px; }
 .modal--lg .modal__panel { max-width: 860px; }
 .modal__head {
