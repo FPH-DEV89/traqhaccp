@@ -6,6 +6,8 @@
 
 Lancement : `npm run gate` (rapide, sans navigateur) — `npm run gate:paint` (exige `npm run serve`).
 Automatique : hook `pre-push` versionné dans `.githooks/` (`git config core.hooksPath .githooks`).
+Bloquant au push : cascade CSS + méta-test. **Consultatif** : fraîcheur de l'artefact (`--advisory`),
+car un artefact de documentation périmé ne doit pas empêcher la livraison de code (cf. §4a).
 
 ---
 
@@ -61,6 +63,40 @@ correctif — une bombe à retardement.
   `:first-child` et les étapes de `@keyframes` ne sont pas des sélecteurs distincts,
 - ne signale que si la **valeur diffère** (une redéclaration identique est légitime),
 - nomme fichier, sélecteur, condition et les **deux numéros de ligne**.
+
+---
+
+## 4. 17/09/2026 — les pièges des gates eux-mêmes (appris en les posant)
+
+Ces quatre leçons viennent de la pose des gates ci-dessus, dont deux auto-infligées. Elles valent
+plus que les gates : c'est ce qui les empêche de pourrir.
+
+**a. Bloquant ≠ consultatif.** Le hook a bloqué le premier push parce que `graphify-out/` était
+périmé — un artefact de *documentation* empêchait la livraison de *code*. C'est exactement ainsi
+qu'un gate meurt : trois contournements par `GATE_SKIP=1` et plus personne ne le lit. D'où
+`--advisory` (diagnostic affiché, exit 0) pour le hook, et le mode strict réservé à l'instant où
+l'artefact sert vraiment (avant de lire le graphe comme carte du projet).
+
+**b. Flake = gate mort.** L'audit peinture a échoué **une fois** à 1440 px sur la prod, puis
+`119/119` sur les trois runs suivants. Cause réelle : `waitUntil: 'domcontentloaded'` + délai fixe
+→ une vue était mesurée en pleine hydratation. Deux correctifs, dans cet ordre :
+attendre `load` **et** `document.fonts.ready` (la cause) ; puis re-mesurer à la 2ᵉ passe et ne
+retenir un échec que s'il **se reproduit** (la ceinture). Vérifié : la fixture clippée échoue
+toujours (le vrai bug est reproduit à la 2ᵉ passe), donc la ceinture ne masque rien.
+
+**c. Un gate trop large fabrique ses propres faux positifs.** L'artefact « périmé » après un commit
+qui ne touchait que `tools/`, `.githooks/` et `package.json` : un graphe de *modules* n'est pas
+invalidé par de l'outillage ou un commentaire CSS. Le périmètre par défaut ignore désormais
+`docs/`, `specs/`, `tools/`, `css/`, hooks et config ; il ne reste que ce qui déplace vraiment
+l'architecture (`src/`, `index.html`). Testé dans les deux sens : changement de `src/` → exit 1 en
+nommant le fichier ; commit d'outillage → exit 0.
+
+**d. Mesurer avant d'annoncer un correctif.** La déclaration CSS retirée a été testée **avec et
+sans** : `119/119` dans les deux cas — c'était du code mort, pas un bug de prod. Sans cette mesure,
+le commit aurait été présenté comme un correctif en production. Corollaire pour la livraison :
+un `200` sur l'URL ne prouve pas qu'un déploiement a eu lieu (une PWA peut réécrire tous les
+chemins vers `index.html`). Preuve = le **corps** de la réponse et le **md5 du fichier servi**
+comparé à `git show HEAD:<fichier>`.
 
 ---
 

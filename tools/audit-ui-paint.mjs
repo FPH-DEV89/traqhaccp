@@ -126,6 +126,7 @@ const { chromium } = loadPlaywright();
 const navigateur = await chromium.launch();
 const echecs = [];
 let mesures = 0;
+let flakes = 0;
 
 for (const { w, h } of LARGEURS) {
   const ctx = await navigateur.newContext({
@@ -144,6 +145,9 @@ for (const { w, h } of LARGEURS) {
     process.exit(2);
   });
   await page.waitForTimeout(1200);
+  // Le délai fixe seul ne suffit pas sur une prod à froid (CSS/fonts/modules encore en vol).
+  await page.waitForLoadState('load').catch(() => {});
+  await page.evaluate(() => (document.fonts ? document.fonts.ready : null)).catch(() => {});
 
   const navigables = opt.switch ? await page.evaluate((f) => typeof window[f] === 'function', opt.switch) : false;
   const cibles = navigables && MODULES.length ? MODULES : [null];
@@ -154,20 +158,37 @@ for (const { w, h } of LARGEURS) {
       await page.waitForTimeout(320);
     }
     mesures++;
-    let res;
-    try { res = await page.evaluate(SONDE, opt.view); }
-    catch (e) { res = { erreur: String(e.message) }; }
-    const msgs = [];
-    if (res.erreur) msgs.push(res.erreur);
-    else {
-      if (res.texte < 150) msgs.push(`vue quasi blanche (${res.texte} car., ${res.noeuds} nœuds)`);
-      for (const c of res.clippes) msgs.push(`CLIPPÉ : ${c.el} fait ${c.visible}px pour ${c.contenu}px de contenu (overflow-y:${c.overflowY})`);
-      if (res.dernier) {
-        if (!res.dernier.dansView) msgs.push(`dernier bloc injoignable (hors viewport, h=${res.dernier.h}px)`);
-        else if (!res.dernier.peint) msgs.push(`dernier bloc NON PEINT — 0 point atteint sur 5, entièrement recouvert par ${res.dernier.couvreurs.join(', ') || 'un inconnu'} (h=${res.dernier.h}px)`);
+    // Une seule passe mesurait des vues en pleine hydratation (chargement à froid de la prod,
+    // waitUntil domcontentloaded + délai fixe) → 1 faux échec observé à 1440px sur la prod,
+    // alors que trois runs complets derrière étaient à 119/119. Donc : un échec n'est retenu
+    // que s'il SE REPRODUIT. Un gate qui crie au loup finit ignoré — donc mort.
+    const mesurer = async () => {
+      let res;
+      try { res = await page.evaluate(SONDE, opt.view); }
+      catch (e) { res = { erreur: String(e.message) }; }
+      const msgs = [];
+      if (res.erreur) msgs.push(res.erreur);
+      else {
+        if (res.texte < 150) msgs.push(`vue quasi blanche (${res.texte} car., ${res.noeuds} nœuds)`);
+        for (const c of res.clippes) msgs.push(`CLIPPÉ : ${c.el} fait ${c.visible}px pour ${c.contenu}px de contenu (overflow-y:${c.overflowY})`);
+        if (res.dernier) {
+          if (!res.dernier.dansView) msgs.push(`dernier bloc injoignable (hors viewport, h=${res.dernier.h}px)`);
+          else if (!res.dernier.peint) msgs.push(`dernier bloc NON PEINT — 0 point atteint sur 5, entièrement recouvert par ${res.dernier.couvreurs.join(', ') || 'un inconnu'} (h=${res.dernier.h}px)`);
+        }
+        if (res.overflowX > 2) msgs.push(`débordement horizontal +${res.overflowX}px`);
       }
-      if (res.overflowX > 2) msgs.push(`débordement horizontal +${res.overflowX}px`);
+      return { res, msgs };
+    };
+
+    let { res, msgs } = await mesurer();
+    let flake = false;
+    if (msgs.length) {
+      await page.waitForTimeout(700);           // laisser finir la peinture/transition en cours
+      const seconde = await mesurer();
+      if (!seconde.msgs.length) { flake = true; res = seconde.res; msgs = []; }
+      else { res = seconde.res; msgs = seconde.msgs; }  // reproduit = vrai bug, on garde le 2e diagnostic
     }
+    // Les erreurs console/JS ne sont pas re-testées : ce ne sont pas des aléas de mesure.
     if (erreurs.length) msgs.push(`${erreurs.length} erreur(s) console : ${erreurs[0]}`);
     if (exceptions.length) msgs.push(`${exceptions.length} exception(s) : ${exceptions[0]}`);
 
@@ -176,7 +197,8 @@ for (const { w, h } of LARGEURS) {
       if (!opt.quiet) console.log(`❌ ${w}x${h}  ${(mod || 'vue').padEnd(18)} ${msgs.join(' · ')}`);
     } else if (!opt.quiet) {
       const pv = res.dernier ? res.dernier.points : '?';
-      console.log(`✅ ${w}x${h}  ${(mod || 'vue').padEnd(18)} ${res.noeuds} nœuds · ${res.texte} car. · ${res.blocs} blocs · dernier peint (${pv} points)`);
+      if (flake) { flakes++; console.log(`🔁 ${w}x${h}  ${(mod || 'vue').padEnd(18)} flake neutralisé (échec non reproduit à la 2e passe)`); }
+      else console.log(`✅ ${w}x${h}  ${(mod || 'vue').padEnd(18)} ${res.noeuds} nœuds · ${res.texte} car. · ${res.blocs} blocs · dernier peint (${pv} points)`);
     }
     erreurs.length = 0; exceptions.length = 0;
   }
@@ -187,7 +209,7 @@ await navigateur.close();
 
 // --- rapport ----------------------------------------------------------------
 const conclu = echecs.length === 0 ? 'PASS' : 'FAIL';
-console.log(`\n${conclu} — ${mesures - echecs.length}/${mesures} vérifications peinture OK · ${opt.url}`);
+console.log(`\n${conclu} — ${mesures - echecs.length}/${mesures} vérifications peinture OK · ${opt.url}${flakes ? ` · ${flakes} flake(s) neutralisé(s) à la 2e passe` : ''}`);
 if (echecs.length) {
   const parLargeur = new Map();
   for (const e of echecs) parLargeur.set(e.w, (parLargeur.get(e.w) || 0) + 1);
