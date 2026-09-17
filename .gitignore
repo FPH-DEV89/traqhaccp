@@ -21,7 +21,9 @@ yarn-error.log*
 *.local
 
 # Outils d'analyse (artefacts locaux, non livrés)
-graphify-out/
+# graphify-out/ est versionné : le graphe d'architecture est livré avec le repo
+# (sauf les snapshots datés de rollback, purement locaux)
+graphify-out/20*/
 .hermes/
 specs/
 
