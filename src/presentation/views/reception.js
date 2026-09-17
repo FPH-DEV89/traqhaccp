@@ -214,13 +214,21 @@ function signalerErreur(racine, cle, message) {
   const zone = racine.querySelector(`[data-erreur="${cle}"]`); if (zone) zone.textContent = message;
   const cible = racine.querySelector(`[name="${cle}"]`); if (cible && typeof cible.focus === 'function') cible.focus();
 }
+let elementRacineVue = null;
+
 function enregistrer(ctx, candidat) {
   const racine = racineDe(candidat);
-  if (!racine) { ctx.ui.toast({ status: 'warn', message: 'Formulaire indisponible' }); return; }
+  if (!racine) { ctx.ui.toast({ status: 'warn', message: 'Formulaire indisponible' }); return false; }
   const fournisseur = valeurChamp(racine, 'fournisseur');
-  if (!fournisseur) return signalerErreur(racine, 'fournisseur', 'Le fournisseur est obligatoire pour tracer l\'origine.');
+  if (!fournisseur) {
+    signalerErreur(racine, 'fournisseur', 'Le fournisseur est obligatoire pour tracer l\'origine.');
+    return false;
+  }
   const temperature = nombreChamp(racine, 'temperature');
-  if (temperature === null) return signalerErreur(racine, 'temperature', 'Relève la température mesurée à réception.');
+  if (temperature === null) {
+    signalerErreur(racine, 'temperature', 'Relève la température mesurée à réception.');
+    return false;
+  }
   const categorie = valeurChamp(racine, 'categorie');
   const norme = normeDe(categorie);
   const horsNorme = Boolean(norme) && (temperature < norme.min || temperature > norme.max);
@@ -228,7 +236,8 @@ function enregistrer(ctx, candidat) {
   if (horsNorme && !corrective) {
     const zone = racine.querySelector('[data-zone="verdict"]');
     if (zone) zone.innerHTML = blocVerdict(ctx, categorie, temperature);
-    return signalerErreur(racine, 'actionCorrective', 'Température hors norme : la validation est impossible sans action corrective.');
+    signalerErreur(racine, 'actionCorrective', 'Température hors norme : la validation est impossible sans action corrective.');
+    return false;
   }
   const emballage = cocheChamp(racine, 'emballage');
   const dlcConforme = cocheChamp(racine, 'dlcConforme');
@@ -243,12 +252,23 @@ function enregistrer(ctx, candidat) {
     dlcDate: valeurChamp(racine, 'dlc'), sanitaryApproval: valeurChamp(racine, 'agrement'), notes: valeurChamp(racine, 'observations'),
     operator: operateur, photo: photoEnAttente,
   };
-  conserverComplements(ctx, ctx.useCases.recordDelivery(data, operateur), data);
-  if (horsNorme) creerNonConformite(ctx, { sujet: `Température hors norme à réception : ${fournisseur} — ${data.product || categorie}`, cause: `T° mesurée ${ctx.fmt.temp(temperature)} (plage ${plageTexte(norme)})`, action: corrective }, operateur);
-  ctx.ui.closeOverlay();
-  photoEnAttente = '';
-  const alerte = horsNorme || data.decision !== 'Conforme';
-  ctx.ui.toast({ status: alerte ? 'warn' : 'ok', message: alerte ? 'Réception enregistrée avec réserve (non-conformité au registre)' : 'Réception conforme enregistrée' });
+
+  try {
+    conserverComplements(ctx, ctx.useCases.recordDelivery(data, operateur), data);
+    if (horsNorme) creerNonConformite(ctx, { sujet: `Température hors norme à réception : ${fournisseur} — ${data.product || categorie}`, cause: `T° mesurée ${ctx.fmt.temp(temperature)} (plage ${plageTexte(norme)})`, action: corrective }, operateur);
+    ctx.ui.closeOverlay();
+    photoEnAttente = '';
+    const alerte = horsNorme || data.decision !== 'Conforme';
+    ctx.ui.toast({ status: alerte ? 'warn' : 'ok', message: alerte ? 'Réception enregistrée avec réserve (non-conformité au registre)' : 'Réception conforme enregistrée' });
+    if (elementRacineVue && elementRacineVue.isConnected) {
+      rafraichir(elementRacineVue, elementRacineVue.__contexte || ctx);
+    }
+    return true;
+  } catch (err) {
+    console.error('Erreur enregistrement réception:', err);
+    ctx.ui.toast({ status: 'danger', message: "Erreur lors de l'enregistrement de la réception. Vérifiez l'espace disponible." });
+    return false;
+  }
 }
 /** Conserve les compléments descriptifs saisis (hors contrat DeliveryRecord). */
 function conserverComplements(ctx, enregistrement, data) {
@@ -369,6 +389,7 @@ function attacher(root, ctx) {
 }
 export function mount(root, ctx) {
   const maGeneration = ++generation;
+  elementRacineVue = root;
   attacher(root, ctx);
   abonnement = ctx.store.subscribe(() => { if (maGeneration === generation && root.isConnected && !root.hidden) rafraichir(root, root.__contexte || ctx); });
 }
@@ -376,5 +397,6 @@ export function unmount(root) {
   generation += 1;
   if (abonnement) { abonnement(); abonnement = null; }
   panneau = null;
+  if (elementRacineVue === root) elementRacineVue = null;
   if (root && typeof root.removeEventListener === 'function') { delete root.dataset.liens; delete root.__contexte; }
 }

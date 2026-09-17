@@ -293,11 +293,16 @@ function signalerErreur(racine, cle, message) {
   const zone = racine.querySelector(`[data-erreur="${cle}"]`); if (zone) zone.textContent = message;
   const cible = racine.querySelector(`[name="${cle}"]`); if (cible && typeof cible.focus === 'function') cible.focus();
 }
+let elementRacineVue = null;
+
 function enregistrer(ctx, candidat, imprimer) {
   const racine = racineDe(candidat);
-  if (!racine) { ctx.ui.toast({ status: 'warn', message: 'Formulaire indisponible' }); return; }
+  if (!racine) { ctx.ui.toast({ status: 'warn', message: 'Formulaire indisponible' }); return false; }
   const nom = valeurChamp(racine, 'nom');
-  if (!nom) return signalerErreur(racine, 'nom', 'Indiquez le nom du produit acheté.');
+  if (!nom) {
+    signalerErreur(racine, 'nom', 'Indiquez le nom du produit acheté.');
+    return false;
+  }
   const destinationClient = valeurChamp(racine, 'destinationClient');
   const destinationRecipe = valeurChamp(racine, 'destinationRecipe');
   const iso = frVersIso(valeurChamp(racine, 'fabrication'));
@@ -323,12 +328,23 @@ function enregistrer(ctx, candidat, imprimer) {
     conservation: consigneParDefaut(),
     photo: photoEnAttente,
   };
-  const resultat = ctx.useCases.createPreparationLabel(data, operateur);
-  conserverComplements(ctx, (resultat && resultat.preparation) || resultat, data, lot);
-  ctx.ui.closeOverlay();
-  photoEnAttente = '';
-  ctx.ui.toast({ status: 'ok', message: `Étiquette « ${nom} » enregistrée pour la traçabilité` });
-  if (imprimer) ouvrirEtiquette(ctx, (resultat && resultat.preparation) || resultat, lot);
+
+  try {
+    const resultat = ctx.useCases.createPreparationLabel(data, operateur);
+    conserverComplements(ctx, (resultat && resultat.preparation) || resultat, data, lot);
+    ctx.ui.closeOverlay();
+    photoEnAttente = '';
+    ctx.ui.toast({ status: 'ok', message: `Étiquette « ${nom} » enregistrée pour la traçabilité` });
+    if (elementRacineVue && elementRacineVue.isConnected) {
+      rafraichir(elementRacineVue, elementRacineVue.__contexte || ctx);
+    }
+    if (imprimer) ouvrirEtiquette(ctx, (resultat && resultat.preparation) || resultat, lot);
+    return true;
+  } catch (err) {
+    console.error('Erreur enregistrement étiquette:', err);
+    ctx.ui.toast({ status: 'danger', message: "Erreur lors de l'enregistrement de l'étiquette. Vérifiez l'espace disponible." });
+    return false;
+  }
 }
 /** Conserve les compléments descriptifs saisis (hors contrat PreparationRecord). */
 function conserverComplements(ctx, preparation, data, lot) {
@@ -485,6 +501,7 @@ function attacher(root, ctx) {
 }
 export function mount(root, ctx) {
   const maGeneration = ++generation;
+  elementRacineVue = root;
   attacher(root, ctx);
   abonnement = ctx.store.subscribe(() => { if (maGeneration === generation && root.isConnected && !root.hidden) rafraichir(root, root.__contexte || ctx); });
 }
@@ -492,5 +509,6 @@ export function unmount(root) {
   generation += 1;
   if (abonnement) { abonnement(); abonnement = null; }
   panneau = null;
+  if (elementRacineVue === root) elementRacineVue = null;
   if (root && typeof root.removeEventListener === 'function') { delete root.dataset.liens; delete root.__contexte; }
 }

@@ -204,6 +204,34 @@ export function photo(src, legende) {
   return empiler({ id: 'ui-photo', element: el, bloquante: true, masquable: true });
 }
 
+/** Compresse et redimensionne une image (Canvas max 1024px, JPEG 0.70) pour préserver le quota localStorage. */
+function compresserImage(sourceDataUrl, maxDim = 1024, qualite = 0.70) {
+  return new Promise((resoudre) => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.naturalWidth || img.width;
+      let h = img.naturalHeight || img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
+      const toile = document.createElement('canvas');
+      toile.width = w;
+      toile.height = h;
+      const ctx = toile.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      resoudre(toile.toDataURL('image/jpeg', qualite));
+    };
+    img.onerror = () => resoudre(sourceDataUrl);
+    img.src = sourceDataUrl;
+  });
+}
+
 /** Capture photo : `onCapture(dataUrl)` ; résout le dataUrl obtenu, sinon `null`. */
 export function camera(options = {}) {
   return new Promise((resoudre) => {
@@ -225,27 +253,29 @@ export function camera(options = {}) {
         const file = ev.target.files && ev.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (e) => {
-          const dataUrl = e.target.result;
-          finir(dataUrl);
+        reader.onload = async (e) => {
+          const brut = e.target.result;
+          const compresse = await compresserImage(brut, 1024, 0.70);
+          finir(compresse);
           arreter();
           fermer(fiche.ouvert);
-          if (options.onCapture) options.onCapture(dataUrl);
+          if (options.onCapture) options.onCapture(compresse);
         };
         reader.readAsDataURL(file);
       });
     }
 
-    declencheur.addEventListener('click', () => {
+    declencheur.addEventListener('click', async () => {
       const toile = document.createElement('canvas');
       toile.width = video.videoWidth || 640;
       toile.height = video.videoHeight || 480;
       toile.getContext('2d').drawImage(video, 0, 0, toile.width, toile.height);
-      const dataUrl = toile.toDataURL('image/jpeg', 0.85);
-      finir(dataUrl);
+      const brut = toile.toDataURL('image/jpeg', 0.85);
+      const compresse = await compresserImage(brut, 1024, 0.70);
+      finir(compresse);
       arreter();
       fermer(fiche.ouvert);
-      if (options.onCapture) options.onCapture(dataUrl);
+      if (options.onCapture) options.onCapture(compresse);
     });
     fiche.ouvert = empiler({ id: 'ui-camera', element: el, bloquante: true, onClose: () => { arreter(); finir(null); } });
     if (pan) pan.classList.add('is-open');

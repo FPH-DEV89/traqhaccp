@@ -153,13 +153,11 @@ export class LocalStorageHACCPRepository {
       return true;
     } catch (e) {
       const quota = /quota|exceed/i.test(`${e && e.name} ${e && e.message}`);
-      console.error(
-        quota
-          ? `Stockage saturé : enregistrement impossible pour « ${key} ». Exportez la sauvegarde puis libérez de l'espace.`
-          : `Écriture impossible dans le stockage pour « ${key} ».`,
-        e
-      );
-      return false;
+      const message = quota
+        ? `Stockage saturé : impossible d'enregistrer « ${key} ». Exportez la sauvegarde puis libérez de l'espace.`
+        : `Écriture impossible dans le stockage pour « ${key} ».`;
+      console.error(message, e);
+      throw new Error(message);
     }
   }
 
@@ -489,7 +487,9 @@ export class LocalStorageHACCPRepository {
   }
 
   resetToDemo() {
-    localStorage.clear();
+    if (typeof localStorage !== 'undefined' && typeof localStorage.clear === 'function') {
+      localStorage.clear();
+    }
     this._migrationEffectuee = false;
   }
 }

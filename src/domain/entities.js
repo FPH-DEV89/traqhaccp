@@ -166,6 +166,10 @@ export class CoolingCycle {
     this.status = this.durationMinutes <= HACCP_NORMS.COOLING.MAX_DURATION_MINUTES && this.endTemp <= HACCP_NORMS.COOLING.END_MAX_TEMP ? 'success' : 'danger';
     this.operator = operator;
   }
+
+  isConform() {
+    return this.status === 'success';
+  }
 }
 
 export class DefrostCycle {
