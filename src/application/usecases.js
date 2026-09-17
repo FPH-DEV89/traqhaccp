@@ -44,6 +44,25 @@ export class HACCPUseCases {
     }
   }
 
+  setExactTemperature(equipId, targetTemp, operatorName) {
+    const equipments = this.repository.getEquipments();
+    const eq = equipments.find(e => e.id === equipId);
+    if (!eq) throw new Error("Équipement introuvable");
+
+    const newTemp = parseFloat(parseFloat(targetTemp).toFixed(1));
+    eq.recordTemperature(newTemp, operatorName);
+    this.repository.saveEquipments(equipments);
+
+    const isConform = eq.isConform();
+    if (!isConform) {
+      this.audio.play('warning');
+      return { success: true, isConform: false, equipment: eq };
+    } else {
+      this.audio.play('success');
+      return { success: true, isConform: true, equipment: eq };
+    }
+  }
+
   resolveTemperatureIncident(equipId, actionTaken, comment, operatorName) {
     const equipments = this.repository.getEquipments();
     const eq = equipments.find(e => e.id === equipId);
@@ -157,6 +176,26 @@ export class HACCPUseCases {
     this.repository.saveCleaningTasks(tasks);
     this.audio.play('success');
     return task;
+  }
+
+  validateCleaningZone(zoneName, operatorName) {
+    const tasks = this.repository.getCleaningTasks();
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    let count = 0;
+
+    tasks.forEach(t => {
+      if (zoneName === 'all' || t.zone === zoneName) {
+        t.status = 'done';
+        t.operator = operatorName;
+        t.time = timeStr;
+        count++;
+      }
+    });
+
+    this.repository.saveCleaningTasks(tasks);
+    this.audio.play('success');
+    return { success: true, count };
   }
 
   resetCleaningPlan() {

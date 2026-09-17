@@ -113,6 +113,7 @@ export class LocalStorageHACCPRepository {
 
   _get(key, fallback) {
     try {
+      if (typeof localStorage === 'undefined') return fallback;
       const raw = localStorage.getItem(this.prefix + key);
       return raw ? JSON.parse(raw) : fallback;
     } catch (e) {
@@ -123,6 +124,7 @@ export class LocalStorageHACCPRepository {
 
   _set(key, value) {
     try {
+      if (typeof localStorage === 'undefined') return;
       localStorage.setItem(this.prefix + key, JSON.stringify(value));
     } catch (e) {
       console.error("Storage write error", e);
@@ -312,8 +314,25 @@ export class LocalStorageHACCPRepository {
     }
   }
 
+  _clear() {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const toRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(this.prefix)) {
+            toRemove.push(k);
+          }
+        }
+        toRemove.forEach(k => localStorage.removeItem(k));
+      }
+    } catch (e) {
+      console.warn("Storage clear error", e);
+    }
+  }
+
   resetToDemo() {
-    localStorage.clear();
+    this._clear();
   }
 }
 
