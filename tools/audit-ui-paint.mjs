@@ -22,16 +22,56 @@
  * Exit 0 = tout est peint et atteignable. Exit 1 = au moins un échec (rapport chiffré).
  */
 import { createRequire } from 'node:module';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const require = createRequire(import.meta.url);
 
-function loadPlaywright() {
+/* Binaires Chromium : dans ce conteneur, PLAYWRIGHT_BROWSERS_PATH pointe sur /opt/hermes/.playwright,
+   un cache vide qui appartient à root — le lancement échoue, et le méta-gate lit cet échec comme
+   un « gate muet » : il bloque alors que le code est sain. Or un gate qui crie au loup finit
+   désactivé. npm run setup:playwright installe donc les navigateurs dans /opt/data/.playwright ;
+   on bascule dessus dès que le chemin configuré ne contient AUCUN binaire utilisable — jamais
+   l'inverse (une machine correctement installée garde son chemin). */
+const CHEMIN_SECOURS = '/opt/data/.playwright';
+
+/* Le chemin des binaires est figé par Playwright AU MOMENT du require : le lire après coup ne
+   sert à rien. On demande donc d'abord à Playwright l'exécutable qu'il attend réellement, et
+   s'il n'est pas là on recharge le module avec le chemin de secours — sans toucher au chemin
+   d'une machine correctement installée. */
+function loadPlaywright(cheminBinaires = null) {
+  if (cheminBinaires) {
+    process.env.PLAYWRIGHT_BROWSERS_PATH = cheminBinaires;
+    for (const cle of Object.keys(require.cache)) {
+      if (cle.includes('playwright')) delete require.cache[cle];
+    }
+  }
   const candidats = [process.env.PLAYWRIGHT_MODULE, 'playwright', 'playwright-core',
     '/opt/data/node_modules/playwright'];
   for (const c of candidats) { if (!c) continue; try { return require(c); } catch {} }
   throw new Error('playwright introuvable — npm i -D playwright (ou PLAYWRIGHT_MODULE=/chemin)');
+}
+
+/** Lance Chromium : le chemin attendu d'abord, puis le chemin de secours si le binaire manque.
+    On décide sur le LANCEMENT réel et non sur executablePath() : Playwright exécute le headless
+    shell (chromium_headless_shell-<rev>) alors qu'executablePath() désigne le chrome complet —
+    une sonde sur le fichier conclut donc à tort que le chemin est inutilisable. */
+async function lancerNavigateur() {
+  const chromium = loadPlaywright().chromium;
+  try {
+    return await chromium.launch();
+  } catch (erreur) {
+    if (!/Executable doesn't exist/i.test(erreur.message) || !existsSync(CHEMIN_SECOURS)) throw erreur;
+    try {
+      return await loadPlaywright(CHEMIN_SECOURS).chromium.launch();
+    } catch (erreurSecours) {
+      throw new Error(
+        `binaire Chromium introuvable sur les deux chemins.\n` +
+        `  ${erreur.message.split('\n')[0]}\n` +
+        `  ${erreurSecours.message.split('\n')[0]}\n` +
+        `  installer : npm run setup:playwright`);
+    }
+  }
 }
 
 // --- arguments --------------------------------------------------------------
@@ -122,8 +162,7 @@ const SONDE = (selView) => {
 };
 
 // --- exécution --------------------------------------------------------------
-const { chromium } = loadPlaywright();
-const navigateur = await chromium.launch();
+const navigateur = await lancerNavigateur();
 const echecs = [];
 let mesures = 0;
 let flakes = 0;
