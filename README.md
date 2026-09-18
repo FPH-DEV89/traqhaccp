@@ -115,7 +115,7 @@ Ce que `npm test` enchaîne : `check-syntax` (syntaxe de tous les modules ES), `
 (design system et surface des vues), `check-parity` (aucune référence orpheline, dette vide via
 `tools/parity-baseline.json`), `check-css-coverage`, `check-norms-consistency` et `test-domain`.
 
-## Déploiement — Vercel (référence) + GitHub Pages
+## Déploiement — Vercel (unique cible)
 
 Site 100 % statique. **URL de référence :**
 `https://traqhaccp.vercel.app/`
@@ -124,17 +124,13 @@ Site 100 % statique. **URL de référence :**
 redéploie automatiquement ; `vercel.json` active les URLs propres et le `no-store` du
 service worker.
 
-> Ancien projet Vercel `traqhaccp_clean_architecture`
-> (`https://traqhaccpcleanarchitecture.vercel.app/`) : **déprécié**, détaché du dépôt
-> le 18/09/2026 pour supprimer le double déploiement. Ne plus le citer.
-
-**GitHub Pages** (miroir de secours) :
-1. **Settings → Pages → Deploy from a branch** ;
-2. branche **`main`**, dossier **`/ (root)`**, puis **Save** ;
-3. miroir publié sur `https://fph-dev89.github.io/traqhaccp/` (le fichier
-   `.nojekyll` présent à la racine empêche Jekyll de filtrer les fichiers).
+C'est l'unique cible de publication. **Une seule URL publique**, un seul projet Vercel
+relié au dépôt : un projet en double déclenche un déploiement de plus à chaque push, donc
+deux URL susceptibles de diverger au premier build qui échoue d'un côté.
 
 Chemins relatifs uniquement (`./src/…`, `./assets/…`) : le site fonctionne aussi bien à la
-racine d'un domaine que dans un sous-dossier de projet. Le service worker (`sw.js`) et le
-manifeste sont servis depuis la même origine ; le cache est versionné par `CACHE_NAME`, toute
-nouvelle version invalide l'ancienne au premier chargement.
+racine d'un domaine que dans un sous-dossier — c'est ce qui a permis de rebasculer l'URL
+sans toucher au code. Aucune URL d'origine ne doit être codée en dur.
+
+Le service worker (`sw.js`) et le manifeste sont servis depuis la même origine ; le cache est
+versionné par `CACHE_NAME`, toute nouvelle version invalide l'ancienne au premier chargement.
