@@ -118,11 +118,15 @@ Ce que `npm test` enchaîne : `check-syntax` (syntaxe de tous les modules ES), `
 ## Déploiement — Vercel (référence) + GitHub Pages
 
 Site 100 % statique. **URL de référence :**
-`https://traqhaccpcleanarchitecture.vercel.app/`
+`https://traqhaccp.vercel.app/`
 
-**Vercel** (principal) : projet relié au dépôt, chaque `git push origin main`
+**Vercel** (principal) : projet `traqhaccp` relié au dépôt, chaque `git push origin main`
 redéploie automatiquement ; `vercel.json` active les URLs propres et le `no-store` du
 service worker.
+
+> Ancien projet Vercel `traqhaccp_clean_architecture`
+> (`https://traqhaccpcleanarchitecture.vercel.app/`) : **déprécié**, détaché du dépôt
+> le 18/09/2026 pour supprimer le double déploiement. Ne plus le citer.
 
 **GitHub Pages** (miroir de secours) :
 1. **Settings → Pages → Deploy from a branch** ;
