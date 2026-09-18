@@ -9,7 +9,7 @@
  *     sans elles, et mettre en cache des réponses opaques ferait échouer `addAll`.
  * Aucun build : les chemins ci-dessous correspondent aux fichiers réellement présents.
  */
-const CACHE_NAME = 'traqhaccp-v4-mobile-trace-20260917-v3';
+const CACHE_NAME = 'traqhaccp-v4-mobile-trace-20260918-v4';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -35,14 +35,17 @@ const ASSETS_TO_CACHE = [
   './src/infrastructure/audio_service.js',
   './src/infrastructure/barcode_service.js',
   './src/infrastructure/camera_service.js',
+  './src/infrastructure/config.js',
   './src/infrastructure/export_label.js',
   './src/infrastructure/export_register.js',
   './src/infrastructure/export_service.js',
   './src/infrastructure/storage_repository.js',
   // Présentation — socle
+  './src/presentation/connexion.js',
   './src/presentation/context.js',
   './src/presentation/icons.js',
   './src/presentation/router.js',
+  './src/presentation/session_serveur.js',
   './src/presentation/shell.js',
   './src/presentation/store.js',
   './src/presentation/ui.js',

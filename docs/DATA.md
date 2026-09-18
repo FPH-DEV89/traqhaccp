@@ -132,8 +132,46 @@ Elles s'appliquent via l'API Management (SQL arbitraire) ou `supabase db push`.
 
 ## 8. Ce qui n'est pas fait
 
-- Aucune interface de connexion : le mode serveur est utilisable par code, pas encore
-  par l'écran (décision produit : accès libre sans login pour l'instant).
+- Aucune interface de **gestion des comptes** : pas d'écran d'invitation, pas de
+  réinitialisation de mot de passe, pas de changement d'établissement (le bloc « Session
+  serveur » de la vue Compte ne sait que fermer la session).
 - `getSession`/`saveSession` restent en `localStorage` (aucune table de session).
 - `resetToDemo()` **refuse** de s'exécuter en mode serveur : un registre partagé réel ne se
   réinitialise pas comme une démo.
+
+## 9. Écran de connexion (chantier 2, livré le 18/09/2026)
+
+Le mode serveur est désormais **atteignable par l'écran**, sans rien changer au mode local.
+
+**Comment on entre en mode serveur**
+
+| Entrée | Effet |
+| --- | --- |
+| `index.html?mode=serveur` | Force + persiste le mode serveur (l'URL prime sur le stockage). |
+| `index.html?mode=local` | Revient au mode local. |
+| Réglages (bascule de mode) | Persiste le choix. |
+| *(défaut)* | Mode local — comportement historique inchangé. |
+
+**Séquence de démarrage (`boot()` dans `src/presentation/context.js`)**
+
+1. `estModeServeur()` est faux → `createApp()` historique, aucun module Supabase chargé.
+2. Sinon : `SupabaseHACCPRepository` est instancié, la session GoTrue est vérifiée
+   (`verifierSession()` + `rafraichirSession()`), puis hydratée (`await hydrate()`).
+3. Sans session valide, le **portail de connexion** (`src/presentation/connexion.js`) prend
+   tout l'écran : e-mail, mot de passe, création d'établissement au premier compte, et une
+   sortie « Continuer sans compte » qui repasse en local.
+4. Une fois la session ouverte, `createApp(depotServeur)` est réétalé sur `app`
+   (`Object.assign`) : **les 17 vues ne changent pas d'une ligne**, elles consomment le même
+   contrat `store → useCases → repository`.
+5. `session_serveur.js` ajoute le seul élément d'interface propre au mode serveur : un bloc
+   « Session serveur » dans la vue Compte (identité connectée + « Se déconnecter »), vide en
+   mode local. Sans lui, le portail serait définitivement hors d'atteinte après la 1re connexion.
+
+**Pièges connus**
+
+- Le paramètre `mode` de l'URL prime sur `localStorage` : tout choix explicite contraire doit
+  appeler `retirerModeUrl()` (`config.js`) avant de recharger, sinon boucle sur le portail.
+- Le portail est un `<div>` plein écran (`z-index: var(--z-modal)`) inséré dans `.app` : il est
+  retiré du DOM (`masquerConnexion()`) et non simplement masqué.
+
+

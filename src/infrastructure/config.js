@@ -15,6 +15,17 @@
  * Le mode peut être forcé sans modifier ce fichier : `localStorage['traqhaccp_v2_mode']`
  * vaut 'serveur' ou 'local' (voir modePersistance()).
  *
+ * ── Choisir le mode : trois niveaux, du plus fort au plus faible ──────────────
+ *   1. paramètre d'URL `?mode=serveur` / `?mode=local` — le plus explicite, il sert à
+ *      ouvrir l'application en mode serveur depuis un lien, sans rien installer ;
+ *   2. `localStorage['traqhaccp_v2_mode']` — surcharge persistante d'un poste donné ;
+ *   3. `MODE_PERSISTANCE` (constante de ce fichier) — valeur livrée : 'local'.
+ *
+ * Toute valeur d'URL reconnue est **recopiée** dans `traqhaccp_v2_mode` par
+ * `appliquerSurchargeModeUrl()`, appelée explicitement au démarrage (boot) : ainsi le mode
+ * survit au rechargement d'une PWA installée, qui ne conserve pas la chaîne de requête.
+ * `modePersistance()` reste une fonction pure : elle lit, elle n'écrit jamais.
+ *
  * ── Pourquoi la clé publique est-elle sans danger dans un dépôt public ? ─────
  * SUPABASE_PUBLISHABLE_KEY est une clé « publishable », conçue pour être embarquée dans
  * un navigateur : elle figure de toute façon dans les requêtes du premier visiteur, la
@@ -80,11 +91,83 @@ export function normaliserMode(valeur) {
 }
 
 /**
- * Mode de persistance effectif : surcharge locale (facultative) sinon valeur de ce fichier.
+ * Mode demandé par l'URL de la page : `?mode=serveur` ou `?mode=local`.
+ *
+ * Le module est importé par des tests Node sans DOM et par des scripts d'outillage : tout
+ * accès à `window`/`location` est donc protégé par `typeof` **et** par un `try`, et l'absence
+ * de navigateur renvoie simplement `null` (aucune surcharge).
+ *
+ * @returns {'local' | 'serveur' | null} mode normalisé, ou null si le paramètre est absent
+ *   ou illisible. Une valeur non reconnue est normalisée : elle vaut 'local'.
+ */
+export function modeParametreUrl() {
+  try {
+    if (typeof window === 'undefined' || !window.location) return null;
+    const recherche = window.location.search;
+    if (typeof recherche !== 'string' || recherche === '') return null;
+    const brut = new URLSearchParams(recherche).get('mode');
+    if (brut === null || String(brut).trim() === '') return null;
+    return normaliserMode(brut);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Recopie dans `localStorage` le mode demandé par `?mode=…`, pour qu'il survive à un
+ * rechargement de PWA (la chaîne de requête n'est pas conservée par le raccourci installé).
+ *
+ * Fonction à effet de bord, volontairement séparée : `modePersistance()` doit rester pure.
+ * Appelée une fois au démarrage (voir `boot()` dans src/presentation/context.js).
+ *
+ * @returns {'local' | 'serveur' | null} mode appliqué, ou null si aucun paramètre d'URL.
+ */
+export function appliquerSurchargeModeUrl() {
+  const depuisUrl = modeParametreUrl();
+  if (depuisUrl === null) return null;
+  ecrireStockage(SUPABASE_CLE_MODE, depuisUrl);
+  return depuisUrl;
+}
+
+/**
+ * Retire le paramètre `?mode=…` de l'URL courante (entrée d'historique remplacée).
+ *
+ * Nécessaire dès qu'un choix EXPLICITE contredit l'URL : sur `index.html?mode=serveur`,
+ * « Continuer sans compte » persiste le mode local puis recharge — sans ce nettoyage,
+ * la surcharge d'URL reprendrait la main et l'utilisateur reviendrait sur le portail
+ * de connexion en boucle.
+ *
+ * @returns {boolean} Vrai si un paramètre `mode` a effectivement été retiré.
+ */
+export function retirerModeUrl() {
+  try {
+    if (typeof window === 'undefined' || !window.location || !window.history
+      || typeof window.history.replaceState !== 'function') return false;
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has('mode')) return false;
+    url.searchParams.delete('mode');
+    const reste = url.searchParams.toString();
+    window.history.replaceState(null, '', `${url.pathname}${reste ? `?${reste}` : ''}${url.hash}`);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Mode de persistance effectif, par ordre de priorité décroissant :
+ *   1. paramètre d'URL `?mode=…` (voir modeParametreUrl) ;
+ *   2. surcharge persistante `localStorage['traqhaccp_v2_mode']` ;
+ *   3. constante `MODE_PERSISTANCE` de ce fichier.
+ *
+ * Fonction pure et sans effet de bord : elle lit, elle n'écrit jamais (la persistance du
+ * paramètre d'URL est le rôle explicite de `appliquerSurchargeModeUrl()`).
  * Ne lève jamais : un stockage indisponible laisse le mode par défaut.
  * @returns {'local' | 'serveur'}
  */
 export function modePersistance() {
+  const depuisUrl = modeParametreUrl();
+  if (depuisUrl !== null) return depuisUrl;
   const force = lireStockage(SUPABASE_CLE_MODE, null);
   return force === null ? normaliserMode(MODE_PERSISTANCE) : normaliserMode(force);
 }

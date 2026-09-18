@@ -4,6 +4,7 @@
  * Contrat de vue v4 : meta / render(ctx) / mount(root, ctx) / unmount().
  */
 import { ROLES, ROLE_ORDER, PERMISSIONS, hasPermission } from '../../domain/roles.js';
+import { blocSession, seDeconnecter } from '../session_serveur.js';
 export const meta = {
   id: 'compte',
   idx: '16',
@@ -133,7 +134,7 @@ function ficheLecture(ctx, fiche, errors) {
   return `<section class="sheet"><div class="section">
     <div class="section__head"><h2 class="section__title">Fiche établissement</h2><div class="section__action">${bouton('etab-editer', 'Modifier', '', !peut, RAISON_DROITS, 'btn--primary btn--sm')}</div></div>
     <div class="callout callout--info">Ces informations apparaissent sur les étiquettes de préparation et sur le registre présenté à la DDPP : tenez-les à jour.</div>
-    <div class="grid grid--2">${lignes}</div></div></section>`;
+    <div class="grid grid--2">${lignes}</div></div></section>${blocSession(ctx)}`;
 }
 function ficheEdition(ctx, fiche, errors) {
   const champs = CHAMPS.map(([cle, libelle, type, indication]) => {
@@ -427,6 +428,7 @@ const ACTIONS = {
   'op-bascule': (ctx, element) => basculerOperateur(ctx, element.getAttribute('data-id')),
   'op-courant': (ctx, element) => { definirCourant(ctx, element.getAttribute('data-id')); },
   'op-supprimer': (ctx, element) => supprimerOperateur(ctx, element.getAttribute('data-id')),
+  'session-deconnexion': (ctx) => seDeconnecter(ctx),
 };
 /* ══ État, câblage et cycle de vie ═════════════════════════════════ */
 const etat = { onglet: 'etablissement', edition: false, action: '', operateur: '' };

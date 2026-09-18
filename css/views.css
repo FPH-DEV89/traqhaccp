@@ -560,8 +560,121 @@
   flex-wrap: wrap;
 }
 
+/* ---- Portail de connexion (mode serveur) ---------------------------------- */
+/* Écran plein cadre affiché AVANT la coquille : il occupe tout l'écran et se
+   retire du DOM (masquerConnexion) dès que la session est établie. */
+.portail {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-8);
+  background: var(--paper);
+  overflow-y: auto;
+}
+
+.portail__carte {
+  width: 100%;
+  max-width: 420px;
+  padding: var(--s-9) var(--s-8);
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-3);
+  box-shadow: var(--sh-2);
+}
+
+.portail__entete {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  margin-bottom: var(--s-7);
+}
+
+.portail__pastille {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-3);
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
+.portail__entete-texte { display: flex; flex-direction: column; gap: var(--s-1); min-width: 0; }
+
+.portail__titre {
+  margin: 0;
+  font-family: var(--ff-serif);
+  font-size: var(--t-h1);
+  color: var(--ink);
+  letter-spacing: -.01em;
+}
+
+.portail__sous-titre { margin: 0; font-size: var(--t-sm); color: var(--ink-3); }
+
+.portail__intro { margin: 0 0 var(--s-7); font-size: var(--t-body); color: var(--ink-2); }
+
+.portail__forme { display: flex; flex-direction: column; gap: var(--s-6); margin-bottom: var(--s-6); }
+.portail__forme[hidden] { display: none; }
+
+.portail__erreur { margin: 0 0 var(--s-5); font-size: var(--t-sm); color: var(--danger); }
+.portail__erreur:empty { margin: 0; }
+
+.portail__pied {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  margin-top: var(--s-7);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--rule);
+}
+
+.portail__lien {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--t-sm);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.portail__lien:hover { color: var(--accent-2); text-decoration: underline; }
+
+.portail__note { margin: 0; font-size: var(--t-label); color: var(--ink-3); }
+
+@media (max-width: 640px) {
+  .portail { align-items: flex-start; padding: var(--s-5); }
+  .portail__carte { margin-top: var(--s-8); padding: var(--s-8) var(--s-6); }
+}
+
+/* ---- Bloc « session serveur » (vue Compte, mode serveur uniquement) -------- */
+.session-serveur {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-6);
+  flex-wrap: wrap;
+}
+
+.session-serveur__texte { min-width: 0; }
+.session-serveur__nom { margin: 0; font-size: var(--t-body); color: var(--ink); }
+.session-serveur__meta {
+  margin: var(--s-1) 0 0;
+  font-family: var(--ff-mono);
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+  word-break: break-all;
+}
+
 /* ---- @media print --------------------------------------------------------- */
 @media print {
+  .portail,
   .inspection-banner,
   .zone-upload,
   .ged__actions,
