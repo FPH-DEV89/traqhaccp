@@ -67,6 +67,16 @@ src/infrastructure/
   audio_service.js       (existant — non modifié)
   export_service.js      export CSV / JSON / PDF / impression (extrait du script inline) (≤ 500 l.)
 
+Socle serveur (mode opt-in, additif — l'app reste utilisable en localStorage) :
+  config.js                    URL + clé publiable Supabase, mode de persistance   (≤ 500 l.)
+  supabase_client.js           client sans dépendance : PostgREST + GoTrue (fetch)  (≤ 500 l.)
+  supabase_mapping.js          specs des 14 collections, camelCase ⇄ snake_case     (≤ 500 l.)
+  supabase_repository_base.js  plomberie interne : session, écritures différées     (≤ 500 l.)
+  supabase_repository.js       SupabaseHACCPRepository — 26 méthodes, même interface
+                               que LocalStorageHACCPRepository                     (≤ 500 l.)
+  supabase_backup.js           export/import de sauvegarde JSON                    (≤ 500 l.)
+  → modèle de données, RLS et matrice des rôles : voir docs/DATA.md
+
 src/presentation/
   context.js        Racine de composition : repository, audio, useCases, account,
                     settings, store, ui, router. Singleton `app`.                   (≤ 120 l.)
