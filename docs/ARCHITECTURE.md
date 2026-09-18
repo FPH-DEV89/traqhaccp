@@ -6,7 +6,7 @@
 ## 1. Contraintes non négociables
 
 1. **Aucun build, aucun bundler, aucun framework.** ES modules natifs servis tels quels
-   (Vercel / GitHub Pages / `python3 -m http.server`). Pas de `package.json` runtime,
+   (Vercel, ou n'importe quel serveur de fichiers / `python3 -m http.server`). Pas de `package.json` runtime,
    pas de `npm install` pour faire tourner l'app, pas de TypeScript, pas de JSX.
 2. **Fonctionnement hors-ligne** conservé (PWA, `sw.js`). Toute nouvelle ressource (CSS,
    module, police, icône) doit être ajoutée à la liste de précache du service worker,

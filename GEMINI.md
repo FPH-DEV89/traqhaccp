@@ -9,3 +9,13 @@ Dès qu'un correctif, un bogue résolu ou une tâche demandée par l'utilisateur
 4. **Commit** : Créer un commit avec un message conventionnel clair et explicite (ex: `fix: ...`, `refactor: ...`, `feat: ...`).
 5. **Push automatique** : Pousser immédiatement les commits sur la branche distante active (`git push origin <branche>`).
 6. **Rapport** : Mentionner brièvement le hash du commit et la confirmation du push dans la réponse finale.
+
+## Publication (déploiement)
+
+- **Une seule URL publique** : `https://traqhaccp.vercel.app/`.
+- **Un seul projet Vercel** (`traqhaccp`) relié au dépôt. Ne jamais créer ni relier un
+  second projet Vercel au même dépôt : chaque push déclencherait un déploiement de plus,
+  donc une seconde URL susceptible de diverger au premier build qui échoue d'un côté.
+- **Aucune URL d'origine codée en dur** : chemins relatifs uniquement dans `index.html`,
+  `manifest.json`, `sw.js` et `vercel.json`.
+- Après un push, vérifier qu'**un seul** déploiement de production a été déclenché.
