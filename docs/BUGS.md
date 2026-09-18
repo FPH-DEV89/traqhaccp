@@ -111,3 +111,23 @@ Il tourne dans le hook : si un gate cesse de mordre, le push est bloqué.
 `spawnSync` → boucle d'événements bloquée, timeout, `exit 1` confondu avec une détection. D'où la
 règle : **distinguer « n'a pas pu tourner » (exit 2) de « a détecté un bug » (exit 1)**, et asserter
 sur le *message* de sortie, pas seulement sur le code.
+
+## 5. 18/09/2026 — le gate ne pouvait plus mordre (binaire Playwright absent)
+
+Symptôme : push bloqué par `FAIL — 2 assertion(s) : un gate ne joue plus son rôle`, alors que le code
+livré était sain (socle de données, aucune vue modifiée).
+
+Cause : Playwright est passé en 1.62.1 et exige `chromium_headless_shell-1234` ; le chemin global
+`/opt/hermes/.playwright` n'en contient que la **-1228**, et il appartient à root — donc
+`npx playwright install` échoue en `EACCES` depuis le conteneur. Sans navigateur,
+`audit-ui-paint.mjs` ne peut pas lever sa page de test : le méta-gate voit un gate muet et bloque.
+
+**Le méta-gate a eu raison** : un gate qui ne peut pas tourner ne prouve rien, et le contourner
+(`GATE_SKIP=1`) aurait tué la seule protection contre les bugs du 16-17/09. Réparation :
+
+```bash
+npm run setup:playwright    # installe le binaire dans un chemin inscriptible
+```
+
+Le hook `pre-push` bascule alors automatiquement sur `/opt/data/.playwright`. Leçon : quand un
+méta-gate hurle, vérifier d'abord si le gate **a pu tourner** — avant de soupçonner le code.

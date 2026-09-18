@@ -16,6 +16,15 @@ fi
 
 cd "$(dirname "$0")/.." || exit 1
 
+# Playwright : le paquet peut exiger une version de binaire absente du chemin global
+# (/opt/hermes/.playwright appartient a root, non inscriptible depuis le conteneur).
+# Sans binaire, audit-ui-paint.mjs ne leve plus sa page de test : le meta-gate voit un
+# gate muet et bloque le push a juste titre. On bascule donc sur un chemin inscriptible
+# des lors qu'il contient une version utilisable (cf. npm run setup:playwright).
+if [ -d /opt/data/.playwright ]; then
+  export PLAYWRIGHT_BROWSERS_PATH=/opt/data/.playwright
+fi
+
 echo "── Gates pré-push ───────────────────────────────────────────────"
 echec=0
 
