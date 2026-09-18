@@ -20,7 +20,7 @@ auth.users ──< memberships >── establishments ──< (toutes les tables
 - `settings.payload` (jsonb) porte les réglages métier et les champs d'établissement qui
   ne sont pas des colonnes (`establishments` ne contient que `name`, `siret`, `address`).
 
-## 2. Schéma (19 tables)
+## 2. Schéma (20 tables)
 
 | Domaine | Tables |
 |---|---|
@@ -34,10 +34,24 @@ auth.users ──< memberships >── establishments ──< (toutes les tables
 | Contrôles | `ph_records`, `weight_records` |
 | Conformité | `non_conformities`, `sanitary_documents` |
 | Journal | `activity_log` |
+| Commercial (hors registre) | `leads` |
 
 Colonnes en `snake_case` côté serveur, `camelCase` côté JavaScript. Le mapping est
 centralisé dans `src/infrastructure/supabase_mapping.js` — **aucune table n'est inventée
 hors de la migration**.
+
+`leads` (migration `0003`) est la seule table **non rattachée à un établissement** : c'est
+le carnet de prospects de la vitrine commerciale. Elle n'obéit donc pas au cloisonnement
+par tenant et suit la règle inverse : un seul droit est public — **déposer** un message.
+Aucune politique de `select`/`update`/`delete` n'existe pour `anon` ou `authenticated`,
+donc les prospects ne sont lisibles que par la clé de service (back-office, scripts). Un
+garde-fou plafonne à 5 dépôts par heure et par adresse email.
+
+⚠️ Piège vérifié le 18/09/2026 : poster sur `leads` avec `Prefer: return=representation`
+échoue en `42501 new row violates row-level security policy` — non pas à cause de la
+politique d'insertion, mais parce que PostgREST doit **relire** la ligne insérée et qu'`anon`
+n'a aucun droit de lecture. Le formulaire de la vitrine doit poster en retour **minimal**
+(comportement par défaut) et se contenter du code HTTP.
 
 `temperature_logs` existe alors que `equipments.history` contient déjà un tableau : c'est
 volontaire, l'historique JSON reste la vue courte de l'écran, la table permet les
@@ -127,8 +141,14 @@ Les migrations sont dans `supabase/migrations/`, numérotées, idempotentes
 
 - `0001_init.sql` — 19 tables, index, 6 fonctions de contrôle, 72 politiques
 - `0002_bootstrap_establishment.sql` — `create_establishment()`
+- `0003_leads.sql` — table `leads` (prospects de la vitrine), RLS « dépôt seul »,
+  garde-fou anti-inondation
 
 Elles s'appliquent via l'API Management (SQL arbitraire) ou `supabase db push`.
+En pratique : `python3 /opt/data/scripts/traqhaccp-socle/apply-migration.py <fichier.sql>`
+(token Management dans `/opt/data/.env.supabase-cmz`, référence projet dans
+`.env.supabase-traqhaccp`). Contrôle après coup :
+`python3 /opt/data/scripts/traqhaccp-socle/verif-leads.py` — 6 vérifications HTTP réelles.
 
 ## 8. Ce qui n'est pas fait
 
