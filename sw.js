@@ -9,11 +9,13 @@
  *     sans elles, et mettre en cache des réponses opaques ferait échouer `addAll`.
  * Aucun build : les chemins ci-dessous correspondent aux fichiers réellement présents.
  */
-const CACHE_NAME = 'traqhaccp-v4-mobile-trace-20260918-v4';
+const CACHE_NAME = 'traqhaccp-v4-patisserie-20260923-v1';
 
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './patisserie.html',
+  './patisserie',
   './manifest.json',
   './assets/favicon.svg',
   // Design system
