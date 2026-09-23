@@ -1,7 +1,7 @@
 # Graph Report - traqhaccp_clean_architecture  (2026-09-23)
 
 ## Corpus Check
-- 94 files · ~127,376 words
+- 94 files · ~127,513 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f93959bc`
+- Built from commit: `63dbabda`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

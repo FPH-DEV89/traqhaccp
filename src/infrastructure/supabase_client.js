@@ -220,7 +220,11 @@ export class SupabaseClient {
     if (donnees && typeof donnees === 'object' && Object.keys(donnees).length > 0) {
       corps.data = donnees;
     }
-    const reponse = await this.requete(`/auth/v1/signup`, {
+    const redirection = typeof window !== 'undefined' && window.location && window.location.origin
+      ? `${window.location.origin}${window.location.pathname}`
+      : 'https://traqhaccp.vercel.app/';
+    const query = `?redirect_to=${encodeURIComponent(redirection)}`;
+    const reponse = await this.requete(`/auth/v1/signup${query}`, {
       methode: 'POST',
       corps,
       auth: false,

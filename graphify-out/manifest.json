@@ -295,8 +295,8 @@
     "semantic_hash": ""
   },
   "src/infrastructure/supabase_client.js": {
-    "mtime": 1790187108.594087,
-    "ast_hash": "0aceafdc3c7430a68cc5644b859caee6",
+    "mtime": 1790189230.7836106,
+    "ast_hash": "a1352756e5b8c3519bd7e4fe5424790c",
     "semantic_hash": ""
   },
   "src/infrastructure/supabase_mapping.js": {
@@ -315,8 +315,8 @@
     "semantic_hash": ""
   },
   "src/presentation/connexion.js": {
-    "mtime": 1790187308.392548,
-    "ast_hash": "c1d967f444bcdd2185259b8f6c1ae702",
+    "mtime": 1790189590.9855335,
+    "ast_hash": "704613047b065405450e7dcee1763dc3",
     "semantic_hash": ""
   },
   "src/presentation/session_serveur.js": {

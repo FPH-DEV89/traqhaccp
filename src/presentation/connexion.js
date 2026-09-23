@@ -151,7 +151,7 @@ function gabarit() {
         <button class="portail__lien" id="portail-retour-connexion" type="button">Retour à la connexion</button>
       </form>
 
-      <!-- Étape 3 : Confirmation d'envoi d'e-mail -->
+      <!-- Étape 3 : Confirmation d'envoi d'e-mail de réinitialisation -->
       <div class="portail__forme" id="portail-forme-recup-succes" hidden>
         <div class="portail__succes" role="status">
           <strong>Lien de réinitialisation envoyé !</strong><br>
@@ -159,6 +159,17 @@ function gabarit() {
           <span class="field__hint">Pensez à vérifier votre dossier de courriers indésirables (spams).</span>
         </div>
         <button class="btn btn--secondary btn--block" id="portail-succes-retour" type="button">Retour à l'écran de connexion</button>
+      </div>
+
+      <!-- Étape 3-bis : Confirmation de création de compte avec validation d'e-mail -->
+      <div class="portail__forme" id="portail-forme-inscr-succes" hidden>
+        <div class="portail__succes" role="status">
+          <strong>Compte créé avec succès !</strong><br>
+          Un e-mail de confirmation vient de vous être envoyé.<br>
+          Cliquez sur le lien reçu dans votre boîte de réception pour activer définitivement votre compte, puis connectez-vous.<br>
+          <span class="field__hint">Pensez à vérifier votre dossier de courriers indésirables (spams).</span>
+        </div>
+        <button class="btn btn--primary btn--block" id="portail-inscr-succes-retour" type="button">Se connecter</button>
       </div>
 
       <!-- Étape 4 : Définition du nouveau mot de passe (suite lien magique) -->
@@ -240,6 +251,7 @@ function afficherEtape(etape, message = '') {
   champ('#portail-forme-creation').hidden = (etape !== 'creation');
   champ('#portail-forme-recup').hidden = (etape !== 'recup');
   champ('#portail-forme-recup-succes').hidden = (etape !== 'recup-succes');
+  champ('#portail-forme-inscr-succes').hidden = (etape !== 'inscr-succes');
   champ('#portail-forme-nouveau-mdp').hidden = (etape !== 'nouveau-mdp');
 
   // Gestion des onglets principaux (visibles uniquement lors de connexion ou inscription)
@@ -267,6 +279,9 @@ function afficherEtape(etape, message = '') {
       case 'recup-succes':
         intro.textContent = 'Consultez votre boîte de réception pour poursuivre.';
         break;
+      case 'inscr-succes':
+        intro.textContent = 'Activez votre compte pour commencer à utiliser le registre partagé.';
+        break;
       case 'nouveau-mdp':
         intro.textContent = 'Choisissez un nouveau mot de passe robuste d’au moins 8 caractères.';
         break;
@@ -287,6 +302,7 @@ function afficherEtape(etape, message = '') {
     recup: '#portail-recup-email',
     'nouveau-mdp': '#portail-nouveau-mdp',
     'recup-succes': '#portail-succes-retour',
+    'inscr-succes': '#portail-inscr-succes-retour',
   };
   const cible = champ(focusParEtape[etape] || '#portail-email');
   if (cible) cible.focus();
@@ -372,23 +388,21 @@ async function soumettreInscription(evenement) {
   effacerErreur();
   etatOccupe(true);
   try {
+    let reponseInscr = null;
     if (typeof contexte.client.signUp === 'function') {
-      await contexte.client.signUp(email, motDePasse);
+      reponseInscr = await contexte.client.signUp(email, motDePasse, { establishment_name: nomEtab });
     } else {
-      await contexte.client.signIn(email, motDePasse);
+      reponseInscr = await contexte.client.signIn(email, motDePasse);
     }
 
-    // Si la session n'est pas directement active (ex: confirmation par email requise)
+    // Si la session n'est pas directement active (confirmation d'e-mail requise par Supabase)
     if (!contexte.client.hasSession()) {
       try {
         await contexte.client.signIn(email, motDePasse);
-      } catch (errCo) {
-        // En cas de compte déjà existant ou attente de validation
-        if (errCo && (errCo.statut === 400 || errCo.statut === 422)) {
-          afficherEtape('connexion', 'Un compte existe déjà avec cette adresse ou un e-mail de confirmation vous a été envoyé. Veuillez vous connecter.');
-          return;
-        }
-        throw errCo;
+      } catch {
+        // L'inscription a réussi et nécessite la confirmation par e-mail
+        afficherEtape('inscr-succes');
+        return;
       }
     }
 
@@ -516,6 +530,18 @@ async function preparer() {
     afficherEtape('nouveau-mdp');
     return;
   }
+  if (hashAuth.accessToken && (hashAuth.type === 'signup' || hashAuth.type === 'bearer' || !hashAuth.type)) {
+    try {
+      client._enregistrerSession({
+        access_token: hashAuth.accessToken,
+        token_type: 'bearer',
+        expires_in: 3600,
+      });
+      nettoyerHashAuth();
+    } catch {
+      /* poursuivre normalement */
+    }
+  }
 
   // 2. Session déjà existante
   let session = null;
@@ -583,6 +609,13 @@ export async function afficherConnexion({ client, repository = null, onErreur = 
   racine.querySelector('#portail-succes-retour').addEventListener('click', () => {
     afficherEtape('connexion');
   });
+
+  const btnRetourInscr = racine.querySelector('#portail-inscr-succes-retour');
+  if (btnRetourInscr) {
+    btnRetourInscr.addEventListener('click', () => {
+      afficherEtape('connexion');
+    });
+  }
 
   const attente = new Promise((resoudre) => { resoudreAttente = resoudre; });
   preparer();
