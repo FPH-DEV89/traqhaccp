@@ -12,6 +12,7 @@ denrées, allergènes (INCO), non-conformités, registre DDPP et mode inspection
   espace fine insécable avant `°C` et `%`).
 
 Architecture détaillée : [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) ·
+Manuel utilisateur : [`docs/MANUEL_UTILISATEUR.md`](docs/MANUEL_UTILISATEUR.md) ·
 Design system : [`docs/DESIGN.md`](docs/DESIGN.md) ·
 Migration v3 → v4 : [`docs/MIGRATION_COMPLETE`](docs/MIGRATION_COMPLETE).
 
