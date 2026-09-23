@@ -295,8 +295,8 @@
     "semantic_hash": ""
   },
   "src/infrastructure/supabase_client.js": {
-    "mtime": 1790151456.6369798,
-    "ast_hash": "742aa2080308f7e437d5b3b8b19c90cd",
+    "mtime": 1790174342.9746082,
+    "ast_hash": "faa295b92439ddab493e95e5206c2333",
     "semantic_hash": ""
   },
   "src/infrastructure/supabase_mapping.js": {
@@ -315,8 +315,8 @@
     "semantic_hash": ""
   },
   "src/presentation/connexion.js": {
-    "mtime": 1790151456.6459684,
-    "ast_hash": "308b6b326809020635143b8ad0dc2909",
+    "mtime": 1790174450.0542114,
+    "ast_hash": "dac4840c4f10fb8153250d8499851bb4",
     "semantic_hash": ""
   },
   "src/presentation/session_serveur.js": {
@@ -465,8 +465,8 @@
     "semantic_hash": ""
   },
   "js/patisserie/auth.js": {
-    "mtime": 1790172210.4218135,
-    "ast_hash": "0759a7d74033a6102e25df431a34787f",
+    "mtime": 1790174461.0656514,
+    "ast_hash": "328af530f636a15c7ea73bdbb5319a71",
     "semantic_hash": ""
   },
   "js/patisserie/calculations.js": {

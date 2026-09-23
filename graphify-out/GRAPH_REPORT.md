@@ -1,16 +1,16 @@
 # Graph Report - traqhaccp_clean_architecture  (2026-09-23)
 
 ## Corpus Check
-- 94 files · ~125,920 words
+- 94 files · ~126,824 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1776 nodes · 3965 edges · 83 communities (58 shown, 25 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 67 edges (avg confidence: 0.62)
+- 1782 nodes · 3995 edges · 83 communities (59 shown, 24 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 69 edges (avg confidence: 0.62)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `56622f9a`
+- Built from commit: `7983395b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -104,8 +104,8 @@
 4. `HACCPUseCases` - 34 edges
 5. `playBeep()` - 33 edges
 6. `AccountUseCases` - 27 edges
-7. `HACCPStore` - 25 edges
-8. `SupabaseClient` - 24 edges
+7. `SupabaseClient` - 26 edges
+8. `HACCPStore` - 25 edges
 9. `icon()` - 23 edges
 10. `normalizeSettings()` - 19 edges
 
@@ -124,7 +124,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (83 total, 25 thin omitted)
+## Communities (83 total, 24 thin omitted)
 
 ### Community 0 - "Design System and Assets"
 Cohesion: 0.12
@@ -148,11 +148,11 @@ Nodes (53): NC_CATEGORIES, ACTIONS, aujour(), barreFiltres(), basculer(), blocTr
 
 ### Community 5 - "Traceability and Allergens"
 Cohesion: 0.10
-Nodes (49): ALL_14_ALLERGENS, ACTIONS, ajouterJours(), allergeneDe(), attacher(), blocChamp(), blocDlc(), blocFiltres() (+41 more)
+Nodes (48): ACTIONS, ajouterJours(), allergeneDe(), attacher(), blocChamp(), blocDlc(), blocFiltres(), blocFormulaire() (+40 more)
 
 ### Community 6 - "App Router"
-Cohesion: 0.11
-Nodes (46): retirerModeUrl(), afficherConnexion(), afficherErreur(), afficherEtape(), champ(), contexte, continuerEnLocal(), effacerErreur() (+38 more)
+Cohesion: 0.16
+Nodes (28): ALL_14_ALLERGENS, ACTIONS, appliquerRecherche(), barreOutils(), blocClient(), categories(), conserverNote(), corpsFiche() (+20 more)
 
 ### Community 7 - "Reception Management"
 Cohesion: 0.10
@@ -198,6 +198,10 @@ Nodes (30): ACTIONS, attacher(), blocEnCours(), blocHistorique(), blocKpis(), bl
 Cohesion: 0.13
 Nodes (28): buildLabelHtml(), fmtDate(), labelCss(), buildRegisterHtml(), fmtDate(), fmtNum(), registerCss(), statusLabel() (+20 more)
 
+### Community 23 - "Settings Constants"
+Cohesion: 0.29
+Nodes (23): retirerModeUrl(), afficherConnexion(), afficherErreur(), afficherEtape(), analyserHashAuth(), champ(), contexte, continuerEnLocal() (+15 more)
+
 ### Community 24 - "Oil and Fryer Monitoring"
 Cohesion: 0.17
 Nodes (28): ACTIONS, apercuTpm(), attacher(), compteurs(), consigner(), decision(), echapper(), ECHELLE (+20 more)
@@ -223,7 +227,7 @@ Cohesion: 0.08
 Nodes (24): description, gates, artifact-fresh, _comment, css-cascade, ui-paint, name, private (+16 more)
 
 ### Community 30 - "Settings Use Cases"
-Cohesion: 0.09
+Cohesion: 0.10
 Nodes (4): SECTIONS_PURGEABLES, SettingsUseCases, createSettings(), normalizeSettings()
 
 ### Community 31 - "Connection and Persistence"
@@ -279,8 +283,8 @@ Cohesion: 0.22
 Nodes (6): errors, files, html, ROOT, SKIP, tmp
 
 ### Community 47 - "Checklist Routine Logic"
-Cohesion: 0.25
-Nodes (10): PERMISSIONS_RESERVEES, SECTIONS_SAUVEGARDE, createOperator(), makeOperatorId(), normalizeOperator(), OBVIOUS_PINS, operatorInitials(), validateOperator() (+2 more)
+Cohesion: 0.19
+Nodes (11): PERMISSIONS_RESERVEES, SECTIONS_SAUVEGARDE, CleaningTask, createOperator(), makeOperatorId(), normalizeOperator(), OBVIOUS_PINS, operatorInitials() (+3 more)
 
 ### Community 50 - "Vercel Deployment Config"
 Cohesion: 0.40
@@ -295,7 +299,7 @@ Cohesion: 0.17
 Nodes (13): AudioService, app, boot(), charger(), createApp(), creerPasserelle(), fmt, HEURE (+5 more)
 
 ### Community 54 - "Git Pre-push Hook"
-Cohesion: 0.17
+Cohesion: 0.16
 Nodes (3): citerValeur(), encoderFiltres(), SupabaseClient
 
 ### Community 59 - "config.js"
@@ -353,7 +357,7 @@ Nodes (3): Automatisation Git (Push après correctif et vérifications), Instruc
 ## Knowledge Gaps
 - **399 isolated node(s):** `html`, `getElemMatches`, `uniqueQueriedIds`, `declaredIdMatches`, `declaredIds` (+394 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **25 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **24 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_

@@ -648,6 +648,25 @@
 
 .portail__note { margin: 0; font-size: var(--t-label); color: var(--ink-3); }
 
+.portail__actions-secondaires {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-top: calc(-1 * var(--s-2));
+}
+
+.portail__succes {
+  margin: 0 0 var(--s-6);
+  padding: var(--s-4);
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  font-size: var(--t-sm);
+  color: var(--ink);
+  line-height: 1.45;
+}
+
 @media (max-width: 640px) {
   .portail { align-items: flex-start; padding: var(--s-5); }
   .portail__carte { margin-top: var(--s-8); padding: var(--s-8) var(--s-6); }

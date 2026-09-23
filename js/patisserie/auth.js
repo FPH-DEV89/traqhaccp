@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TraqHACCP Pâtisserie — Supabase Auth & Multi-Establishment Portal
  */
 import { supabase } from '../../src/infrastructure/supabase_client.js';
@@ -28,11 +28,13 @@ export function updateHeaderEstablishment() {
 
 export async function initAuth() {
   const mode = modePersistance();
+  const hash = typeof window !== 'undefined' && window.location ? window.location.hash : '';
+  const estRetourAuth = hash.includes('type=recovery') || hash.includes('error_description');
 
-  // Si on est en mode serveur ou qu'une session Supabase active existe
-  if (mode === 'serveur' || supabase.hasSession()) {
+  // Si on est en mode serveur, qu'une session active existe ou qu'un lien de reset a été cliqué
+  if (mode === 'serveur' || supabase.hasSession() || estRetourAuth) {
     try {
-      if (!supabase.hasSession()) {
+      if (!supabase.hasSession() || estRetourAuth) {
         await afficherPortailConnexion();
         return;
       }

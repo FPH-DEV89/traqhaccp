@@ -279,6 +279,49 @@ export class SupabaseClient {
     return this.requete('/auth/v1/user');
   }
 
+  /**
+   * Demande d'envoi d'e-mail de réinitialisation de mot de passe (GoTrue `/auth/v1/recover`).
+   * @param {string} email
+   * @param {string} [redirectTo] - URL optionnelle de retour
+   * @returns {Promise<object>}
+   */
+  async demanderReinitialisation(email, redirectTo = null) {
+    if (!email) {
+      throw new ErreurSupabase('Adresse e-mail requise pour réinitialiser le mot de passe.', { statut: 400 });
+    }
+    const query = redirectTo ? `?redirect_to=${encodeURIComponent(redirectTo)}` : '';
+    return this.requete(`/auth/v1/recover${query}`, {
+      methode: 'POST',
+      corps: { email: String(email).trim() },
+      auth: false,
+    });
+  }
+
+  /**
+   * Met à jour le mot de passe utilisateur (via jeton de récupération ou session courante).
+   * @param {string} nouveauMotDePasse
+   * @param {string} [accessToken] - jeton d'accès optionnel (ex: token de recovery extrait de l'URL)
+   * @returns {Promise<object>}
+   */
+  async mettreAJourMotDePasse(nouveauMotDePasse, accessToken = null) {
+    if (!nouveauMotDePasse || String(nouveauMotDePasse).length < 8) {
+      throw new ErreurSupabase('Le nouveau mot de passe doit comporter au moins 8 caractères.', { statut: 400 });
+    }
+    const options = {
+      methode: 'PUT',
+      corps: { password: String(nouveauMotDePasse) },
+    };
+    if (accessToken) {
+      options.auth = false;
+      options.entetes = {
+        apikey: this.cle,
+        Authorization: `Bearer ${accessToken}`,
+      };
+    }
+    const resultat = await this.requete('/auth/v1/user', options);
+    return resultat;
+  }
+
   /* ─────────────────────────── Requête générique ─────────────────────── */
 
   /**
