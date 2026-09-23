@@ -107,10 +107,23 @@
             <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
             DLC Sec. & Témoins
           </button>
+          <button id="nav-team" onclick="switchView('team')" class="px-3.5 py-1.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            Équipe & Utilisateurs
+          </button>
         </nav>
 
         <!-- Right Quick Actions: Inspection Mode & Theme Toggle -->
         <div class="flex items-center gap-2">
+          <!-- Opérateur Courant / Switcher Rapide -->
+          <button onclick="openOperatorModal()" class="px-2 py-1 sm:px-2.5 sm:py-1 text-xs font-semibold rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 transition flex items-center gap-1.5 sm:gap-2 shadow-sm active:scale-95" title="Changer d'opérateur ou gérer l'équipe">
+            <span id="current-op-initials" class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px]">LP</span>
+            <div class="text-left">
+              <span id="current-op-name" class="block leading-tight text-[11px] font-bold max-w-[80px] sm:max-w-none truncate">Lucas P.</span>
+              <span id="current-op-role" class="hidden sm:block leading-tight text-[9px] text-zinc-500 dark:text-zinc-400">Chef Tourrier</span>
+            </div>
+          </button>
+
           <button onclick="openInspectionModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 transition flex items-center gap-1.5 shadow-sm active:scale-95">
             <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
             <span>DDPP / Alerte</span>
@@ -391,6 +404,38 @@
       </div>
     </div>
 
+
+    <!-- VIEW 5: Team & User Accounts Management -->
+    <div id="view-team" class="hidden space-y-4">
+      <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base font-bold text-zinc-900 dark:text-white">Comptes Utilisateurs & Brigade</h2>
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-md">Traçabilité Nominative CE</span>
+            </div>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Gérez les membres de l'équipe, leurs rôles d'accès et leurs codes PIN pour signer les réceptions et étiquettes.</p>
+          </div>
+          <button onclick="openAddUserModal()" class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center justify-center gap-2 shadow-sm active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+            <span>Ajouter un utilisateur</span>
+          </button>
+        </div>
+
+        <!-- Team members list -->
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="team-grid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <div class="bg-zinc-50 dark:bg-zinc-800/40 rounded-2xl border border-zinc-200/60 dark:border-zinc-700/60 p-4 text-xs space-y-2">
+        <div class="flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <span>Sécurité Sanitaire & Signature des Enregistrements</span>
+        </div>
+        <p class="text-zinc-500 dark:text-zinc-400">Chaque action enregistrée (réception de marchandise, déstockage client, étiquette DLC secondaire) est signée au nom de l'opérateur actuellement en service pour répondre aux exigences des inspecteurs DDPP.</p>
+      </div>
+    </div>
   </main>
 
   <!-- Mobile Bottom Navigation Bar -->
@@ -410,6 +455,10 @@
     <button onclick="switchView('dlc')" id="mob-dlc" class="flex flex-col items-center gap-1 text-zinc-500 dark:text-zinc-400">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
       <span>DLC Sec.</span>
+    </button>
+    <button onclick="switchView('team')" id="mob-team" class="flex flex-col items-center gap-1 text-zinc-500 dark:text-zinc-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      <span>Équipe</span>
     </button>
   </div>
 
@@ -930,6 +979,98 @@
           <button onclick="saveAdjustedStock()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold">Enregistrer</button>
         </div>
       </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: Changement Rapide d'Opérateur -->
+  <div id="modal-operator-switch" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800">
+      <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+            OP
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-zinc-900 dark:text-white">Opérateur en service</h3>
+            <p class="text-[11px] text-zinc-400">Sélectionnez la personne active</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="p-4 space-y-2 max-h-[60vh] overflow-y-auto" id="operator-switch-list">
+        <!-- Rendered via JS -->
+      </div>
+      <div class="p-3 bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center text-xs">
+        <button onclick="closeModals(); switchView('team');" class="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline flex items-center gap-1">
+          <span>Gérer l'équipe</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <button onclick="closeModals(); openAddUserModal();" class="px-2.5 py-1.5 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-semibold">+ Nouveau</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Ajouter un Utilisateur -->
+  <div id="modal-add-user" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800">
+      <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+            +U
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-zinc-900 dark:text-white">Ajouter un utilisateur</h3>
+            <p class="text-[11px] text-zinc-400">Nouveau membre de la brigade</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="add-user-form" onsubmit="handleAddUserSubmit(event)" class="p-5 space-y-4 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Prénom *</label>
+            <input type="text" id="user-firstname" required placeholder="ex. Camille" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Nom *</label>
+            <input type="text" id="user-lastname" required placeholder="ex. Martin" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Rôle / Poste *</label>
+          <select id="user-role" required class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
+            <option value="Chef Pâtissier">Chef Pâtissier / Gérant (Supervision & HACCP)</option>
+            <option value="Chef Tourrier">Chef Tourrier (Pâtes, Tourage, Cuissons)</option>
+            <option value="Pâtissier Entremets">Pâtissier Entremets & Finitions</option>
+            <option value="Apprenti / Commis">Apprenti / Commis (Nettoyage & Préparations)</option>
+            <option value="Responsable Vente">Responsable Vente & Caisse</option>
+          </select>
+        </div>
+
+        <div class="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-200/70 dark:border-zinc-700/70 space-y-2">
+          <label class="block font-semibold text-zinc-700 dark:text-zinc-300">Code PIN de signature (facultatif)</label>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="password" id="user-pin" maxlength="4" inputmode="numeric" placeholder="PIN 4 chiffres" class="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl font-mono text-center tracking-widest">
+            <input type="password" id="user-pin-confirm" maxlength="4" inputmode="numeric" placeholder="Confirmer PIN" class="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl font-mono text-center tracking-widest">
+          </div>
+          <p class="text-[10px] text-zinc-400">Permet de valider rapidement les étiquettes et contrôles sur la tablette tactile.</p>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+          <button type="button" onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium">Annuler</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm active:scale-95 transition flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            <span>Créer l'utilisateur</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -1618,7 +1759,7 @@
 
     function switchView(tab) {
       playBeep(520, 0.03);
-      ['traceability', 'recipes', 'sales', 'dlc'].forEach(t => {
+      ['traceability', 'recipes', 'sales', 'dlc', 'team'].forEach(t => {
         document.getElementById(`view-${t}`)?.classList.add('hidden');
         
         // Desktop nav
@@ -1653,7 +1794,10 @@
       if (tab === 'traceability') renderLots();
       if (tab === 'recipes') renderRecipes();
       if (tab === 'sales') { renderSalesCatalog(); renderSalesHistory(); }
-      if (tab === 'dlc') { renderSecondaryDlcs(); renderWitnessSamples(); }
+      if (tab === 'dlc') { renderSecondaryDlcs(); renderWitnessSamples();
+      updateOperatorUI();
+      renderTeamGrid(); }
+      if (tab === 'team') { renderTeamGrid(); }
     }
 
     function setCategoryFilter(cat) {
@@ -1681,6 +1825,176 @@
         pill.classList.remove('bg-amber-100', 'text-amber-800', 'border-amber-300');
       }
       renderLots();
+    }
+
+    
+    // --- GESTION BRIGADE & UTILISATEURS ---
+    let teamMembers = [
+      {
+        id: 'u-1',
+        firstName: 'Lucas',
+        lastName: 'Perez',
+        initials: 'LP',
+        role: 'Chef Tourrier',
+        pin: '1234',
+        active: true,
+        joinedDate: '2025-01-10'
+      },
+      {
+        id: 'u-2',
+        firstName: 'Camille',
+        lastName: 'Laurent',
+        initials: 'CL',
+        role: 'Pâtissier Entremets',
+        pin: '',
+        active: true,
+        joinedDate: '2025-03-15'
+      },
+      {
+        id: 'u-3',
+        firstName: 'Antoine',
+        lastName: 'Dubois',
+        initials: 'AD',
+        role: 'Chef Pâtissier',
+        pin: '7890',
+        active: true,
+        joinedDate: '2024-09-01'
+      }
+    ];
+
+    let currentOperatorId = 'u-1';
+
+    function getCurrentOperator() {
+      return teamMembers.find(m => m.id === currentOperatorId) || teamMembers[0];
+    }
+
+    function setCurrentOperator(userId) {
+      const user = teamMembers.find(m => m.id === userId);
+      if (!user) return;
+      currentOperatorId = userId;
+      updateOperatorUI();
+      closeModals();
+      showToast(`${user.firstName} ${user.lastName} est maintenant en service.`);
+      playBeep(680, 0.05);
+    }
+
+    function updateOperatorUI() {
+      const op = getCurrentOperator();
+      if (!op) return;
+
+      const initEl = document.getElementById('current-op-initials');
+      const nameEl = document.getElementById('current-op-name');
+      const roleEl = document.getElementById('current-op-role');
+
+      if (initEl) initEl.innerText = op.initials;
+      if (nameEl) nameEl.innerText = `${op.firstName} ${op.lastName.charAt(0)}.`;
+      if (roleEl) roleEl.innerText = op.role;
+    }
+
+    function renderTeamGrid() {
+      const container = document.getElementById('team-grid');
+      if (!container) return;
+
+      container.innerHTML = teamMembers.map(m => {
+        const isCurrent = m.id === currentOperatorId;
+        return `
+          <div class="p-4 rounded-2xl border ${isCurrent ? 'border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20' : 'border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900'} shadow-sm flex flex-col justify-between gap-3">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center font-extrabold text-sm">
+                  ${m.initials}
+                </span>
+                <div>
+                  <h4 class="font-bold text-sm text-zinc-900 dark:text-white">${m.firstName} ${m.lastName}</h4>
+                  <p class="text-xs text-zinc-500 dark:text-zinc-400">${m.role}</p>
+                </div>
+              </div>
+              ${isCurrent ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">En service</span>' : ''}
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] pt-2 border-t border-zinc-100 dark:border-zinc-800">
+              <span class="text-zinc-400">PIN : ${m.pin ? '•••• (Défini)' : 'Non configuré'}</span>
+              ${!isCurrent ? `<button onclick="setCurrentOperator('${m.id}')" class="px-3 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-semibold transition active:scale-95">Choisir</button>` : '<span class="text-emerald-600 font-semibold">Actif</span>'}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderOperatorSwitchList() {
+      const container = document.getElementById('operator-switch-list');
+      if (!container) return;
+
+      container.innerHTML = teamMembers.map(m => {
+        const isCurrent = m.id === currentOperatorId;
+        return `
+          <button onclick="setCurrentOperator('${m.id}')" class="w-full p-2.5 rounded-xl flex items-center justify-between ${isCurrent ? 'bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/80 border border-transparent'} transition text-left">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-lg ${isCurrent ? 'bg-emerald-600 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200'} flex items-center justify-center font-bold text-xs">
+                ${m.initials}
+              </span>
+              <div>
+                <p class="font-bold text-xs text-zinc-900 dark:text-white">${m.firstName} ${m.lastName}</p>
+                <p class="text-[10px] text-zinc-400">${m.role}</p>
+              </div>
+            </div>
+            ${isCurrent ? '<svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function openOperatorModal() {
+      playBeep(550, 0.04);
+      renderOperatorSwitchList();
+      const m = document.getElementById('modal-operator-switch');
+      if (m) {
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+      }
+    }
+
+    function openAddUserModal() {
+      playBeep(600, 0.04);
+      const m = document.getElementById('modal-add-user');
+      if (m) {
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+      }
+    }
+
+    function handleAddUserSubmit(e) {
+      e.preventDefault();
+      const first = document.getElementById('user-firstname').value.trim();
+      const last = document.getElementById('user-lastname').value.trim();
+      const role = document.getElementById('user-role').value;
+      const pin = document.getElementById('user-pin').value.trim();
+      const pin2 = document.getElementById('user-pin-confirm').value.trim();
+
+      if (pin && pin !== pin2) {
+        showToast('Les deux codes PIN saisis sont différents.');
+        playBeep(250, 0.1);
+        return;
+      }
+
+      const initials = (first.charAt(0) + last.charAt(0)).toUpperCase();
+      const newUser = {
+        id: `u-${Date.now().toString().slice(-4)}`,
+        firstName: first,
+        lastName: last,
+        initials: initials,
+        role: role,
+        pin: pin,
+        active: true,
+        joinedDate: new Date().toISOString().split('T')[0]
+      };
+
+      teamMembers.push(newUser);
+      playBeep(750, 0.08);
+      closeModals();
+      renderTeamGrid();
+      showToast(`Utilisateur ${newUser.firstName} ${newUser.lastName} créé avec succès !`);
+      e.target.reset();
     }
 
     function updateTopMetrics() {
@@ -1781,7 +2095,7 @@
         type: type,
         creationDate: new Date().toISOString().split('T')[0],
         expiryDate: exp,
-        operator: 'Chef Pâtissier'
+        operator: getCurrentOperator().firstName + ' (' + getCurrentOperator().role + ')'
       });
 
       playBeep(800, 0.08);
