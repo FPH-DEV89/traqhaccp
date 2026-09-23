@@ -1,16 +1,16 @@
 # Graph Report - traqhaccp_clean_architecture  (2026-09-23)
 
 ## Corpus Check
-- 86 files · ~124,488 words
+- 86 files · ~124,518 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1699 nodes · 3641 edges · 83 communities (54 shown, 29 thin omitted)
+- 1700 nodes · 3642 edges · 80 communities (56 shown, 24 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 67 edges (avg confidence: 0.62)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `da3fe31c`
+- Built from commit: `4ee3e251`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -67,7 +67,6 @@
 - [[_COMMUNITY_HACCP Fixture Seeding|HACCP Fixture Seeding]]
 - [[_COMMUNITY_Vercel Deployment Config|Vercel Deployment Config]]
 - [[_COMMUNITY_Cleaning Task Entity|Cleaning Task Entity]]
-- [[_COMMUNITY_Equipment Entity|Equipment Entity]]
 - [[_COMMUNITY_Domain Logic Tests|Domain Logic Tests]]
 - [[_COMMUNITY_Git Pre-push Hook|Git Pre-push Hook]]
 - [[_COMMUNITY_Compliance Checker Tool|Compliance Checker Tool]]
@@ -81,13 +80,11 @@
 - [[_COMMUNITY_SupabaseRepositoryBase|SupabaseRepositoryBase]]
 - [[_COMMUNITY_TraqHACCP — Registre sanitaire|TraqHACCP — Registre sanitaire]]
 - [[_COMMUNITY_BUGS.md — pannes vécues et le gate qui les rend re-livables impossibles|BUGS.md — pannes vécues et le gate qui les rend re-livables impossibles]]
-- [[_COMMUNITY_export_register.js|export_register.js]]
 - [[_COMMUNITY_5. Utilisation quotidienne  Les modules indispensables|5. Utilisation quotidienne : Les modules indispensables]]
 - [[_COMMUNITY_Guide de conformité HACCP pour TraqHACCP|Guide de conformité HACCP pour TraqHACCP]]
 - [[_COMMUNITY_DESIGN|DESIGN.md]]
 - [[_COMMUNITY_6. Contrôles spécifiques & Gestion des écarts|6. Contrôles spécifiques & Gestion des écarts]]
 - [[_COMMUNITY_3. Configuration initiale essentielle|3. Configuration initiale essentielle]]
-- [[_COMMUNITY_SanitaryDocument|SanitaryDocument]]
 - [[_COMMUNITY_sw.js|sw.js]]
 - [[_COMMUNITY_GEMINI|GEMINI.md]]
 - [[_COMMUNITY_Git Automation Flow|Git Automation Flow]]
@@ -124,23 +121,23 @@
 ## Import Cycles
 - None detected.
 
-## Communities (83 total, 29 thin omitted)
+## Communities (80 total, 24 thin omitted)
 
 ### Community 0 - "Design System and Assets"
-Cohesion: 0.07
-Nodes (65): icon(), ICON_ALIAS, iconFor(), ICONS, TRACES, appliquer(), bandeau(), BARRE_MOBILE (+57 more)
+Cohesion: 0.05
+Nodes (80): AudioService, appliquerSurchargeModeUrl(), app, boot(), charger(), createApp(), creerPasserelle(), fmt (+72 more)
 
 ### Community 1 - "Supabase Client Configuration"
 Cohesion: 0.19
 Nodes (18): DEFAULT_ESTABLISHMENT, exporterSauvegarde(), importerSauvegarde(), ErreurSupabase, cibleConflit(), COLLECTIONS, identifiants(), SPECS (+10 more)
 
 ### Community 2 - "Auth and Permissions"
-Cohesion: 0.06
-Nodes (83): canManageUsers(), hasPermission(), PERMISSIONS, ROLE_ORDER, ROLES, estModeServeur(), blocSession(), clientDe() (+75 more)
+Cohesion: 0.07
+Nodes (76): canManageUsers(), hasPermission(), PERMISSIONS, ROLE_ORDER, estModeServeur(), blocSession(), clientDe(), esc() (+68 more)
 
 ### Community 3 - "UI Navigation and Actions"
 Cohesion: 0.07
-Nodes (70): annee(), ACTIONS, afficherErreurs(), afficherErreursPanneau(), aller(), annees(), apercu(), appliquerPreference() (+62 more)
+Nodes (69): ACTIONS, afficherErreurs(), afficherErreursPanneau(), aller(), annees(), apercu(), appliquerPreference(), appliquerSauvegarde() (+61 more)
 
 ### Community 4 - "Non-Conformity Management"
 Cohesion: 0.11
@@ -148,7 +145,7 @@ Nodes (53): NC_CATEGORIES, ACTIONS, aujour(), barreFiltres(), basculer(), blocTr
 
 ### Community 5 - "Traceability and Allergens"
 Cohesion: 0.10
-Nodes (49): SHELF_LIFE_PRESETS, ACTIONS, ajouterJours(), allergeneDe(), attacher(), blocChamp(), blocDlc(), blocFiltres() (+41 more)
+Nodes (48): ACTIONS, ajouterJours(), allergeneDe(), attacher(), blocChamp(), blocDlc(), blocFiltres(), blocFormulaire() (+40 more)
 
 ### Community 6 - "App Router"
 Cohesion: 0.16
@@ -179,32 +176,28 @@ Cohesion: 0.15
 Nodes (34): ACTIONS, apercuPh(), apercuPoids(), atMs(), attacher(), blocSeg(), champ(), conformePh() (+26 more)
 
 ### Community 16 - "Cleaning Management"
-Cohesion: 0.11
-Nodes (38): NORMS, ACTIONS, ALIAS, barreOutils(), basculer(), compteurs(), correspond(), derniere() (+30 more)
+Cohesion: 0.15
+Nodes (34): ACTIONS, ALIAS, barreOutils(), basculer(), compteurs(), correspond(), derniere(), echeance() (+26 more)
 
 ### Community 17 - "Temperature Monitoring"
 Cohesion: 0.17
 Nodes (34): ACTIONS, attacher(), aujourdhui(), borne(), conformeEq(), creneauDe(), CRENEAUX, creneauxFaits() (+26 more)
 
-### Community 18 - "Account Use Cases"
-Cohesion: 0.15
-Nodes (9): AccountUseCases, PERMISSIONS_RESERVEES, createOperator(), makeOperatorId(), normalizeOperator(), OBVIOUS_PINS, operatorDisplayName(), operatorInitials() (+1 more)
-
 ### Community 19 - "Domain Entities and Logic"
-Cohesion: 0.11
-Nodes (13): DEFAULT_BRIGADE, DEFAULT_CHECKLIST_ROUTINES, DEFAULT_EQUIPMENTS, DEFAULT_SETTINGS, HACCP_NORMS, STORAGE_KEYS, ChecklistItem, CoolingCycle (+5 more)
+Cohesion: 0.06
+Nodes (24): DEFAULT_CHECKLIST_ROUTINES, ChecklistItem, CoolingCycle, DefrostCycle, DishAllergens, NonConformity, PhControlRecord, PreparationLabel (+16 more)
 
 ### Community 21 - "Defrosting Management"
 Cohesion: 0.13
 Nodes (30): ACTIONS, attacher(), blocEnCours(), blocHistorique(), blocKpis(), blocMesures(), blocRegle(), champValeur() (+22 more)
 
 ### Community 22 - "Export and Labeling"
-Cohesion: 0.18
-Nodes (21): buildLabelHtml(), fmtDate(), labelCss(), _activityLog(), _brigade(), buildFullBackup(), _csv(), downloadFile() (+13 more)
+Cohesion: 0.11
+Nodes (29): BarcodeService, buildLabelHtml(), fmtDate(), labelCss(), buildRegisterHtml(), fmtDate(), fmtNum(), registerCss() (+21 more)
 
 ### Community 23 - "Settings Constants"
-Cohesion: 0.12
-Nodes (13): COLLECTIONS, CONTROLES_REGLAGES, COUPLES_ORDONNES, DENSITES, PLAGES_SEUILS, SECTIONS_PURGEABLES, SECTIONS_SAUVEGARDE, THEMES (+5 more)
+Cohesion: 0.11
+Nodes (13): COLLECTIONS, CONTROLES_REGLAGES, COUPLES_ORDONNES, DENSITES, PLAGES_SEUILS, SECTIONS_SAUVEGARDE, THEMES, TYPES_EQUIPEMENT (+5 more)
 
 ### Community 24 - "Oil and Fryer Monitoring"
 Cohesion: 0.17
@@ -215,8 +208,8 @@ Cohesion: 0.07
 Nodes (28): audio, barcodeSVG, chks, cleanings, cool, defrost, delivConform, delivReject (+20 more)
 
 ### Community 26 - "Barcode and QR Services"
-Cohesion: 0.08
-Nodes (20): BarcodeService, checklists, conformPh, conformWeight, dangerPh, docs, eq, expiredDoc (+12 more)
+Cohesion: 0.07
+Nodes (21): DeliveryRecord, Fryer, checklists, conformPh, conformWeight, dangerPh, docs, eq (+13 more)
 
 ### Community 27 - "Parity and Integrity Checks"
 Cohesion: 0.08
@@ -230,6 +223,10 @@ Nodes (22): ACTIONS, attacher(), autoCompleter(), autoFait, barreProgression(), 
 Cohesion: 0.08
 Nodes (24): description, gates, artifact-fresh, _comment, css-cascade, ui-paint, name, private (+16 more)
 
+### Community 30 - "Settings Use Cases"
+Cohesion: 0.10
+Nodes (4): SECTIONS_PURGEABLES, SettingsUseCases, createSettings(), normalizeSettings()
+
 ### Community 31 - "Connection and Persistence"
 Cohesion: 0.27
 Nodes (20): definirModePersistance(), retirerModeUrl(), afficherConnexion(), afficherErreur(), afficherEtape(), champ(), contexte, continuerEnLocal() (+12 more)
@@ -239,8 +236,8 @@ Cohesion: 0.19
 Nodes (18): ACTIONS, attacher(), blocAlertes(), blocBanniere(), blocRoutineRapide(), blocTuiles(), dateFr(), debutDeJour() (+10 more)
 
 ### Community 33 - "Storage Repository Defaults"
-Cohesion: 0.08
-Nodes (17): CleaningTask, DeliveryRecord, Fryer, DEFAULT_ALLERGEN_DISHES, DEFAULT_CHECKLISTS_DATA, DEFAULT_CLEANINGS, DEFAULT_COOLINGS, DEFAULT_DEFROSTS (+9 more)
+Cohesion: 0.18
+Nodes (11): DEFAULT_BRIGADE, DEFAULT_EQUIPMENTS, DEFAULT_SETTINGS, HACCP_NORMS, SHELF_LIFE_PRESETS, STORAGE_KEYS, ALLERGENS_14, NORMS (+3 more)
 
 ### Community 34 - "PWA Web Manifest"
 Cohesion: 0.14
@@ -262,6 +259,10 @@ Nodes (13): ALLOWED_SYMBOLS, BANS, cssFiles, EMOJI_RANGES, findEmoji(), MIGRATIO
 Cohesion: 0.14
 Nodes (13): calledFuncs, declaredFuncs, declaredIdMatches, declaredIds, declaredTabContainers, eventMatches, getElemMatches, html (+5 more)
 
+### Community 39 - "Settings and Backup Logic"
+Cohesion: 0.20
+Nodes (7): argv, changes, cible, marqueur, opt, rapport, re
+
 ### Community 40 - "Gate and Environment Tests"
 Cohesion: 0.17
 Nodes (5): BAC, ENV, ICI, rClippee, rSaine
@@ -278,17 +279,21 @@ Nodes (7): argv, echecs, lancerNavigateur(), LARGEURS, loadPlaywright(), opt, re
 Cohesion: 0.22
 Nodes (6): errors, files, html, ROOT, SKIP, tmp
 
+### Community 47 - "Checklist Routine Logic"
+Cohesion: 0.22
+Nodes (9): PERMISSIONS_RESERVEES, ChecklistRoutine, createOperator(), makeOperatorId(), normalizeOperator(), OBVIOUS_PINS, operatorInitials(), validateOperator() (+1 more)
+
 ### Community 50 - "Vercel Deployment Config"
 Cohesion: 0.40
 Nodes (4): cleanUrls, headers, rewrites, version
 
 ### Community 51 - "Cleaning Task Entity"
-Cohesion: 0.10
-Nodes (32): NAV, AudioService, app, boot(), charger(), createApp(), creerPasserelle(), fmt (+24 more)
+Cohesion: 0.25
+Nodes (18): NAV, contexte(), demonter(), destroy(), element(), idDuHash(), idEtat(), initRouter() (+10 more)
 
 ### Community 59 - "config.js"
 Cohesion: 0.16
-Nodes (15): appliquerSurchargeModeUrl(), CONFIG_SUPABASE, ecrireStockage(), lireStockage(), modeParametreUrl(), modePersistance(), MODES_PERSISTANCE, normaliserMode() (+7 more)
+Nodes (14): CONFIG_SUPABASE, ecrireStockage(), lireStockage(), modeParametreUrl(), modePersistance(), MODES_PERSISTANCE, normaliserMode(), stockageLocal() (+6 more)
 
 ### Community 60 - "TraqHACCP — Architecture cible v4 (contrat d'exécution)"
 Cohesion: 0.17
@@ -314,10 +319,6 @@ Nodes (9): Architecture, Design system, Données locales, Démarrage (sans build
 Cohesion: 0.25
 Nodes (7): 1. 16/09/2026 — « les titres s'affichent mais rien d'autre », 2. 17/09/2026 — artefact généré périmé + raccourci cassé, 3. 16/09/2026 — écrasement silencieux en cascade, 4. 17/09/2026 — les pièges des gates eux-mêmes (appris en les posant), 5. 18/09/2026 — le gate ne pouvait plus mordre (binaire Playwright absent), BUGS.md — pannes vécues et le gate qui les rend re-livables impossibles, Méta-gate : `tools/test-gates.mjs`
 
-### Community 67 - "export_register.js"
-Cohesion: 0.46
-Nodes (7): buildRegisterHtml(), fmtDate(), fmtNum(), registerCss(), statusLabel(), tbl(), tr()
-
 ### Community 68 - "5. Utilisation quotidienne : Les modules indispensables"
 Cohesion: 0.29
 Nodes (7): 5.1 Températures des enceintes (Module 02), 5.2 Réception des marchandises & livraisons (Module 05), 5.3 Traçabilité, étiquettes & DLC secondaires (Module 04), 5.4 Plan de nettoyage et désinfection (Module 03), 5.5 Checklists d'ouverture et de fermeture (Module 06), 5.6 Huiles de friture (Module 07), 5. Utilisation quotidienne : Les modules indispensables
@@ -334,25 +335,29 @@ Nodes (5): 6.1 Refroidissement rapide (Module 09), 6.2 Décongélation sécuris�
 Cohesion: 0.50
 Nodes (4): 3.1 Compléter la fiche établissement, 3.2 Déclarer vos équipements de froid et chaud, 3.3 Configurer votre brigade et attribuer les rôles, 3. Configuration initiale essentielle
 
+### Community 75 - "GEMINI.md"
+Cohesion: 0.50
+Nodes (3): Automatisation Git (Push après correctif et vérifications), Instructions pour l'assistant, Publication (déploiement)
+
 ## Knowledge Gaps
 - **394 isolated node(s):** `html`, `getElemMatches`, `uniqueQueriedIds`, `declaredIdMatches`, `declaredIds` (+389 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **29 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **24 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `HACCPUseCases` connect `HACCP Use Cases` to `Cleaning Task Entity`, `Domain Entities and Logic`, `Equipment Entity`, `App Integration Tests`, `Barcode and QR Services`?**
+- **Why does `HACCPUseCases` connect `HACCP Use Cases` to `Design System and Assets`, `App Integration Tests`, `Barcode and QR Services`, `Domain Entities and Logic`?**
   _High betweenness centrality (0.040) - this node is a cross-community bridge._
-- **Why does `HACCP_NORMS` connect `Domain Entities and Logic` to `Traceability and Allergens`, `Reception Management`, `Audit and Scoring`, `Cooling Cycle Tracking`, `pH and Weight Records`, `Cleaning Management`, `Temperature Monitoring`, `Defrosting Management`, `Oil and Fryer Monitoring`, `App Integration Tests`, `Barcode and QR Services`?**
+- **Why does `HACCP_NORMS` connect `Storage Repository Defaults` to `Traceability and Allergens`, `Reception Management`, `Audit and Scoring`, `Cooling Cycle Tracking`, `Checklist Routine Logic`, `pH and Weight Records`, `Temperature Monitoring`, `Domain Entities and Logic`, `Defrosting Management`, `Oil and Fryer Monitoring`, `App Integration Tests`, `Barcode and QR Services`?**
   _High betweenness centrality (0.038) - this node is a cross-community bridge._
-- **Why does `SupabaseHACCPRepository` connect `Supabase Data Repository` to `Supabase Client Configuration`, `config.js`, `Settings and Backup Logic`?**
+- **Why does `SupabaseHACCPRepository` connect `Supabase Data Repository` to `Supabase Client Configuration`, `config.js`, `Settings Use Cases`?**
   _High betweenness centrality (0.036) - this node is a cross-community bridge._
 - **What connects `html`, `getElemMatches`, `uniqueQueriedIds` to the rest of the system?**
   _395 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Design System and Assets` be split into smaller, more focused modules?**
-  _Cohesion score 0.06923361717882266 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05039193729003359 - nodes in this community are weakly interconnected._
 - **Should `Auth and Permissions` be split into smaller, more focused modules?**
-  _Cohesion score 0.05518394648829431 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06684733514001806 - nodes in this community are weakly interconnected._
 - **Should `UI Navigation and Actions` be split into smaller, more focused modules?**
-  _Cohesion score 0.07267884322678843 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07433489827856025 - nodes in this community are weakly interconnected._
