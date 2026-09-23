@@ -17,13 +17,13 @@
  * d'énumérer les comptes existants.
  */
 
-import { definirModePersistance, retirerModeUrl } from '../infrastructure/config.js';
 import { icon } from './icons.js';
 import { toast } from './ui.js';
 
 const PORTAL_ID = 'portail-connexion';
 const EMAIL_VALIDE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const LIBELLE_CONNEXION = 'Se connecter';
+const LIBELLE_INSCRIPTION = 'Créer mon compte et mon établissement';
 const LIBELLE_CREATION = 'Créer mon établissement';
 const LIBELLE_RECUPERATION = 'Envoyer le lien de réinitialisation';
 const LIBELLE_NOUVEAU_MDP = 'Enregistrer le nouveau mot de passe';
@@ -85,6 +85,13 @@ function gabarit() {
           <p class="portail__sous-titre">Registre sanitaire partagé</p>
         </span>
       </header>
+
+      <!-- Sélecteur d'onglet Connexion / Inscription -->
+      <div class="seg" id="portail-onglets" role="tablist" style="margin-bottom: var(--s-6); width: 100%;">
+        <button class="seg__item is-active" id="portail-onglet-connexion" type="button" role="tab" style="flex: 1;">Se connecter</button>
+        <button class="seg__item" id="portail-onglet-inscription" type="button" role="tab" style="flex: 1;">Créer un compte</button>
+      </div>
+
       <p class="portail__intro" id="portail-intro"></p>
 
       <!-- Étape 1 : Connexion -->
@@ -103,6 +110,33 @@ function gabarit() {
                  autocomplete="current-password" required>
         </div>
         <button class="btn btn--primary btn--block" id="portail-connexion-valider" type="submit">${LIBELLE_CONNEXION}</button>
+      </form>
+
+      <!-- Étape 1-bis : Inscription explicite (Créer un compte) -->
+      <form class="portail__forme" id="portail-forme-inscription" hidden novalidate>
+        <div class="field">
+          <label class="field__label" for="portail-inscr-etab">Nom de l'établissement</label>
+          <input class="input" id="portail-inscr-etab" name="etablissement" type="text"
+                 autocomplete="organization" maxlength="80" placeholder="ex. Le Bistrot Gourmand" required>
+          <p class="field__hint">Apparaît sur les enregistrements, les étiquettes et les exports.</p>
+        </div>
+        <div class="field">
+          <label class="field__label" for="portail-inscr-email">Adresse e-mail</label>
+          <input class="input" id="portail-inscr-email" name="email" type="email" inputmode="email"
+                 autocomplete="email" spellcheck="false" required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="portail-inscr-mdp">Mot de passe</label>
+          <input class="input" id="portail-inscr-mdp" name="motdepasse" type="password"
+                 autocomplete="new-password" minlength="8" required>
+          <p class="field__hint">Minimum 8 caractères.</p>
+        </div>
+        <div class="field">
+          <label class="field__label" for="portail-inscr-confirm">Confirmer le mot de passe</label>
+          <input class="input" id="portail-inscr-confirm" name="confirmmdp" type="password"
+                 autocomplete="new-password" minlength="8" required>
+        </div>
+        <button class="btn btn--primary btn--block" id="portail-inscription-valider" type="submit">${LIBELLE_INSCRIPTION}</button>
       </form>
 
       <!-- Étape 2 : Demande d'envoi du lien de réinitialisation -->
@@ -143,7 +177,7 @@ function gabarit() {
         <button class="btn btn--primary btn--block" id="portail-nouveau-mdp-valider" type="submit">${LIBELLE_NOUVEAU_MDP}</button>
       </form>
 
-      <!-- Étape 5 : Création de l'établissement initial -->
+      <!-- Étape 5 : Création de l'établissement initial (pour compte existant orphelin) -->
       <form class="portail__forme" id="portail-forme-creation" hidden novalidate>
         <div class="field">
           <label class="field__label" for="portail-etab">Nom de l'établissement</label>
@@ -155,10 +189,6 @@ function gabarit() {
       </form>
 
       <p class="portail__erreur" id="portail-erreur" role="status" aria-live="polite"></p>
-      <footer class="portail__pied">
-        <button class="portail__lien" id="portail-local" type="button">Continuer sans compte (données locales)</button>
-        <p class="portail__note">Aucune donnée n'est envoyée tant que vous n'êtes pas connecté.</p>
-      </footer>
     </div>
   </div>`;
 }
@@ -181,12 +211,13 @@ const effacerErreur = () => afficherErreur('');
 function etatOccupe(occupe) {
   if (!racine) return;
   const etape = racine.dataset.etape;
-  racine.querySelectorAll('.portail__forme .input, .portail__forme button').forEach((el) => {
+  racine.querySelectorAll('.portail__forme .input, .portail__forme button, #portail-onglets button').forEach((el) => {
     el.disabled = occupe;
   });
 
   const boutons = {
     connexion: ['#portail-connexion-valider', LIBELLE_CONNEXION, 'Connexion…'],
+    inscription: ['#portail-inscription-valider', LIBELLE_INSCRIPTION, 'Création du compte…'],
     creation: ['#portail-creation-valider', LIBELLE_CREATION, 'Création…'],
     recup: ['#portail-recup-valider', LIBELLE_RECUPERATION, 'Envoi en cours…'],
     'nouveau-mdp': ['#portail-nouveau-mdp-valider', LIBELLE_NOUVEAU_MDP, 'Enregistrement…'],
@@ -205,14 +236,28 @@ function afficherEtape(etape, message = '') {
   racine.dataset.etape = etape;
 
   champ('#portail-forme-connexion').hidden = (etape !== 'connexion');
+  champ('#portail-forme-inscription').hidden = (etape !== 'inscription');
   champ('#portail-forme-creation').hidden = (etape !== 'creation');
   champ('#portail-forme-recup').hidden = (etape !== 'recup');
   champ('#portail-forme-recup-succes').hidden = (etape !== 'recup-succes');
   champ('#portail-forme-nouveau-mdp').hidden = (etape !== 'nouveau-mdp');
 
+  // Gestion des onglets principaux (visibles uniquement lors de connexion ou inscription)
+  const barreOnglets = champ('#portail-onglets');
+  if (barreOnglets) {
+    barreOnglets.hidden = (etape !== 'connexion' && etape !== 'inscription');
+    const ongletCo = champ('#portail-onglet-connexion');
+    const ongletInscr = champ('#portail-onglet-inscription');
+    if (ongletCo) ongletCo.classList.toggle('is-active', etape === 'connexion');
+    if (ongletInscr) ongletInscr.classList.toggle('is-active', etape === 'inscription');
+  }
+
   const intro = champ('#portail-intro');
   if (intro) {
     switch (etape) {
+      case 'inscription':
+        intro.textContent = 'Créez votre compte administrateur et initialisez le registre officiel de votre établissement.';
+        break;
       case 'creation':
         intro.textContent = "Ce compte n'est rattaché à aucun établissement : nommez-le pour créer le registre partagé.";
         break;
@@ -237,6 +282,7 @@ function afficherEtape(etape, message = '') {
 
   const focusParEtape = {
     connexion: '#portail-email',
+    inscription: '#portail-inscr-etab',
     creation: '#portail-etab',
     recup: '#portail-recup-email',
     'nouveau-mdp': '#portail-nouveau-mdp',
@@ -265,18 +311,6 @@ function terminer(reponse) {
   if (aboutir) aboutir(reponse);
 }
 
-function continuerEnLocal() {
-  definirModePersistance('local');
-  // L'URL peut porter `?mode=serveur` : sans ce nettoyage, la surcharge d'URL reprendrait la
-  // main au rechargement et ramènerait l'utilisateur sur le portail, en boucle.
-  retirerModeUrl();
-  terminer({ ok: false, raison: 'local' });
-  try {
-    if (typeof location !== 'undefined' && typeof location.reload === 'function') location.reload();
-  } catch {
-    /* environnement sans navigation : le démarrage local prend le relais */
-  }
-}
 
 /** Validation locale : renvoie { message, champ } ou null. */
 function validerIdentifiants(email, motDePasse) {
@@ -307,6 +341,76 @@ async function soumettreConnexion(evenement) {
   } finally {
     const secret = champ('#portail-mdp');
     if (secret) secret.value = '';
+    etatOccupe(false);
+  }
+}
+
+async function soumettreInscription(evenement) {
+  evenement.preventDefault();
+  const nomEtab = ((champ('#portail-inscr-etab') || {}).value || '').trim();
+  const email = ((champ('#portail-inscr-email') || {}).value || '').trim();
+  const motDePasse = (champ('#portail-inscr-mdp') || {}).value || '';
+  const confirm = (champ('#portail-inscr-confirm') || {}).value || '';
+
+  if (nomEtab.length < 2) {
+    afficherErreur("Indiquez le nom de l'établissement (2 caractères minimum).", '#portail-inscr-etab');
+    return;
+  }
+  if (!email || !EMAIL_VALIDE.test(email)) {
+    afficherErreur('Indiquez une adresse e-mail valide.', '#portail-inscr-email');
+    return;
+  }
+  if (!motDePasse || motDePasse.length < 8) {
+    afficherErreur('Le mot de passe doit comporter au moins 8 caractères.', '#portail-inscr-mdp');
+    return;
+  }
+  if (motDePasse !== confirm) {
+    afficherErreur('Les deux mots de passe ne correspondent pas.', '#portail-inscr-confirm');
+    return;
+  }
+
+  effacerErreur();
+  etatOccupe(true);
+  try {
+    if (typeof contexte.client.signUp === 'function') {
+      await contexte.client.signUp(email, motDePasse);
+    } else {
+      await contexte.client.signIn(email, motDePasse);
+    }
+
+    // Si la session n'est pas directement active (ex: confirmation par email requise)
+    if (!contexte.client.hasSession()) {
+      try {
+        await contexte.client.signIn(email, motDePasse);
+      } catch (errCo) {
+        // En cas de compte déjà existant ou attente de validation
+        if (errCo && (errCo.statut === 400 || errCo.statut === 422)) {
+          afficherEtape('connexion', 'Un compte existe déjà avec cette adresse ou un e-mail de confirmation vous a été envoyé. Veuillez vous connecter.');
+          return;
+        }
+        throw errCo;
+      }
+    }
+
+    // Création de l'établissement rattaché
+    if (!contexte.repository) {
+      throw new Error('Dépôt serveur indisponible.');
+    }
+    await contexte.repository.creerEtablissement(nomEtab);
+    terminer({ ok: true });
+  } catch (erreur) {
+    if (contexte.onErreur) contexte.onErreur(erreur);
+    const msg = (erreur && erreur.message) ? erreur.message : '';
+    if (msg.includes('already registered') || msg.includes('User already registered')) {
+      afficherEtape('connexion', 'Un compte existe déjà avec cet e-mail. Connectez-vous.');
+    } else {
+      afficherErreur(messageErreur(erreur));
+    }
+  } finally {
+    const s1 = champ('#portail-inscr-mdp');
+    const s2 = champ('#portail-inscr-confirm');
+    if (s1) s1.value = '';
+    if (s2) s2.value = '';
     etatOccupe(false);
   }
 }
@@ -454,9 +558,16 @@ export async function afficherConnexion({ client, repository = null, onErreur = 
   racine = conteneur.querySelector(`#${PORTAL_ID}`);
 
   racine.querySelector('#portail-forme-connexion').addEventListener('submit', soumettreConnexion);
+  racine.querySelector('#portail-forme-inscription').addEventListener('submit', soumettreInscription);
   racine.querySelector('#portail-forme-creation').addEventListener('submit', soumettreCreation);
   racine.querySelector('#portail-forme-recup').addEventListener('submit', soumettreDemandeRecuperation);
   racine.querySelector('#portail-forme-nouveau-mdp').addEventListener('submit', soumettreNouveauMotDePasse);
+
+  const ongletCo = racine.querySelector('#portail-onglet-connexion');
+  if (ongletCo) ongletCo.addEventListener('click', () => afficherEtape('connexion'));
+
+  const ongletInscr = racine.querySelector('#portail-onglet-inscription');
+  if (ongletInscr) ongletInscr.addEventListener('click', () => afficherEtape('inscription'));
 
   racine.querySelector('#portail-vers-recup').addEventListener('click', () => {
     const saisieEmail = (champ('#portail-email') || {}).value || '';
@@ -473,7 +584,6 @@ export async function afficherConnexion({ client, repository = null, onErreur = 
     afficherEtape('connexion');
   });
 
-  racine.querySelector('#portail-local').addEventListener('click', continuerEnLocal);
   const attente = new Promise((resoudre) => { resoudreAttente = resoudre; });
   preparer();
   return attente;

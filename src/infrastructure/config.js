@@ -71,8 +71,8 @@ export const SUPABASE_CLE_ETABLISSEMENT = `${SUPABASE_PREFIXE}establishment_id`;
    Mode de persistance
    ═══════════════════════════════════════════════════════════════════ */
 
-/** @type {'local' | 'serveur'} Mode livré par défaut (comportement historique). */
-export const MODE_PERSISTANCE = 'local';
+/** @type {'local' | 'serveur'} Mode livré par défaut (production connectée). */
+export const MODE_PERSISTANCE = 'serveur';
 
 /** Alias anglais de MODE_PERSISTANCE, pour les appelants qui testent un drapeau. */
 export const PERSISTENCE_MODE = MODE_PERSISTANCE;

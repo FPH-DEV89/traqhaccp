@@ -203,6 +203,35 @@ export class SupabaseClient {
   }
 
   /**
+   * Inscription d'un nouvel utilisateur (`/auth/v1/signup`).
+   * @param {string} email
+   * @param {string} motDePasse
+   * @param {object} [donnees] - métadonnées utilisateur optionnelles
+   * @returns {Promise<object>} réponse d'inscription (session ou utilisateur)
+   */
+  async signUp(email, motDePasse, donnees = {}) {
+    if (!email || !motDePasse) {
+      throw new ErreurSupabase('Adresse e-mail et mot de passe sont obligatoires pour créer un compte.', { statut: 400 });
+    }
+    const corps = {
+      email: String(email).trim(),
+      password: String(motDePasse),
+    };
+    if (donnees && typeof donnees === 'object' && Object.keys(donnees).length > 0) {
+      corps.data = donnees;
+    }
+    const reponse = await this.requete(`/auth/v1/signup`, {
+      methode: 'POST',
+      corps,
+      auth: false,
+    });
+    if (reponse && typeof reponse.access_token === 'string') {
+      return this._enregistrerSession(reponse);
+    }
+    return reponse;
+  }
+
+  /**
    * Connexion par mot de passe (`grant_type=password`).
    * @param {string} email
    * @param {string} motDePasse

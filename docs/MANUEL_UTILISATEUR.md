@@ -1,4 +1,4 @@
-﻿# Manuel Utilisateur — TraqHACCP Pro
+# Manuel Utilisateur — TraqHACCP Pro
 ## Guide de démarrage et d'utilisation pour les nouveaux utilisateurs & établissements
 
 Bienvenue sur **TraqHACCP**, votre solution de gestion du Plan de Maîtrise Sanitaire (PMS) et registre sanitaire réglementaire conforme aux exigences européennes (Règlement CE 852/2004, Paquet Hygiène) et françaises.
@@ -51,18 +51,17 @@ L'application propose deux modes de fonctionnement :
 
 ## 2. Créer un compte et son établissement
 
-Pour démarrer avec le registre partagé :
+Pour démarrer avec le registre partagé connecté :
 
-1. Rendez-vous sur **TraqHACCP** (en mode connecté/serveur ou via le portail de connexion).
-2. **Saisissez votre adresse e-mail et votre mot de passe**.
-3. Lors de la première connexion avec une nouvelle adresse e-mail :
-   - L'écran affiche automatiquement l'étape **« Créer mon établissement »**.
-   - Saisissez la **Raison sociale / Nom commercial** de votre établissement (ex. *« Le Bistrot Gourmand »*, *« Boulangerie Saint-Honoré »*).
-   - Cliquez sur **« Créer mon établissement »**.
-4. Votre compte administrateur (**Gérant**) est immédiatement créé et votre établissement est initialisé.
-
-> **Remarque :**
-> En cas de coupure réseau, l'application reste accessible. Pour basculer à tout moment en mode local de secours, un lien *« Continuer sans compte (données locales) »* est disponible sur la fenêtre de connexion.
+1. Rendez-vous sur **TraqHACCP** ([https://traqhaccp.vercel.app/](https://traqhaccp.vercel.app/)). Le portail de connexion et d'inscription s'affiche directement.
+2. Pour une première utilisation, cliquez sur l'onglet **« Créer un compte »**.
+3. Renseignez :
+   - Le **Nom de l'établissement** (Raison sociale / Nom commercial, ex. *« Le Bistrot Gourmand »*),
+   - Votre **adresse e-mail**,
+   - Votre **mot de passe** (minimum 8 caractères) et sa confirmation.
+4. Cliquez sur **« Créer mon compte et mon établissement »**.
+5. Votre compte administrateur (**Gérant**) est immédiatement créé et votre registre sanitaire partagé est initialisé sur le serveur sécurisé.
+6. Lors de vos visites suivantes (ou sur les autres appareils de la brigade), utilisez simplement l'onglet **« Se connecter »**.
 
 ---
 
