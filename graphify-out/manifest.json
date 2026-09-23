@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "sw.js": {
-    "mtime": 1790163718.7837732,
-    "ast_hash": "9309cdebf5a360f2ed9c68a4511b2bc3",
+    "mtime": 1790188480.586585,
+    "ast_hash": "7cf80915adea4b0ff12748eb1f88f77b",
     "semantic_hash": ""
   },
   "test_clean_arch.js": {
@@ -450,8 +450,8 @@
     "semantic_hash": ""
   },
   "patisserie.html": {
-    "mtime": 1790173414.8307636,
-    "ast_hash": "98f948bb00c4972e71fb24e6a7582b76",
+    "mtime": 1790188485.4927323,
+    "ast_hash": "9986049eea5c377c63989c4e07de0d8e",
     "semantic_hash": ""
   },
   "js/patisserie/app.js": {
