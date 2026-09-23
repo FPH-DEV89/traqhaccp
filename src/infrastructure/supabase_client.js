@@ -220,9 +220,12 @@ export class SupabaseClient {
     if (donnees && typeof donnees === 'object' && Object.keys(donnees).length > 0) {
       corps.data = donnees;
     }
-    const redirection = typeof window !== 'undefined' && window.location && window.location.origin
-      ? `${window.location.origin}${window.location.pathname}`
-      : 'https://traqhaccp.vercel.app/';
+    let redirection = 'https://traqhaccp.vercel.app/';
+    if (typeof window !== 'undefined' && window.location && window.location.origin) {
+      if (!window.location.origin.includes('localhost') && !window.location.origin.includes('127.0.0.1')) {
+        redirection = `${window.location.origin}${window.location.pathname}`;
+      }
+    }
     const query = `?redirect_to=${encodeURIComponent(redirection)}`;
     const reponse = await this.requete(`/auth/v1/signup${query}`, {
       methode: 'POST',

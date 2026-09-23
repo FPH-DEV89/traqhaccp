@@ -439,9 +439,12 @@ async function soumettreDemandeRecuperation(evenement) {
   effacerErreur();
   etatOccupe(true);
   try {
-    const redirection = typeof window !== 'undefined'
-      ? `${window.location.origin}${window.location.pathname}`
-      : null;
+    let redirection = 'https://traqhaccp.vercel.app/';
+    if (typeof window !== 'undefined' && window.location && window.location.origin) {
+      if (!window.location.origin.includes('localhost') && !window.location.origin.includes('127.0.0.1')) {
+        redirection = `${window.location.origin}${window.location.pathname}`;
+      }
+    }
     await contexte.client.demanderReinitialisation(email, redirection);
     afficherEtape('recup-succes');
   } catch (erreur) {

@@ -29,9 +29,9 @@ export function updateHeaderEstablishment() {
 export async function initAuth() {
   const mode = modePersistance();
   const hash = typeof window !== 'undefined' && window.location ? window.location.hash : '';
-  const estRetourAuth = hash.includes('type=recovery') || hash.includes('error_description');
+  const estRetourAuth = hash.includes('type=recovery') || hash.includes('access_token=') || hash.includes('type=signup') || hash.includes('error_description');
 
-  // Si on est en mode serveur, qu'une session active existe ou qu'un lien de reset a été cliqué
+  // Si on est en mode serveur, qu'une session active existe ou qu'un lien d'auth a été cliqué
   if (mode === 'serveur' || supabase.hasSession() || estRetourAuth) {
     try {
       if (!supabase.hasSession() || estRetourAuth) {
@@ -84,7 +84,7 @@ export async function afficherPortailConnexion() {
 
 async function synchroniserEtablissementConnecte() {
   let etabId = 'local';
-  let etabNom = 'Maison Saint-Honoré';
+  let etabNom = 'Mon Établissement';
 
   try {
     const membres = await supabase.select('memberships', { colonnes: 'establishment_id,role', limite: 1 });
@@ -101,6 +101,42 @@ async function synchroniserEtablissementConnecte() {
   }
 
   loadState(etabId, etabNom);
+
+  // Synchroniser l'utilisateur réel connecté pour ne pas afficher le compte de démo Lucas P.
+  try {
+    const utilisateur = supabase.currentUser();
+    if (utilisateur && utilisateur.email) {
+      const email = utilisateur.email;
+      const meta = utilisateur.user_metadata || {};
+      const prenom = meta.first_name || meta.firstName || email.split('@')[0];
+      const nom = meta.last_name || meta.lastName || '';
+      const initiales = `${prenom.charAt(0)}${nom ? nom.charAt(0) : ''}`.toUpperCase() || 'MO';
+
+      const opExistant = state.teamMembers.find(m => m.id === utilisateur.id || m.email === email);
+      if (!opExistant) {
+        const profilConnecte = {
+          id: utilisateur.id || 'usr-connecte',
+          firstName: prenom,
+          lastName: nom,
+          initials: initiales,
+          role: 'Responsable',
+          email: email,
+          pin: '',
+          active: true,
+          joinedDate: new Date().toISOString().split('T')[0]
+        };
+        // Remplacer la brigade par défaut de démo par l'utilisateur connecté
+        state.teamMembers = [profilConnecte];
+        state.currentOperatorId = profilConnecte.id;
+        saveState();
+      } else {
+        state.currentOperatorId = opExistant.id;
+      }
+    }
+  } catch (e) {
+    console.warn('Erreur synchronisation utilisateur connecté :', e);
+  }
+
   updateHeaderEstablishment();
   rafraichirToutesLesVues();
 }
