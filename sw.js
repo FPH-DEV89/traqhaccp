@@ -9,7 +9,7 @@
  *     sans elles, et mettre en cache des réponses opaques ferait échouer `addAll`.
  * Aucun build : les chemins ci-dessous correspondent aux fichiers réellement présents.
  */
-const CACHE_NAME = 'traqhaccp-v4-patisserie-20260923-v1';
+const CACHE_NAME = 'traqhaccp-v4-patisserie-20260923-v2';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -111,7 +111,7 @@ async function reseauDAbord(requete) {
     if (reponse && reponse.ok) cache.put(requete, reponse.clone());
     return reponse;
   } catch (erreur) {
-    return (await cache.match(requete, { ignoreSearch: true })) || (await cache.match('./index.html')) || Response.error();
+    return (await cache.match(requete, { ignoreSearch: true })) || (await cache.match('./patisserie.html')) || (await cache.match('./index.html')) || Response.error();
   }
 }
 

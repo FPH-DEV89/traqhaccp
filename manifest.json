@@ -1,7 +1,7 @@
 {
-  "name": "TraqHACCP — Registre sanitaire",
+  "name": "TraqHACCP — Pâtisserie, Traçabilité & Coûts",
   "short_name": "TraqHACCP",
-  "description": "Registre sanitaire HACCP hors-ligne : températures, nettoyage, huiles de friture, traçabilité, non-conformités et audits.",
+  "description": "Application Pâtisserie HACCP : traçabilité ingrédients, fiches techniques, calcul des coûts de revient, caisse FIFO et contrôle sanitaire DDPP.",
   "lang": "fr-FR",
   "dir": "ltr",
   "start_url": "./index.html",
