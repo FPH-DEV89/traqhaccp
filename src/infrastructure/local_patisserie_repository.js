@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TraqHACCP Pro — Repository Pâtisserie Local & Hors-ligne (Infrastructure)
  */
 import { 
@@ -7,7 +7,7 @@ import {
   SecondaryDlcRecord, 
   WitnessSampleRecord, 
   SaleRecord 
-} from '../../domain/patisserie_entities.js';
+} from '../domain/patisserie_entities.js';
 
 const KEY_LOTS = 'traqhaccp_patisserie_lots_v1';
 const KEY_RECIPES = 'traqhaccp_patisserie_recipes_v1';
