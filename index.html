@@ -47,8 +47,7 @@
 </noscript>
 
 <script type="module">
-  import { boot } from './src/presentation/context.js';
-  boot();
+  window.location.replace('./patisserie.html');
 
   // PWA : le registre doit rester consultable hors-ligne (harnais réseau dégradé).
   if ('serviceWorker' in navigator) {
