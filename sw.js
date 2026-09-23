@@ -9,7 +9,7 @@
  *     sans elles, et mettre en cache des réponses opaques ferait échouer `addAll`.
  * Aucun build : les chemins ci-dessous correspondent aux fichiers réellement présents.
  */
-const CACHE_NAME = 'traqhaccp-v4-patisserie-20260923-v4';
+const CACHE_NAME = 'traqhaccp-v4-patisserie-20260923-v5';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -99,11 +99,12 @@ self.addEventListener('fetch', (evenement) => {
   const url = new URL(requete.url);
   if (url.origin !== self.location.origin) return; // polices, Tone.js : réseau direct
   const navigation = requete.mode === 'navigate' || requete.destination === 'document'
-    || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html');
-  evenement.respondWith(navigation ? reseauDAbord(requete) : cacheDAbord(requete));
+    || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html') || url.pathname.endsWith('/patisserie.html');
+  const codeApp = url.pathname.endsWith('.js') || url.pathname.endsWith('.css');
+  evenement.respondWith(navigation || codeApp ? reseauDAbord(requete) : cacheDAbord(requete));
 });
 
-/** Réseau d'abord (document) : repli cache, puis page d'entrée hors-ligne. */
+/** Réseau d'abord (document et modules JS) : repli cache, puis page d'entrée hors-ligne. */
 async function reseauDAbord(requete) {
   const cache = await caches.open(CACHE_NAME);
   try {
@@ -115,7 +116,7 @@ async function reseauDAbord(requete) {
   }
 }
 
-/** Cache d'abord (assets) : réseau en secours, puis page d'entrée hors-ligne. */
+/** Cache d'abord (images, polices, favicons) : réseau en secours, puis page d'entrée hors-ligne. */
 async function cacheDAbord(requete) {
   const cache = await caches.open(CACHE_NAME);
   const enCache = await cache.match(requete, { ignoreSearch: true });

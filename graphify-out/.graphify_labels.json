@@ -72,7 +72,6 @@
   "70": "DESIGN.md",
   "71": "6. Contrôles spécifiques & Gestion des écarts",
   "72": "3. Configuration initiale essentielle",
-  "73": "Equipment",
   "74": "sw.js",
   "75": "GEMINI.md",
   "76": "Git Automation Flow",
@@ -82,6 +81,5 @@
   "80": "PERSISTENCE_MODE",
   "81": "closeTopOverlay",
   "82": "Vercel Production Deployment",
-  "83": "SanitaryDocument",
-  "84": "DeliveryRecord"
+  "83": "SanitaryDocument"
 }

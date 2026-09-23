@@ -2,7 +2,7 @@
  * TraqHACCP Pâtisserie — Supabase Auth & Multi-Establishment Portal
  */
 import { supabase } from '../../src/infrastructure/supabase_client.js';
-import { afficherConnexion, masquerConnexion } from '../../src/presentation/connexion.js';
+import { afficherConnexion, masquerConnexion } from '../../src/presentation/connexion.js?v=4.5';
 import { modePersistance, definirModePersistance } from '../../src/infrastructure/config.js';
 import { state, loadState, saveState } from './state.js';
 import { showToast, playBeep } from './audio-toast.js';
