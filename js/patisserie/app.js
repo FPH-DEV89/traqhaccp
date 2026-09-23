@@ -149,7 +149,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').then((reg) => {
     if (reg && reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-  }).catch(() => {});
+  }).catch((e) => console.warn('[SW] enregistrement impossible :', e.message));
   let rechargement = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!rechargement) {

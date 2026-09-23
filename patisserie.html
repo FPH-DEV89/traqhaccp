@@ -2,7 +2,7 @@
 <html lang="fr" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="TraqHACCP Pro — Pâtisserie, Traçabilité Ingrédients, Fiches Recettes, Coûts et Caisse FIFO">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -72,28 +72,28 @@
   <link rel="stylesheet" href="css/components.css?v=4.4">
   <link rel="stylesheet" href="css/views.css?v=4.4">
 </head>
-<body class="h-full bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans antialiased transition-colors duration-200 flex flex-col selection:bg-emerald-500 selection:text-white pb-20 md:pb-8">
+<body class="h-full bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans antialiased transition-colors duration-200 flex flex-col selection:bg-emerald-500 selection:text-white pb-20 lg:pb-8">
 
   <header class="sticky top-0 z-40 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 gap-3">
+      <div class="flex items-center justify-between h-16 gap-3 min-w-0">
         
         <!-- Logo & Brand -->
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center font-black tracking-tighter text-sm shadow-sm cursor-pointer" onclick="switchView('traceability')">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 shrink-0 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center font-black tracking-tighter text-sm shadow-sm cursor-pointer" onclick="switchView('traceability')">
             T<span class="text-emerald-500">Q</span>
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-sm tracking-tight text-zinc-900 dark:text-white">TraqHACCP</span>
-              <span class="px-1.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 rounded-md border border-emerald-200 dark:border-emerald-800/50">CE 852 · Pâtisserie</span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="font-bold text-sm tracking-tight text-zinc-900 dark:text-white truncate">TraqHACCP</span>
+              <span class="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 rounded-md border border-emerald-200 dark:border-emerald-800/50">CE 852 · Pâtisserie</span>
             </div>
-            <p id="header-establishment-name" class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate max-w-[190px] sm:max-w-none">Maison Saint-Honoré · Labo, Vente & Livraison</p>
+            <p id="header-establishment-name" class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate max-w-[120px] sm:max-w-none">Maison Saint-Honoré · Labo, Vente & Livraison</p>
           </div>
         </div>
 
-        <!-- Desktop Navigation Tabs -->
-        <nav class="hidden md:flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-800/70 rounded-xl text-xs font-semibold border border-zinc-200/60 dark:border-zinc-700/60">
+        <!-- Desktop Navigation Tabs (≥1024px : en dessous, la barre tactile inférieure prend le relais) -->
+        <nav class="hidden lg:flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-800/70 rounded-xl text-xs font-semibold border border-zinc-200/60 dark:border-zinc-700/60">
           <button id="nav-trace" onclick="switchView('traceability')" class="px-3.5 py-1.5 rounded-lg text-white bg-zinc-900 dark:bg-zinc-700 shadow-sm transition-all flex items-center gap-1.5">
             <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
             Traçabilité & Stocks
@@ -117,11 +117,11 @@
         </nav>
 
         <!-- Right Quick Actions: Inspection Mode & Theme Toggle -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 shrink-0">
           <!-- Opérateur Courant / Switcher Rapide -->
           <button onclick="openOperatorModal()" class="px-2 py-1 sm:px-2.5 sm:py-1 text-xs font-semibold rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 transition flex items-center gap-1.5 sm:gap-2 shadow-sm active:scale-95" title="Changer d'opérateur ou gérer l'équipe">
             <span id="current-op-initials" class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px]">LP</span>
-            <div class="text-left">
+            <div class="hidden sm:block text-left">
               <span id="current-op-name" class="block leading-tight text-[11px] font-bold max-w-[80px] sm:max-w-none truncate">Lucas P.</span>
               <span id="current-op-role" class="hidden sm:block leading-tight text-[9px] text-zinc-500 dark:text-zinc-400">Chef Tourrier</span>
             </div>
@@ -134,7 +134,7 @@
 
           <button onclick="openInspectionModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 transition flex items-center gap-1.5 shadow-sm active:scale-95">
             <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            <span>DDPP / Alerte</span>
+            <span class="hidden sm:inline">DDPP / Alerte</span>
           </button>
 
           <button onclick="toggleDarkMode()" aria-label="Basculer thème sombre" class="p-2 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
@@ -447,7 +447,7 @@
   </main>
 
   <!-- Mobile Bottom Navigation Bar -->
-  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-lg border-t border-zinc-200 dark:border-zinc-800 px-3 py-2 flex items-center justify-around text-[10px] font-medium">
+  <div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-lg border-t border-zinc-200 dark:border-zinc-800 px-3 py-2 flex items-center justify-around text-[10px] font-medium">
     <button onclick="switchView('traceability')" id="mob-trace" class="flex flex-col items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
       <span>Traçabilité</span>

@@ -11,6 +11,9 @@
  *               dans 300px. Tous les checks DOM passaient au vert, l'écran était vide.
  *   Fixture B — contradiction de cascade : deux `@media (max-width: 900px)`, même sélecteur
  *               `.app`, même propriété `grid-template-rows`, valeurs différentes.
+ *   Fixture C — précache de service worker non servable : une entrée de ASSETS_TO_CACHE sans
+ *               fichier sur disque. addAll() étant tout-ou-rien, ce 404 tuait install() et
+ *               l'hors-ligne disparaissait sans erreur visible.
  *
  * Usage : node tools/test-gates.mjs        (exit 0 = les gates fonctionnent, exit 1 = régression)
  */
@@ -78,16 +81,16 @@ mkdirSync(BAC, { recursive: true });
 // 1) gate cascade
 writeFileSync(join(BAC, 'bug.css'), css(true));
 writeFileSync(join(BAC, 'sain.css'), css(false));
-console.log('── Gate 1/3 · check-css-cascade.mjs');
+console.log('── Gate 1/4 · check-css-cascade.mjs');
 attendu('contradiction @media détectée', node('check-css-cascade.mjs', [join(BAC, 'bug.css')]).status, 1);
 attendu('CSS légitime laissé passer', node('check-css-cascade.mjs', [join(BAC, 'sain.css')]).status, 0);
 
 // 2) gate artefact périmé
-console.log('── Gate 2/3 · check-artifact-fresh.mjs');
+console.log('── Gate 2/4 · check-artifact-fresh.mjs');
 attendu('artefact absent = silence', node('check-artifact-fresh.mjs', ['--dir', join(BAC, 'inexistant')]).status, 0);
 
 // 3) gate peinture (fixtures chargées en file://)
-console.log('── Gate 3/3 · audit-ui-paint.mjs');
+console.log('── Gate 3/4 · audit-ui-paint.mjs');
 const ENV = { PAINT_WIDTHS: '1024x768' };
 writeFileSync(join(BAC, 'clippee.html'), page(true));
 writeFileSync(join(BAC, 'saine.html'), page(false));
@@ -100,14 +103,46 @@ mentionne('le message nomme le clipping', rClippee.stdout, 'CLIPPÉ|NON PEINT');
 const rSaine = node('audit-ui-paint.mjs', ['--url', urlFichier('saine.html'), '--view', '#view', '--quiet'], ENV);
 attendu('page saine laissée passer', rSaine.status, 0);
 
+// 4) gate hors-ligne : le précache du service worker doit être servable
+console.log('── Gate 4/4 · check-sw-assets.mjs');
+/* Fixture C — panne du 23/09/2026 : ASSETS_TO_CACHE contenait une entrée qui n'existe pas sur
+   disque (résolue par une réécriture de l'hébergeur). cache.addAll() étant tout-ou-rien, ce 404
+   rejetait install() : plus aucun service worker, donc plus d'hors-ligne, sans message d'erreur.
+   La version cassée oublie AUSSI un module vivant : les deux moitiés de la panne sont testées. */
+const arbre = (sain) => {
+  const d = join(BAC, sain ? 'sw-sain' : 'sw-casse');
+  mkdirSync(d, { recursive: true });
+  writeFileSync(join(d, 'index.html'),
+    '<!doctype html><link rel="stylesheet" href="./s.css"><script type="module" src="./app.js"></script>');
+  writeFileSync(join(d, 'app.js'), "import { a } from './mod.js';\nexport const b = a;\n");
+  writeFileSync(join(d, 'mod.js'), 'export const a = 1;\n');
+  writeFileSync(join(d, 's.css'), '.a{color:red}\n');
+  writeFileSync(join(d, 'sw.js'), sain
+    ? "const ASSETS_TO_CACHE = [\n  './index.html',\n  './app.js',\n  './mod.js',\n  './s.css',\n];\n"
+    : "const ASSETS_TO_CACHE = [\n  './index.html',\n  './app.js',\n  './absent.js',\n  './s.css',\n];\n");
+  return d;
+};
+const dCasse = arbre(false);
+const dSain = arbre(true);
+
+const rSwCasse = node('check-sw-assets.mjs', ['--sw', join(dCasse, 'sw.js'), '--html', 'index.html', '--root', dCasse]);
+attendu('entrée de précache introuvable détectée (panne du 23/09)', rSwCasse.status, 1);
+mentionne("le message nomme l'entrée sans fichier", rSwCasse.stdout, 'INTROUVABLE');
+mentionne('le message nomme aussi le module vivant oublié', rSwCasse.stdout, 'mod\\.js');
+
+const rSwSain = node('check-sw-assets.mjs', ['--sw', join(dSain, 'sw.js'), '--html', 'index.html', '--root', dSain]);
+attendu('précache sain laissé passer', rSwSain.status, 0);
+
 // Détail utile en cas d'échec
 if (ko) {
   console.log('\n── Détail des sorties qui n\'ont pas réagi comme prévu ──');
-  console.log(rClippee.stdout?.trim() || rClippee.stderr?.trim());
-  console.log(rSaine.stdout?.trim() || rSaine.stderr?.trim());
+  for (const r of [rClippee, rSaine, rSwCasse, rSwSain]) {
+    console.log((r.stdout || '').trim() || (r.stderr || '').trim());
+    console.log('·'.repeat(40));
+  }
 }
 
 console.log(ko
   ? `\nFAIL — ${ko} assertion(s) : un gate ne joue plus son rôle.`
-  : '\nPASS — les 3 gates détectent bien les bugs du 16-17/09/2026 et ne crient pas au loup sur du code sain.');
+  : '\nPASS — les 4 gates détectent bien les pannes du 16-17/09 et du 23/09/2026, et ne crient pas au loup sur du code sain.');
 process.exit(ko ? 1 : 0);

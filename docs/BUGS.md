@@ -6,8 +6,9 @@
 
 Lancement : `npm run gate` (rapide, sans navigateur) — `npm run gate:paint` (exige `npm run serve`).
 Automatique : hook `pre-push` versionné dans `.githooks/` (`git config core.hooksPath .githooks`).
-Bloquant au push : cascade CSS + méta-test. **Consultatif** : fraîcheur de l'artefact (`--advisory`),
-car un artefact de documentation périmé ne doit pas empêcher la livraison de code (cf. §4a).
+Bloquant au push : cascade CSS + précache hors-ligne + méta-test. **Consultatif** : fraîcheur de
+l'artefact (`--advisory`), car un artefact de documentation périmé ne doit pas empêcher la livraison
+de code (cf. §4a).
 
 ---
 
@@ -131,3 +132,42 @@ npm run setup:playwright    # installe le binaire dans un chemin inscriptible
 
 Le hook `pre-push` bascule alors automatiquement sur `/opt/data/.playwright`. Leçon : quand un
 méta-gate hurle, vérifier d'abord si le gate **a pu tourner** — avant de soupçonner le code.
+
+---
+
+## 6. 23/09/2026 — le « hors-ligne » qui n'existait pas (service worker jeté en silence)
+
+**Symptôme** : l'app est vendue comme *registre sanitaire hors-ligne*. Réseau coupé, elle n'affichait
+**rien** : `ERR_INTERNET_DISCONNECTED`, page blanche. Aucune erreur nulle part, aucun 404 visible.
+
+**Cause** : `ASSETS_TO_CACHE` listait `./patisserie`, chemin qui **n'existe pas** dans le dépôt — il
+n'est servi que par une réécriture côté hébergeur. Sur tout autre hôte (GitHub Pages, serveur local,
+`file://`) c'est un 404. Or `cache.addAll()` est **tout-ou-rien** : un seul 404 rejette la promesse de
+`install()`, le worker devient *redundant* et est jeté → `getRegistrations()` renvoie **0**, et il n'y
+a jamais eu de hors-ligne.
+
+Panne invisible par construction : `register('./sw.js').catch(() => {})` avalait l'échec. Le seul
+symptôme observable était une **absence** — indiscernable de « pas encore de cache ».
+
+**Aggravant** : la liste précachait ~30 fichiers de l'ancienne architecture (17 vues, routeur,
+usecases, services) que **la page livrée ne charge plus**, tout en oubliant les 8 modules
+`js/patisserie/*` réellement exécutés. Et Tailwind, chargé depuis un CDN tiers, n'était jamais
+intercepté : même avec un worker sain, l'hors-ligne aurait rendu une page **dé-stylée** (une réponse
+opaque ne peut pas entrer dans `addAll()`, mais `cache.put()` l'accepte — d'où un cache explicite).
+
+**Gate** : `tools/check-sw-assets.mjs`
+- chaque entrée de `ASSETS_TO_CACHE` doit exister sur disque → aucun 404 possible ;
+- la **fermeture d'imports** de la page livrée doit être intégralement précachée (sinon l'hors-ligne
+  est partiel en silence) ;
+- sans navigateur, donc exécutable dans le hook ; `--sw <copie>` + `--root <dépôt>` rejouent la panne ;
+- `exit 2` = le gate n'a pas pu tourner (distinct de `exit 1` = panne détectée, cf. §Méta-gate).
+
+**Vérifié dans les deux sens** : sur l'ancien `sw.js` → exit 1 en nommant `./patisserie` **et** les 9
+modules vivants manquants ; sur le corrigé → exit 0. Réparation mesurée à l'exécution : **0 → 1**
+service worker `active`, **32** entrées en cache, et réseau coupé la page reste **peinte** (1 772
+caractères, `position: sticky` et styles Tailwind appliqués).
+
+**Corollaire (la leçon transférable)** : un gate doit mesurer ce que l'app **livre**, pas ce qu'un
+routeur mort déclare. `gate:paint` sortait `0/7` pour cette raison exacte — il mesurait `#view`, le
+conteneur de l'app non déployée. Rebranché sur la page servie : **5 vues × 7 largeurs = 35/35**.
+
