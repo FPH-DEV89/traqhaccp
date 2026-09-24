@@ -362,11 +362,54 @@ export function updateTopMetrics() {
   const statWarn = document.getElementById('stat-warning-dlc');
   const statSec = document.getElementById('stat-sec-dlc');
   const countAll = document.getElementById('count-all');
+  const statMargin = document.getElementById('stat-margin');
+  const statMarginCoef = document.getElementById('stat-margin-coef');
+  const statMarginSub = document.getElementById('stat-margin-sub');
 
   if (statLots) statLots.innerText = state.lots.length;
   if (statWarn) statWarn.innerText = urgentCount;
   if (statSec) statSec.innerText = state.secondaryDlcs.length;
   if (countAll) countAll.innerText = state.lots.length;
+
+  if (statMargin) {
+    if (state.salesHistory && state.salesHistory.length > 0) {
+      let totalVentesTTC = 0;
+      let totalMarge = 0;
+      state.salesHistory.forEach(s => {
+        totalVentesTTC += (s.totalTTC || 0);
+        totalMarge += (s.marginTotal || 0);
+      });
+      const totalVentesHT = totalVentesTTC / 1.10; // Base TVA moyenne pâtisserie 10%
+      const margeRatio = totalVentesHT > 0 ? (totalMarge / totalVentesHT) * 100 : 0;
+      const coutMatiere = Math.max(0, totalVentesHT - totalMarge);
+      const coef = coutMatiere > 0 ? (totalVentesTTC / coutMatiere) : 0;
+      const countVentes = state.salesHistory.length;
+
+      statMargin.innerText = `${margeRatio.toFixed(1)}%`;
+      if (statMarginCoef) statMarginCoef.innerText = coef > 0 ? `Coef. ~${coef.toFixed(1)}x` : '—';
+      if (statMarginSub) statMarginSub.innerText = `${countVentes} vente${countVentes > 1 ? 's' : ''} enregistrée${countVentes > 1 ? 's' : ''}`;
+    } else if (state.recipes && state.recipes.length > 0) {
+      let sumMargeRatio = 0;
+      let sumCoef = 0;
+      let validCount = 0;
+      state.recipes.forEach(r => {
+        const m = calculateRecipeMetrics(r);
+        sumMargeRatio += m.margeRatio;
+        sumCoef += m.coefMarge;
+        validCount++;
+      });
+      const avgMarge = validCount > 0 ? sumMargeRatio / validCount : 0;
+      const avgCoef = validCount > 0 ? sumCoef / validCount : 0;
+
+      statMargin.innerText = `${avgMarge.toFixed(1)}%`;
+      if (statMarginCoef) statMarginCoef.innerText = avgCoef > 0 ? `Coef. ~${avgCoef.toFixed(1)}x` : '—';
+      if (statMarginSub) statMarginSub.innerText = 'Moyenne fiches techniques';
+    } else {
+      statMargin.innerText = '—';
+      if (statMarginCoef) statMarginCoef.innerText = '—';
+      if (statMarginSub) statMarginSub.innerText = 'En attente de données';
+    }
+  }
 }
 
 export function switchView(tab) {
