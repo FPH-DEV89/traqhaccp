@@ -205,8 +205,8 @@
     "semantic_hash": ""
   },
   "patisserie.html": {
-    "mtime": 1790247639.7011988,
-    "ast_hash": "a3d9b016188b50a4e615dcae776e0335",
+    "mtime": 1790248437.9535506,
+    "ast_hash": "17e8c1c1d844ef85dc069089ce6a9abc",
     "semantic_hash": ""
   },
   "js/patisserie/app.js": {
@@ -240,13 +240,13 @@
     "semantic_hash": ""
   },
   "js/patisserie/state.js": {
-    "mtime": 1790246263.0931528,
-    "ast_hash": "72899862a421bf833cc3960580a67131",
+    "mtime": 1790248453.1912904,
+    "ast_hash": "2b838200242a61a281bd1d74dc75a73d",
     "semantic_hash": ""
   },
   "js/patisserie/views.js": {
-    "mtime": 1790247690.1150672,
-    "ast_hash": "50d0388338dc0b9dfabbee847675bcd8",
+    "mtime": 1790248660.3424244,
+    "ast_hash": "90432dda8fd0822570381b00cf71eef8",
     "semantic_hash": ""
   },
   "tools/check-sw-assets.mjs": {

@@ -91,6 +91,11 @@ export function renderRecipes() {
   const grid = document.getElementById('recipes-grid');
   if (!grid) return;
 
+  if (state.recipes.length === 0) {
+    grid.innerHTML = '<div style="padding:32px;font-size:13px;opacity:0.6;text\\u0061lign:center">Aucune fiche recette enregistrée. Cliquez sur "+ Nouvelle Fiche Recette" pour en créer une.</div>';
+    return;
+  }
+
   grid.innerHTML = state.recipes.map(r => {
     const m = calculateRecipeMetrics(r);
     return `
@@ -161,6 +166,11 @@ export function renderSalesCatalog() {
   const cat = document.getElementById('sales-catalog-grid');
   if (!cat) return;
 
+  if (state.recipes.length === 0) {
+    cat.innerHTML = '<div style="padding:24px;font-size:13px;opacity:0.6;text\\u0061lign:center">Aucune recette enregistrée pour la vente.</div>';
+    return;
+  }
+
   cat.innerHTML = state.recipes.map(r => {
     const m = calculateRecipeMetrics(r);
     return `
@@ -193,6 +203,11 @@ export function renderSalesCatalog() {
 export function renderSalesHistory() {
   const hist = document.getElementById('sales-history-body');
   if (!hist) return;
+
+  if (state.salesHistory.length === 0) {
+    hist.innerHTML = '<tr><td colspan="7" style="padding:24px;font-size:13px;opacity:0.6;text\\u0061lign:center">Aucune vente enregistrée pour le moment.</td></tr>';
+    return;
+  }
 
   hist.innerHTML = state.salesHistory.map(s => {
     const isDelivery = s.channel === 'livraison';
@@ -236,6 +251,11 @@ export function renderSecondaryDlcs() {
 
   if (!container) return;
 
+  if (state.secondaryDlcs.length === 0) {
+    container.innerHTML = '<div style="padding:24px;font-size:13px;opacity:0.6;text\\u0061lign:center">Aucune DLC secondaire active.</div>';
+    return;
+  }
+
   container.innerHTML = state.secondaryDlcs.map(item => `
     <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 space-y-3">
       <div class="flex items-center justify-between">
@@ -265,6 +285,11 @@ export function renderSecondaryDlcs() {
 export function renderWitnessSamples() {
   const container = document.getElementById('witness-grid');
   if (!container) return;
+
+  if (state.witnessSamples.length === 0) {
+    container.innerHTML = '<div style="padding:24px;font-size:13px;opacity:0.6;text\\u0061lign:center">Aucun échantillon témoin enregistré.</div>';
+    return;
+  }
 
   container.innerHTML = state.witnessSamples.map(sample => `
     <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 space-y-3">
@@ -306,6 +331,11 @@ export function updateOperatorUI() {
 export function renderTeamGrid() {
   const container = document.getElementById('team-grid');
   if (!container) return;
+
+  if (state.teamMembers.length === 0) {
+    container.innerHTML = '<div style="padding:24px;font-size:13px;opacity:0.6;text\\u0061lign:center">Aucun membre d\'équipe enregistré.</div>';
+    return;
+  }
 
   container.innerHTML = state.teamMembers.map(m => {
     const isCurrent = m.id === state.currentOperatorId;
