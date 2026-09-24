@@ -10,6 +10,7 @@ import {
   setCurrentOperator 
 } from './state.js';
 import { calculateRecipeMetrics, formatDateFr } from './calculations.js';
+import { demarrerAlertes } from './notifications.js';
 import { 
   renderLots, 
   renderRecipes, 
@@ -143,6 +144,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   renderTeamGrid();
   updateOperatorUI();
   updateTopMetrics();
+
+  // Alertes de service : résumé à l'ouverture, puis surveillance périodique
+  demarrerAlertes();
 });
 
 // PWA Service Worker

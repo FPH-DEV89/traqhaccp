@@ -22,7 +22,7 @@
  * Les chemins ci-dessous correspondent aux fichiers RÉELLEMENT référencés par l'app livrée
  * (patisserie.html → js/patisserie/app.js → fermeture d'imports).
  */
-const CACHE_NAME = 'traqhaccp-patisserie-20260924-v8';
+const CACHE_NAME = 'traqhaccp-patisserie-20260924-v9';
 
 /** Assets same-origin réellement chargés par patisserie.html. */
 const ASSETS_TO_CACHE = [
@@ -34,7 +34,7 @@ const ASSETS_TO_CACHE = [
   './css/components.css',
   './css/views.css',
 
-  // Entrée applicative + ses 10 modules
+  // Entrée applicative + ses 11 modules
   './js/patisserie/app.js',
   './js/patisserie/audio-toast.js',
   './js/patisserie/auth.js',
@@ -46,6 +46,7 @@ const ASSETS_TO_CACHE = [
   './js/patisserie/settings.js',
   './js/patisserie/settings-data.js',
   './js/patisserie/settings-norms.js',
+  './js/patisserie/notifications.js',
   // Socle importé par js/patisserie (fermeture d'imports réelle)
   './src/domain/constants.js',
   './src/domain/haccp_norms.js',
@@ -105,6 +106,26 @@ self.addEventListener('message', (evenement) => {
   if (evenement.data && evenement.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+});
+
+/**
+ * Clic sur une alerte de service : ramener le registre au premier plan plutôt que
+ * d'ouvrir un second onglet. Si l'application n'est plus ouverte, on la relance.
+ */
+self.addEventListener('notificationclick', (evenement) => {
+  evenement.notification.close();
+  evenement.waitUntil((async () => {
+    const fenetres = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const fenetre of fenetres) {
+      if ('focus' in fenetre) {
+        await fenetre.focus();
+        return;
+      }
+    }
+    if (self.clients.openWindow) {
+      await self.clients.openWindow('./patisserie.html');
+    }
+  })());
 });
 
 self.addEventListener('fetch', (evenement) => {
