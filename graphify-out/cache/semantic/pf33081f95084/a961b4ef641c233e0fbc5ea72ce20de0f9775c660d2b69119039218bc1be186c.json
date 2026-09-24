@@ -1,1 +1,0 @@
-{"nodes": [{"id": "docs_bugs", "label": "BUGS & Gates Registry", "file_type": "document", "source_file": "docs/BUGS.md"}], "edges": [{"source": "docs_bugs", "target": "docs_architecture", "relation": "cites", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "docs/BUGS.md"}], "hyperedges": []}
