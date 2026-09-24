@@ -46,15 +46,28 @@ python3 -m http.server 8899      # ou : npm run serve
 Node.js 22 et python3 suffisent. **Ne jamais lancer `npm install`** : le projet n'a pas de
 dépendances npm (Playwright est optionnel pour le gate de peinture).
 
-## Dette Tailwind
+## Dette Tailwind (mesurée et gelée)
 
 L'app livrée charge **Tailwind depuis le CDN** (`cdn.tailwindcss.com`). C'est une dette produit
-mesurée (24/09/2026) et gelée dans `tools/tailwind-baseline.json` :
-- `rounded-xl` : 81 occurrences · `shadow-sm` : 33 · `backdrop-blur` : 13
-- Total classes utilitaires Tailwind : 3 134 uniques dans `patisserie.html` + `js/patisserie/`
+mesurée le 24/09/2026 et gelée dans **deux** baselines complémentaires :
+- `tools/tailwind-baseline.json` — compteurs de classes, mesurés uniquement sur les sources qui
+  **consomment** Tailwind (`patisserie.html` + `js/patisserie/*.js` ; le CSS ne compte pas, sinon
+  `text-align:` ou `border-radius:` seraient comptés comme des classes) :
+  `rounded-xl` 81 · `shadow-sm` 33 · `backdrop-blur` 13 · **total 2 880 occurrences**.
+- `tools/design-violations-baseline.json` — violations du design system dans l'app livrée,
+  **comptées par règle** (667 violations sur 14 règles : couleurs Tailwind 453, rayons 112,
+  ombres 46, glassmorphism 13, flou 12, hex en dur 8, …).
 
-Le gate `check-design.mjs` **échoue si un compteur augmente**. Une baisse se répercute à la
-main dans `tailwind-baseline.json` et se note dans `docs/BUGS.md`.
+Le gate `check-design.mjs` **échoue dès qu'une règle dépasse son compte** (nouvelle règle violée
+incluse) et laisse passer une baisse en affichant la ligne à remettre à jour. Les fichiers `css/**`
+et `src/presentation/**` ne sont, eux, soumis à **aucune** tolérance : leur rayon littéral en px,
+couleur en dur, gradient ou `z-index` arbitraire échoue immédiatement.
+
+```bash
+node tools/check-design.mjs                 # vérifie les baselines
+node tools/check-design.mjs --write-baseline # re-mesure et réécrit les deux baselines
+```
+
 
 ## Modules applicatifs
 

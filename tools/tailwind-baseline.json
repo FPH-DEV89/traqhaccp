@@ -1,6 +1,6 @@
 {
-  "_comment": "Baseline Tailwind — mesurée le 2026-09-24 par check-design.mjs sur patisserie.html + js/patisserie/*.js + css/*.css + src/presentation/*.js.",
-  "_note": "L'app livrée dépend du CDN Tailwind ; c'est une dette produit mesurée, pas un oubli de gate. Les compteurs NE PEUVENT QU'DÉCROÎTRE. Une baisse se répercute à la main et se note dans docs/BUGS.md.",
+  "_comment": "Baseline Tailwind — mesurée le 2026-09-24 par check-design.mjs sur patisserie.html + js/patisserie/*.js (sources qui consomment Tailwind ; le CSS n'est plus compté).",
+  "_note": "L'app livrée dépend du CDN Tailwind ; c'est une dette produit mesurée, pas un oubli de gate. Les compteurs NE PEUVENT QUE DÉCROÎTRE. Une baisse se répercute à la main et se note dans docs/BUGS.md.",
   "rounded-xl": 81,
   "rounded-2xl": 21,
   "rounded-3xl": 10,
@@ -12,5 +12,5 @@
   "shadow-2xl": 10,
   "shadow-inner": 1,
   "backdrop-blur": 13,
-  "total-tw-classes": 3134
+  "total-tw-classes": 2880
 }

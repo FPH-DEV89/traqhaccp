@@ -1,3 +1,10 @@
-2026-09-24 — app livrée patisserie.html (js/patisserie/* + socle src/domain/ + src/infrastructure/ + src/presentation/).
-Architecture : modules ES plats, Tailwind CDN, Supabase. Legacy clean-architecture v4 (index.html + src/application + src/presentation/views) retiré le 24/09/2026.
-Dette Tailwind : mesurée et gelée dans tools/tailwind-baseline.json.
+2026-09-24 — app livrée : patisserie.html + js/patisserie/*.js (8 modules) + socle src/ vivant
+(src/domain/{constants,haccp_norms}.js, src/infrastructure/{config,supabase_client}.js,
+src/presentation/{connexion,icons,ui}.js).
+Architecture : modules ES plats, PWA hors-ligne (sw.js), Supabase Auth, Tailwind via CDN.
+Legacy clean-architecture v4 (index.html + src/application + src/presentation/views) retiré le
+24/09/2026 ; `npm test` cible désormais la page réellement servie.
+Dette mesurée et gelée : tools/tailwind-baseline.json (2 880 classes) et
+tools/design-violations-baseline.json (667 violations / 14 règles) — ne peuvent que décroître.
+Chaîne de vérification : npm test (6 étapes) puis npm run gate (4 gates, dont 7 pannes témoins).
+Détail : docs/ARCHITECTURE.md §5-§6 et docs/BUGS.md §7.

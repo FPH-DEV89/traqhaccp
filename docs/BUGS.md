@@ -171,3 +171,78 @@ caractères, `position: sticky` et styles Tailwind appliqués).
 routeur mort déclare. `gate:paint` sortait `0/7` pour cette raison exacte — il mesurait `#view`, le
 conteneur de l'app non déployée. Rebranché sur la page servie : **5 vues × 7 largeurs = 35/35**.
 
+---
+
+## 7. 24/09/2026 — la chaîne de vérification validait du code mort
+
+**Symptôme** : `npm test` était **vert**, et ne prouvait rien. Il scannait `index.html` et
+`src/presentation/**`, c'est-à-dire l'app de la clean architecture **abandonnée** la veille —
+une page injoignable en production (`/index` → 301 → `/` → `patisserie.html`). La page réellement
+servie, `patisserie.html` + `js/patisserie/*.js`, n'était visée par **aucun** gate.
+
+**Mesuré** (fermeture d'imports depuis la page servie) : **21 fichiers vivants**, 64 jamais
+atteints — dont, il est vrai, des points d'entrée légitimes (`sw.js`, `tools/**`, `manifest.json`).
+Après tri : **50 fichiers réellement morts**, soit 75 % du JavaScript du dépôt. Le domaine HACCP
+était testé deux fois, dans deux générations différentes (`test_clean_arch.js`,
+`test_complete_app.mjs`), et l'un des deux, **`test_clean_arch.js`, était servi publiquement**
+(`HTTP 200`, corps identique au fichier committé) : un harnais de test de l'architecture morte
+exposé sur le domaine de production.
+
+**Cause racine** : le même défaut que §6, à l'échelle de la chaîne entière. Les gates avaient été
+écrits *avant* la bascule du 23/09 et personne ne les a rebranchés. Un gate ne vaut que s'il cible
+le code **livré** ; sinon il verdit pour ne rien dire.
+
+**Réparation**
+
+- **50 fichiers supprimés** : `index.html`, `css/base.css`, `css/layout.css`, `src/application/*` (4),
+  `src/domain/{entities,patisserie_entities,patisserie_services,roles}.js`,
+  `src/infrastructure/*` (13), `src/presentation/{context,router,shell,store,session_serveur}.js`,
+  `src/presentation/viewmodels/*`, `src/presentation/views/*` (17), `test_clean_arch.js`,
+  `test_complete_app.mjs`, `audit_app.mjs`, `tools/test-export-service.mjs`.
+- **`tools/test-domain.mjs` réécrit** sur le domaine **vivant** (`src/domain/constants.js`,
+  `src/domain/haccp_norms.js`) : **89 assertions** (seuils réglementaires, 14 allergènes INCO,
+  équivalences v3↔v4 documentées, brigade, équipements, DLC, checklists) + `--selftest` qui
+  **sabote** une valeur en mémoire et exige l'échec. Les 2 harnais morts sont remplacés, pas perdus.
+- **5 gates rebranchés** sur l'app livrée : `check-syntax` (page + `<script>` inline + 8 modules +
+  socle), `check-design`, `check-parity` (ids de `patisserie.html` ↔ modules), `check-css-coverage`,
+  `check-norms-consistency` (plus aucune dépendance au harnais supprimé).
+- **`sw.js`** : retrait de `./index.html`, `./css/base.css`, `./css/layout.css` de `ASSETS_TO_CACHE`
+  (fichiers supprimés) ; `CACHE_NAME` → `traqhaccp-patisserie-20260924-v7`.
+- **`vercel.json`** : redirect permanent `/index.html` → `/` pour que l'ancienne URL ne 404 pas.
+
+**Le trou trouvé PENDANT la mission** (et non supposé) : `check-design` excusait **toute** violation
+trouvée dans `patisserie.html` / `js/patisserie/*.js` par un simple filtre de chemin, sans la
+compter. Injection réelle de `alert('x')` dans `js/patisserie/app.js` → le gate sortait **0**. Le gel
+n'était complet que pour les compteurs Tailwind. Corrigé : gel **par comptage de règle**.
+Autre fausse mesure corrigée : les compteurs Tailwind scannaient aussi le CSS, où `text-align: center`
+ou `border-radius: 20px` étaient comptés comme des classes utilitaires — le total annoncé
+(**3 134**) était gonflé de 254 propriétés CSS. Mesure honnête : **2 880**.
+
+**Baselines créées** (toutes mesurées le 24/09/2026, ne peuvent que décroître) :
+
+| Fichier | Contenu mesuré |
+| --- | --- |
+| `tools/tailwind-baseline.json` | `rounded-xl` 81 · `shadow-sm` 33 · `backdrop-blur` 13 · total **2 880** |
+| `tools/design-violations-baseline.json` | **667 violations / 14 règles** (couleurs Tailwind 453, rayons 112, ombres 46, glassmorphism 13, flou 12, hex en dur 8, emoji 5, animations 4, opacité 3, dégradés 2, Inter 2, rgb() 1, border-2 1) |
+| `tools/patisserie-parity-baseline.json` | 7 ids connus, créés dynamiquement par `modals.js` |
+| `tools/css-coverage-baseline.json` | vide (aucune classe structurelle manquante) |
+
+**Pannes témoins** (`npm run gate:selftest`, 7 gates) — chacune rejouée automatiquement :
+
+| Panne injectée | Réaction attendue (vérifiée) |
+| --- | --- |
+| `alert('x')` dans `js/patisserie/app.js` | exit 1 · « [NOUVELLE RÈGLE] alert() interdit : 0 → 1 » |
+| 5 × `rounded-xl` en plus dans `patisserie.html` | exit 1 · « rounded-xl 81 → 86 » |
+| `border-radius: 20px` dans `css/views.css` | exit 1 · « rayon littéral > 6px interdit » |
+| `border-radius: var(--r-2)` (identique, tokenisé) | exit 0 · pas de faux positif |
+| édition CSS légitime (`text-align`, `grid-template-columns`) | exit 0 · l'ancien comptage aurait rougi |
+| id référencé absent de `patisserie.html` | exit 1 · le message nomme l'id |
+| « sortir 301 » du `<script>` inline | exit 1 · erreur de syntaxe nommée |
+
+**Leçon transférable (la plus importante de cet audit)** : *un vérificateur doit être testé
+lui-même.* Le harnais de rendu Hermes (`traqhaccp-e2e.mjs`) ne connaissait que la génération v4
+(`window.switchTab`, conteneur `#view`) et annonçait « **0/17 modules · ⚠ RENDU FAIBLE** » sur une
+app parfaitement saine. Il sonde désormais la génération **avant** de mesurer, la nomme, et sort
+`exit 2` s'il ne reconnaît rien : impossible de confondre « page cassée » et « harnais mal branché ».
+Mesure sur l'app livrée : **5 vues peuplées sur 5 · 0 erreur console · 0 débordement horizontal**,
+aux trois gabarits (1440, 1024, 390 px).

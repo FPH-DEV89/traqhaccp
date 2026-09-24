@@ -14,6 +14,12 @@
  *   Fixture C — précache de service worker non servable : une entrée de ASSETS_TO_CACHE sans
  *               fichier sur disque. addAll() étant tout-ou-rien, ce 404 tuait install() et
  *               l'hors-ligne disparaissait sans erreur visible.
+ *   Fixture D — parité : un id référencé par js/patisserie absent de patisserie.html.
+ *   Fixture E — gel incomplet (trou mesuré le 24/09) : check-design excusait TOUTE violation
+ *               de l'app livrée par un filtre de chemin, y compris une règle jamais violée
+ *               auparavant (alert()), qui passait donc sans bruit.
+ *   Fixture F — rayon littéral en px dans css/ : `border-radius: 20px` doit échouer là où
+ *               `var(--r-2)` passe.
  *
  * Usage : node tools/test-gates.mjs        (exit 0 = les gates fonctionnent, exit 1 = régression)
  */
@@ -81,16 +87,16 @@ mkdirSync(BAC, { recursive: true });
 // 1) gate cascade
 writeFileSync(join(BAC, 'bug.css'), css(true));
 writeFileSync(join(BAC, 'sain.css'), css(false));
-console.log('── Gate 1/4 · check-css-cascade.mjs');
+console.log('── Gate 1/7 · check-css-cascade.mjs');
 attendu('contradiction @media détectée', node('check-css-cascade.mjs', [join(BAC, 'bug.css')]).status, 1);
 attendu('CSS légitime laissé passer', node('check-css-cascade.mjs', [join(BAC, 'sain.css')]).status, 0);
 
 // 2) gate artefact périmé
-console.log('── Gate 2/4 · check-artifact-fresh.mjs');
+console.log('── Gate 2/7 · check-artifact-fresh.mjs');
 attendu('artefact absent = silence', node('check-artifact-fresh.mjs', ['--dir', join(BAC, 'inexistant')]).status, 0);
 
 // 3) gate peinture (fixtures chargées en file://)
-console.log('── Gate 3/4 · audit-ui-paint.mjs');
+console.log('── Gate 3/7 · audit-ui-paint.mjs');
 const ENV = { PAINT_WIDTHS: '1024x768' };
 writeFileSync(join(BAC, 'clippee.html'), page(true));
 writeFileSync(join(BAC, 'saine.html'), page(false));
@@ -104,7 +110,7 @@ const rSaine = node('audit-ui-paint.mjs', ['--url', urlFichier('saine.html'), '-
 attendu('page saine laissée passer', rSaine.status, 0);
 
 // 4) gate hors-ligne : le précache du service worker doit être servable
-console.log('── Gate 4/4 · check-sw-assets.mjs');
+console.log('── Gate 4/7 · check-sw-assets.mjs');
 /* Fixture C — panne du 23/09/2026 : ASSETS_TO_CACHE contenait une entrée qui n'existe pas sur
    disque (résolue par une réécriture de l'hébergeur). cache.addAll() étant tout-ou-rien, ce 404
    rejetait install() : plus aucun service worker, donc plus d'hors-ligne, sans message d'erreur.
@@ -134,7 +140,7 @@ const rSwSain = node('check-sw-assets.mjs', ['--sw', join(dSain, 'sw.js'), '--ht
 attendu('précache sain laissé passer', rSwSain.status, 0);
 
 // 5) gate parité patisserie.html ↔ js/patisserie — nouvelle divergence détectée
-console.log('── Gate 5/6 · check-parity.mjs (rebranché patisserie.html ↔ js/patisserie)');
+console.log('── Gate 5/7 · check-parity.mjs (rebranché patisserie.html ↔ js/patisserie)');
 /* Fixture D — référence DOM orpheline : js référence un id absent de patisserie.html.
    La baseline est vide dans ce bac à sable → toute divergence est fatale. */
 {
@@ -176,7 +182,7 @@ console.log('── Gate 5/6 · check-parity.mjs (rebranché patisserie.html ↔
 }
 
 // 6) gate test-domain --selftest : la panne témoin doit échouer
-console.log('── Gate 6/6 · test-domain.mjs --selftest');
+console.log('── Gate 6/7 · test-domain.mjs --selftest');
 const rDomainSelftest = node('test-domain.mjs', ['--selftest']);
 attendu('test-domain --selftest : panne témoin détectée (rc=1)', rDomainSelftest.status, 1);
 mentionne('le message nomme le sabotage', rDomainSelftest.stdout, 'sabotée|ÉCHEC');
@@ -184,6 +190,49 @@ mentionne('le message nomme le sabotage', rDomainSelftest.stdout, 'sabotée|ÉCH
 const rDomainNormal = node('test-domain.mjs', []);
 attendu('test-domain normal : toutes les assertions OK (rc=0)', rDomainNormal.status, 0);
 mentionne('le message indique OK', rDomainNormal.stdout, 'test-domain: OK');
+
+// 7) gate design — le gel des violations doit être COMPLET, pas seulement Tailwind
+console.log('── Gate 7/7 · check-design.mjs (gel des violations de l\'app livrée)');
+/* Fixture E — le trou corrigé le 24/09/2026 : check-design gelait TOUTE violation trouvée dans
+   patisserie.html / js/patisserie par simple filtre de chemin, sans la compter. Une nouvelle
+   violation d'une règle non-Tailwind (ici alert()) passait donc inaperçue. La mesure par règle
+   doit la nommer et échouer. Fixture F : le rayon littéral en px dans une feuille css/. */
+{
+  const dDesign = join(BAC, 'design');
+  mkdirSync(join(dDesign, 'tools'), { recursive: true });
+  mkdirSync(join(dDesign, 'css'), { recursive: true });
+  mkdirSync(join(dDesign, 'js', 'patisserie'), { recursive: true });
+  mkdirSync(join(dDesign, 'src', 'presentation'), { recursive: true });
+  writeFileSync(join(dDesign, 'tools', 'tailwind-baseline.json'),
+    JSON.stringify({ 'total-tw-classes': 0, 'rounded-xl': 0 }));
+  writeFileSync(join(dDesign, 'tools', 'design-violations-baseline.json'),
+    JSON.stringify({ rules: {}, total: 0 }));
+  const pageDesign = (fautive) => `<!doctype html><html lang=fr><body>
+<div id="x">Relevé de température</div>
+<script>${fautive ? "alert('x');" : "console.log('ok');"}</script>
+</body></html>`;
+  const design = () => spawnSync(process.execPath, [join(ICI, 'check-design.mjs')],
+    { encoding: 'utf8', cwd: dDesign, timeout: 30000 });
+  writeFileSync(join(dDesign, 'js', 'patisserie', 'app.js'), 'export const a = 1;\n');
+
+  writeFileSync(join(dDesign, 'patisserie.html'), pageDesign(true));
+  const rDesignCasse = design();
+  attendu('violation d\'une règle non-Tailwind dans l\'app livrée détectée', rDesignCasse.status, 1);
+  mentionne('le message nomme la règle violée', (rDesignCasse.stdout || '') + (rDesignCasse.stderr || ''), 'alert\\(\\) interdit');
+
+  writeFileSync(join(dDesign, 'patisserie.html'), pageDesign(false));
+  const rDesignSain = design();
+  attendu('app livrée saine laissée passer', rDesignSain.status, 0);
+
+  writeFileSync(join(dDesign, 'css', 'vues.css'), '.carte { padding: 8px; border-radius: 20px; }\n');
+  const rRayon = design();
+  attendu('rayon littéral > 6px dans css/ détecté', rRayon.status, 1);
+  mentionne('le message nomme le rayon', (rRayon.stdout || '') + (rRayon.stderr || ''), 'rayon littéral');
+
+  writeFileSync(join(dDesign, 'css', 'vues.css'), '.carte { padding: 8px; border-radius: var(--r-2); }\n');
+  const rRayonSain = design();
+  attendu('rayon tokenisé (var(--r-2)) laissé passer', rRayonSain.status, 0);
+}
 
 // Détail utile en cas d'échec
 if (ko) {
@@ -196,6 +245,6 @@ if (ko) {
 
 console.log(ko
   ? `\nFAIL — ${ko} assertion(s) : un gate ne joue plus son rôle.`
-  : '\nPASS — les 6 gates détectent bien les pannes historiques (16-17/09, 23/09/2026) et les nouvelles (parité patisserie.html, domaine), et ne crient pas au loup sur du code sain.');
+  : '\nPASS — les 7 gates détectent bien les pannes historiques (16-17/09, 23/09/2026) et les nouvelles (parité patisserie.html, domaine), et ne crient pas au loup sur du code sain.');
 process.exit(ko ? 1 : 0);
 

@@ -1,0 +1,21 @@
+{
+  "_comment": "Violations du design system dans l'app livrée, comptées PAR RÈGLE le 2026-09-24. Ne peut que décroître. Relancer avec --write-baseline pour mettre à jour après correction.",
+  "_note": "Ces violations viennent exclusivement de patisserie.html et js/patisserie/*.js (app livrée). Les fichiers css/*.css et src/presentation/*.js restent scannés sans tolérance : toute violation y est un échec immédiat.",
+  "rules": {
+    "classe de couleur Tailwind (utiliser les tokens var(--…))": 453,
+    "rayon > 6px interdit (--r-3 max) — DETTE TAILWIND MESURÉE": 112,
+    "ombre Tailwind interdite (--sh-1 / --sh-2 seulement) — DETTE TAILWIND MESURÉE": 46,
+    "glassmorphism interdit — DETTE TAILWIND MESURÉE": 13,
+    "flou décoratif interdit — DETTE TAILWIND MESURÉE": 12,
+    "couleur hexadécimale en dur (tokens.css uniquement, sinon var(--…))": 8,
+    "pilule / pastille ronde interdite (.mark carré) — DETTE TAILWIND MESURÉE": 5,
+    "emoji « ️ » interdit dans l'UI": 5,
+    "animation décorative interdite (.skeleton autorisé en CSS)": 4,
+    "opacité décorative interdite": 3,
+    "dégradé interdit": 2,
+    "police Inter interdite (Archivo / Instrument Serif / IBM Plex Mono)": 2,
+    "couleur rgb()/rgba() en dur (tokens.css uniquement)": 1,
+    "bordure épaisse interdite (filet 1px)": 1
+  },
+  "total": 667
+}
