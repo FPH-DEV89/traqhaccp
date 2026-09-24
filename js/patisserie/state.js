@@ -245,7 +245,7 @@ const DEFAULT_TEAM = [
 ];
 
 export const state = {
-  establishmentId: 'local',
+  establishmentId: 'serveur',
   establishmentName: '',
   establishmentSub: '',
   lots: [],
@@ -264,7 +264,7 @@ export const state = {
 
 const CLE_ETAB_COURANT = 'traqhaccp_patisserie_etab_courant_v1';
 
-/** Enregistre l'établissement courant pour éviter de retomber en démo sans réseau. */
+/** Enregistre l'établissement courant pour synchroniser la PWA hors-ligne. */
 export function enregistrerEtablissementCourant() {
   try {
     localStorage.setItem(CLE_ETAB_COURANT, JSON.stringify({ id: state.establishmentId, nom: state.establishmentName }));
@@ -287,7 +287,7 @@ export function lireEtablissementCourant() {
 }
 
 function storageKey(suffix) {
-  const scope = state.establishmentId || 'local';
+  const scope = state.establishmentId || 'serveur';
   return `traqhaccp_patisserie_${scope}_${suffix}_v1`;
 }
 
@@ -306,8 +306,8 @@ export function saveState() {
   }
 }
 
-export function loadState(etabId = 'local', etabName = null) {
-  state.establishmentId = etabId || 'local';
+export function loadState(etabId = 'serveur', etabName = null) {
+  state.establishmentId = etabId || 'serveur';
   if (etabName) {
     state.establishmentName = etabName;
     state.establishmentSub = `${etabName} · Labo, Vente & Livraison`;
@@ -344,7 +344,7 @@ export function loadState(etabId = 'local', etabName = null) {
     console.warn('Erreur de chargement local :', e);
   }
 
-  if (state.establishmentId !== 'local') enregistrerEtablissementCourant();
+  enregistrerEtablissementCourant();
 }
 
 export function getCurrentOperator() {

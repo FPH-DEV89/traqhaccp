@@ -265,7 +265,7 @@ function renderTabCompte(ctx) {
       </div>
       <div class="callout callout--info">
         ${icon('lock', 16)}
-        <span>Les codes PIN ne sont jamais affichés ni transmis. Les relevés sont conservés localement, sur cet appareil.</span>
+        <span>Les codes PIN ne sont jamais affichés ni transmis. Les relevés sont synchronisés avec votre établissement Supabase.</span>
       </div>
       <p class="settings__sub">TraqHACCP Pâtisserie · version ${esc(APP_VERSION)}</p>
     </div>`;

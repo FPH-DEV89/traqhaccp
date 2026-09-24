@@ -41,11 +41,8 @@ Ce manuel vous accompagne pas à pas : de la **création de votre compte** et de
 TraqHACCP est accessible directement depuis votre navigateur web à l'adresse officielle :
 👉 **https://traqhaccp.vercel.app/**
 
-L'application propose deux modes de fonctionnement :
-1. **Mode Serveur (Recommandé pour les équipes & multi-postes)** :
-   Vos relevés sont synchronisés en temps réel et partagés entre tous les terminaux de l'établissement (tablettes de cuisine, smartphone du gérant, poste administratif).
-2. **Mode Local (Hors-ligne / Sans compte)** :
-   Toutes les données sont conservées uniquement dans le navigateur du terminal utilisé. Idéal pour tester sans inscription.
+L'application fonctionne en mode connecté (cloud sécurisé Supabase) :
+Vos relevés sont synchronisés en temps réel et partagés entre tous les terminaux de l'établissement (tablettes de cuisine, smartphone du gérant, poste administratif). En cas de micro-coupure internet, le cache de résilience PWA prend le relais pour garantir la continuité du travail en cuisine.
 
 ---
 
@@ -212,8 +209,8 @@ TraqHACCP est une **Progressive Web App (PWA)**. Vous n'avez pas besoin de passe
 
 ## 9. Sauvegardes et sécurité
 
-- **Multi-postes / Serveur** : Vos données sont protégées dans le cloud sécurisé de l'établissement avec isolation étanche des données (Row-Level Security).
-- **Mode Local** : Pensez à exporter régulièrement une sauvegarde JSON depuis **Réglages > Sauvegardes** pour parer à toute perte ou casse de votre tablette.
+- **Synchronisation Cloud Supabase** : Vos données sont protégées dans le cloud sécurisé de l'établissement avec isolation étanche des données (Row-Level Security) entre comptes.
+- **Sauvegarde et export** : Vous pouvez à tout moment exporter une archive JSON ou un rapport officiel depuis **Réglages > Sauvegardes** ou **DDPP / Alerte**.
 - **Raccourci pratique** : Appuyez sur `Ctrl + K` (ou `Cmd + K` sur Mac/iPad) pour ouvrir la palette de recherche rapide et sauter vers n'importe quel module en 1 seconde.
 
 ---

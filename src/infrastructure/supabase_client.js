@@ -396,7 +396,7 @@ export class SupabaseClient {
     } catch (cause) {
       throw new ErreurSupabase(
         'Réseau indisponible : impossible de joindre le serveur TraqHACCP. '
-        + 'Le mode local reste utilisable hors-ligne.',
+        + 'Les données en cache restent utilisables hors-ligne.',
         { statut: 0, details: String(cause && cause.message ? cause.message : cause) },
       );
     }

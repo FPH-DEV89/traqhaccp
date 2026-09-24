@@ -4,9 +4,8 @@ Application web **française** de registre sanitaire HACCP pour la pâtisserie a
 relevés de températures, plan de nettoyage, suivi des huiles de friture, réception et
 traçabilité des denrées, allergènes (INCO), non-conformités, registre DDPP et mode inspection.
 
-- **PWA statique** : `patisserie.html` + modules ES natifs, **aucun build**, **aucune dépendance npm**.
-- **Hors-ligne d'abord** : toutes les données restent dans le navigateur (`localStorage` + Supabase
-  optionnel), un service worker met les fichiers en cache.
+- **PWA statique connectée** : `patisserie.html` + modules ES natifs, **aucun build**, **aucune dépendance npm**.
+- **Connecté à Supabase & PWA hors-ligne** : registre synchronisé dans le cloud (multi-postes), cache local pour le travail continu en laboratoire.
 - **Modules ES plats** : `js/patisserie/` (8 modules), socle `src/domain/` et `src/infrastructure/` vivants.
 - Interface, libellés, commentaires et formats en français (virgule décimale, espace fine avant `°C` et `%`).
 
@@ -73,22 +72,20 @@ node tools/check-design.mjs --write-baseline # re-mesure et réécrit les deux b
 
 Chargés par `patisserie.html` depuis `js/patisserie/` :
 - `app.js` — point d'entrée, boot, navigation entre vues
-- `auth.js` — authentification Supabase + mode local
-- `views.js` — rendu de chaque vue HACCP (températures, réceptions, etc.)
-- `state.js` — état partagé (localStorage + Supabase)
+- `auth.js` — authentification et session Supabase
+- `views.js` — rendu de chaque vue HACCP (traçabilité, recettes, ventes, DLC, équipe)
+- `state.js` — état partagé (session Supabase + persistance locale)
 - `modals.js` — composants modaux (formulaires, confirmations)
 - `calculations.js` — calculs métier (DLC, coûts, scores)
 - `recall.js` — rappel produit et alertes
 - `audio-toast.js` — retour sonore et notifications toast
 
-## Données locales
+## Synchronisation Supabase & Données
 
-Stockées dans le navigateur sous des clés `traq_` :
-`traq_equipments`, `traq_deliveries`, `traq_preparations`, `traq_allergens`, `traq_cleaning`,
-`traq_fryers`, `traq_cooling`, `traq_defrost`, `traq_ph`, `traq_weight`, `traq_documents`,
-`traq_nonconformities`, `traq_checklists`, `traq_brigade`, `traq_settings`, `traq_session`.
-
-Synchronisation Supabase optionnelle (désactivée en mode local avec `?mode=local`).
+Connecté en temps réel à **Supabase** (PostgREST + GoTrue) :
+- Cloisonnement strict multi-établissements par Row Level Security (RLS).
+- Sessions brigade, codes PIN et enregistrements synchronisés entre tous les postes.
+- Cache de résilience PWA pour assurer la continuité opérationnelle hors-ligne en laboratoire.
 
 ## Vérifications
 

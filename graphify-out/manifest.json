@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790246263.023484,
-    "ast_hash": "dfbc93d3bac28dd8060bcb0ea2c98784",
+    "mtime": 1790270174.557374,
+    "ast_hash": "8414439e8505477320d5563f85d9db44",
     "semantic_hash": ""
   },
   "package.json": {
@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "docs/ARCHITECTURE.md": {
-    "mtime": 1790246263.0257585,
-    "ast_hash": "cd5a9c6e77dd5a2771a270a815b2591d",
+    "mtime": 1790270187.1404097,
+    "ast_hash": "5977016fa54e78824f407c6db9b4a23c",
     "semantic_hash": ""
   },
   "docs/DESIGN.md": {
@@ -100,18 +100,18 @@
     "semantic_hash": ""
   },
   "src/infrastructure/config.js": {
-    "mtime": 1790187102.8959658,
-    "ast_hash": "d04c39bf88fff7ee2cccb4f856eafbc7",
+    "mtime": 1790270089.2721221,
+    "ast_hash": "52d60844446d2c7a939cb0a495fb6829",
     "semantic_hash": ""
   },
   "src/infrastructure/supabase_client.js": {
-    "mtime": 1790194132.3942935,
-    "ast_hash": "1f040455272b80bafee3bece773ae40b",
+    "mtime": 1790270147.5599,
+    "ast_hash": "f8c587bff7e6830ca803dc680bc13109",
     "semantic_hash": ""
   },
   "src/presentation/connexion.js": {
-    "mtime": 1790194135.0336657,
-    "ast_hash": "f3209d5ebd16ca5f805d1072392cfdce",
+    "mtime": 1790270139.7676027,
+    "ast_hash": "8369acf15ffc825406d8a825c6cb5d4d",
     "semantic_hash": ""
   },
   "tools/audit-haccp-report.mjs": {
@@ -195,13 +195,13 @@
     "semantic_hash": ""
   },
   "docs/DATA.md": {
-    "mtime": 1790151456.5864036,
-    "ast_hash": "338a8ebfcf2f5b0d24d46a7ad244afca",
+    "mtime": 1790270219.407554,
+    "ast_hash": "4ec60d9c04dde9d6918cac5d981f5f09",
     "semantic_hash": ""
   },
   "docs/MANUEL_UTILISATEUR.md": {
-    "mtime": 1790187365.8159368,
-    "ast_hash": "3524f62c27972b751e0752709a418ba0",
+    "mtime": 1790270208.902633,
+    "ast_hash": "7b4111fb6c2af8b1e4361151eb535f78",
     "semantic_hash": ""
   },
   "patisserie.html": {
@@ -220,8 +220,8 @@
     "semantic_hash": ""
   },
   "js/patisserie/auth.js": {
-    "mtime": 1790246263.085884,
-    "ast_hash": "55bee24e7e830b955a0d302cc3a604a6",
+    "mtime": 1790270111.9641697,
+    "ast_hash": "7c3e7a7fcfe6f5bb5212287526b74568",
     "semantic_hash": ""
   },
   "js/patisserie/calculations.js": {
@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "js/patisserie/state.js": {
-    "mtime": 1790248453.1912904,
-    "ast_hash": "2b838200242a61a281bd1d74dc75a73d",
+    "mtime": 1790270122.2081163,
+    "ast_hash": "abc530aec2d07f4c026441fe413958ae",
     "semantic_hash": ""
   },
   "js/patisserie/views.js": {
@@ -270,8 +270,8 @@
     "semantic_hash": ""
   },
   "js/patisserie/settings.js": {
-    "mtime": 1790246263.0921526,
-    "ast_hash": "06157036f897bd8aaa03021fd56a076f",
+    "mtime": 1790270156.6686952,
+    "ast_hash": "4560b67157b151e016af4149f33bbefc",
     "semantic_hash": ""
   },
   "tools/css-coverage-baseline.json": {

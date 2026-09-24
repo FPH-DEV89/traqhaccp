@@ -1,8 +1,7 @@
 # DATA.md — Socle de données TraqHACCP
 
-Ce document décrit la couche de données serveur ajoutée en complément du mode local
-(`localStorage`). **L'application reste utilisable sans compte** : le mode local est le
-défaut, le mode serveur est opt-in.
+Ce document décrit la couche de données serveur connectée à **Supabase** (PostgREST + GoTrue).
+L'application est connectée en permanence à Supabase, avec un cache local PWA de résilience.
 
 ## 1. Le tenant, c'est l'établissement
 

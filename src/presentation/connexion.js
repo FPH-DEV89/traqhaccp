@@ -68,7 +68,7 @@ function messageErreur(erreur) {
   if (statut === 403) return "Ce compte n'est rattaché à aucun établissement.";
   if (statut === 422) return 'Adresse e-mail ou mot de passe refusé par le serveur.';
   if (statut === 429) return 'Trop de tentatives : patientez un instant avant de réessayer.';
-  if (statut === 0 || statut >= 500) return 'Serveur injoignable : vérifiez le réseau, ou continuez en mode local.';
+  if (statut === 0 || statut >= 500) return 'Serveur injoignable : vérifiez votre connexion réseau.';
   const brut = erreur && typeof erreur.message === 'string' ? erreur.message.trim() : '';
   return brut || 'Opération impossible pour le moment.';
 }
@@ -581,7 +581,7 @@ export async function afficherConnexion({ client, repository = null, onErreur = 
   if (!client || typeof client.signIn !== 'function') throw new Error('afficherConnexion : client Supabase requis');
   if (racine) return new Promise((resoudre) => { resoudreAttente = resoudre; });
   const conteneur = hote();
-  if (!conteneur) return { ok: false, raison: 'local' };
+  if (!conteneur) return { ok: false, raison: 'non_disponible' };
   contexte = { client, repository, onErreur };
   conteneur.insertAdjacentHTML('beforeend', gabarit());
   racine = conteneur.querySelector(`#${PORTAL_ID}`);

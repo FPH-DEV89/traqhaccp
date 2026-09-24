@@ -27,27 +27,26 @@ export function updateHeaderEstablishment() {
 }
 
 export async function initAuth() {
-  const mode = modePersistance();
   const hash = typeof window !== 'undefined' && window.location ? window.location.hash : '';
   const estRetourAuth = hash.includes('type=recovery') || hash.includes('access_token=') || hash.includes('type=signup') || hash.includes('error_description');
 
-  // Si on est en mode serveur, qu'une session active existe ou qu'un lien d'auth a été cliqué
-  if (mode === 'serveur' || supabase.hasSession() || estRetourAuth) {
-    try {
-      if (!supabase.hasSession() || estRetourAuth) {
-        await afficherPortailConnexion();
-        return;
-      }
-      await synchroniserEtablissementConnecte();
-    } catch (e) {
-      console.warn('Erreur auth serveur, repli local :', e);
-      loadState('local', 'Mon établissement');
+  if (!supabase.hasSession() || estRetourAuth) {
+    await afficherPortailConnexion();
+    return;
+  }
+
+  try {
+    await synchroniserEtablissementConnecte();
+  } catch (e) {
+    console.warn('Erreur synchronisation Supabase :', e);
+    const dernier = lireEtablissementCourant();
+    if (dernier) {
+      loadState(dernier.id, dernier.nom);
       updateHeaderEstablishment();
+      rafraichirToutesLesVues();
+    } else {
+      await afficherPortailConnexion();
     }
-  } else {
-    // Mode local par défaut
-    loadState('local', 'Mon établissement');
-    updateHeaderEstablishment();
   }
 }
 
@@ -70,12 +69,8 @@ export async function afficherPortailConnexion() {
       await synchroniserEtablissementConnecte();
       showToast(`Connecté avec succès à ${state.establishmentName}`);
     } else {
-      // Choix mode local
-      definirModePersistance('local');
-      loadState('local', 'Mon établissement');
-      updateHeaderEstablishment();
-      rafraichirToutesLesVues();
-      showToast("Mode local actif (données sur cet appareil).");
+      // Authentification Supabase requise : maintenir le portail actif
+      await afficherPortailConnexion();
     }
   } catch (e) {
     console.error('Erreur ouverture portail :', e);
@@ -83,7 +78,7 @@ export async function afficherPortailConnexion() {
 }
 
 async function synchroniserEtablissementConnecte() {
-  let etabId = 'local';
+  let etabId = 'serveur';
   let etabNom = 'Mon Établissement';
 
   try {
@@ -100,14 +95,11 @@ async function synchroniserEtablissementConnecte() {
     console.warn('Impossible de charger les infos établissement Supabase :', err);
   }
 
-  // le mode démo (local) ne doit jamais être atteint depuis une session serveur, même en cas de panne réseau
-  if (etabId === 'local') {
+  if (etabId === 'serveur') {
     const dernier = lireEtablissementCourant();
-    if (dernier) {
+    if (dernier && dernier.id) {
       etabId = dernier.id;
       etabNom = dernier.nom || etabNom;
-    } else {
-      etabId = 'serveur';
     }
   }
 
@@ -160,11 +152,10 @@ export async function deconnecterEtablissement() {
     // Ignorer si déjà déconnecté
   }
   supabase.effacerSession();
-  definirModePersistance('local');
   closeModals();
   showToast("Vous avez été déconnecté.");
   
-  // Rouvrir le portail pour se reconnecter ou basculer
+  // Rouvrir immédiatement le portail de connexion Supabase
   setTimeout(() => {
     afficherPortailConnexion();
   }, 400);

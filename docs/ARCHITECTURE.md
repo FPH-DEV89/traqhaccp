@@ -17,7 +17,7 @@
 
 L'entrée est **`patisserie.html`**. L'URL racine `/` sert la même page (réécriture `vercel.json`) ;
 `/index.html` redirige en 301 vers `/` (le fichier `index.html` n'existe plus).
-Mode sans serveur applicatif : `patisserie.html?mode=local` (Supabase contourné).
+L'application est connectée à Supabase en permanence (avec cache PWA de résilience hors-ligne).
 
 ## 2. Contraintes non négociables
 
@@ -53,8 +53,8 @@ css/
 
 js/patisserie/
   app.js                 boot, navigation entre vues, enregistrement du service worker
-  auth.js                connexion Supabase + mode local
-  state.js               état partagé (localStorage + Supabase)
+  auth.js                authentification et session Supabase
+  state.js               état partagé (session Supabase + cache local)
   views.js               rendu des vues (traçabilité, recettes, ventes, DLC, équipe)
   modals.js              modales et formulaires
   calculations.js        calculs métier (DLC, coûts, marges)

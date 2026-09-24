@@ -1,16 +1,16 @@
 # Graph Report - traqhaccp_clean_architecture  (2026-09-24)
 
 ## Corpus Check
-- 55 files · ~67,344 words
+- 55 files · ~66,957 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 620 nodes · 1223 edges · 41 communities (27 shown, 14 thin omitted)
+- 620 nodes · 1213 edges · 41 communities (27 shown, 14 thin omitted)
 - Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 56 edges (avg confidence: 0.55)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `291c042f`
+- Built from commit: `03a94b26`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -86,12 +86,12 @@
 ## Communities (41 total, 14 thin omitted)
 
 ### Community 0 - "App UI State Management"
-Cohesion: 0.11
-Nodes (67): playBeep(), showToast(), deconnecterEtablissement(), rafraichirToutesLesVues(), calculateRecipeMetrics(), formatDateFr(), addRecipeIngredientRow(), adjustDestockMultiplier() (+59 more)
+Cohesion: 0.10
+Nodes (72): playBeep(), showToast(), afficherPortailConnexion(), deconnecterEtablissement(), initAuth(), rafraichirToutesLesVues(), synchroniserEtablissementConnecte(), updateHeaderEstablishment() (+64 more)
 
 ### Community 1 - "Supabase Persistence Configuration"
 Cohesion: 0.08
-Nodes (24): afficherPortailConnexion(), initAuth(), synchroniserEtablissementConnecte(), updateHeaderEstablishment(), appliquerSurchargeModeUrl(), CONFIG_SUPABASE, definirModePersistance(), ecrireStockage() (+16 more)
+Nodes (17): appliquerSurchargeModeUrl(), CONFIG_SUPABASE, ecrireStockage(), lireStockage(), modeParametreUrl(), modePersistance(), MODES_PERSISTANCE, stockageLocal() (+9 more)
 
 ### Community 2 - "HACCP Regulatory Compliance"
 Cohesion: 0.20
@@ -198,16 +198,16 @@ Nodes (5): 1. Barèmes de Températures Réglementaires (Arrêté du 21/12/2009)
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `icon()` connect `Icon and Overlay UI` to `Authentication UI Logic`, `HACCP Data Repository`, `Application Constants and Norms`?**
-  _High betweenness centrality (0.029) - this node is a cross-community bridge._
-- **Why does `showToast()` connect `App UI State Management` to `Supabase Persistence Configuration`, `HACCP Data Repository`, `notifications.js`?**
+  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+- **Why does `showToast()` connect `App UI State Management` to `HACCP Data Repository`, `notifications.js`?**
   _High betweenness centrality (0.018) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `icon()` (e.g. with `renderDurees()` and `renderEquipements()`) actually correct?**
   _`icon()` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `DEFAUTS`, `ALERT_FALLBACK`, `REMINDER_LABELS` to the rest of the system?**
   _258 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App UI State Management` be split into smaller, more focused modules?**
-  _Cohesion score 0.10631578947368421 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10030864197530864 - nodes in this community are weakly interconnected._
 - **Should `Supabase Persistence Configuration` be split into smaller, more focused modules?**
-  _Cohesion score 0.07619738751814223 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07890070921985816 - nodes in this community are weakly interconnected._
 - **Should `HACCP Data Repository` be split into smaller, more focused modules?**
   _Cohesion score 0.14260249554367202 - nodes in this community are weakly interconnected._

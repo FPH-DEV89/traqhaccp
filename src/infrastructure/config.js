@@ -5,26 +5,13 @@
  * l'import, aucune requête réseau, aucune écriture de stockage. Il peut donc être importé
  * sans risque par un module de présentation, un test Node ou un script d'outillage.
  *
- * ── Deux modes de persistance, un seul comportement par défaut ───────────────
- *   'local'   → LocalStorageHACCPRepository : mode historique (hors-ligne, sans compte,
- *               données de démonstration si le stockage est vide). C'est la valeur livrée
- *               ici : rien ne change pour l'application existante.
- *   'serveur' → SupabaseHACCPRepository : PostgREST + GoTrue, plusieurs appareils,
- *               cloisonnement par établissement assuré par les politiques RLS.
+ * ── Persistance connectée à Supabase ──────────────────────────────────────────
+ *   L'application est connectée à Supabase (PostgREST + GoTrue) : multi-postes,
+ *   synchronisation temps réel, et cloisonnement strict par établissement assuré
+ *   par les politiques RLS.
  *
- * Le mode peut être forcé sans modifier ce fichier : `localStorage['traqhaccp_v2_mode']`
- * vaut 'serveur' ou 'local' (voir modePersistance()).
- *
- * ── Choisir le mode : trois niveaux, du plus fort au plus faible ──────────────
- *   1. paramètre d'URL `?mode=serveur` / `?mode=local` — le plus explicite, il sert à
- *      ouvrir l'application en mode serveur depuis un lien, sans rien installer ;
- *   2. `localStorage['traqhaccp_v2_mode']` — surcharge persistante d'un poste donné ;
- *   3. `MODE_PERSISTANCE` (constante de ce fichier) — valeur livrée : 'local'.
- *
- * Toute valeur d'URL reconnue est **recopiée** dans `traqhaccp_v2_mode` par
- * `appliquerSurchargeModeUrl()`, appelée explicitement au démarrage (boot) : ainsi le mode
- * survit au rechargement d'une PWA installée, qui ne conserve pas la chaîne de requête.
- * `modePersistance()` reste une fonction pure : elle lit, elle n'écrit jamais.
+ *   En PWA hors-ligne, les données de l'établissement connecté sont mises en cache
+ *   dans le navigateur pour continuer l'activité du laboratoire sans interruption.
  *
  * ── Pourquoi la clé publique est-elle sans danger dans un dépôt public ? ─────
  * SUPABASE_PUBLISHABLE_KEY est une clé « publishable », conçue pour être embarquée dans
@@ -68,49 +55,32 @@ export const SUPABASE_CLE_MODE = `${SUPABASE_PREFIXE}mode`;
 export const SUPABASE_CLE_ETABLISSEMENT = `${SUPABASE_PREFIXE}establishment_id`;
 
 /* ═══════════════════════════════════════════════════════════════════
-   Mode de persistance
+   Mode de persistance (Supabase exclusivement)
    ═══════════════════════════════════════════════════════════════════ */
 
-/** @type {'local' | 'serveur'} Mode livré par défaut (production connectée). */
+/** @type {'serveur'} Mode unique en production (PWA connectée à Supabase). */
 export const MODE_PERSISTANCE = 'serveur';
 
 /** Alias anglais de MODE_PERSISTANCE, pour les appelants qui testent un drapeau. */
 export const PERSISTENCE_MODE = MODE_PERSISTANCE;
 
-/** Modes acceptés. */
-export const MODES_PERSISTANCE = Object.freeze(['local', 'serveur']);
+/** Modes acceptés : exclusivement serveur (Supabase). */
+export const MODES_PERSISTANCE = Object.freeze(['serveur']);
 
 /**
- * Normalise une valeur quelconque en mode valide.
- * Tout ce qui n'est pas explicitement 'serveur' retombe sur 'local' : le défaut sûr.
- * @param {unknown} valeur
- * @returns {'local' | 'serveur'}
+ * Normalise le mode de persistance : toujours 'serveur' (Supabase).
+ * @returns {'serveur'}
  */
-export function normaliserMode(valeur) {
-  return String(valeur ?? '').trim().toLowerCase() === 'serveur' ? 'serveur' : 'local';
+export function normaliserMode() {
+  return 'serveur';
 }
 
 /**
- * Mode demandé par l'URL de la page : `?mode=serveur` ou `?mode=local`.
- *
- * Le module est importé par des tests Node sans DOM et par des scripts d'outillage : tout
- * accès à `window`/`location` est donc protégé par `typeof` **et** par un `try`, et l'absence
- * de navigateur renvoie simplement `null` (aucune surcharge).
- *
- * @returns {'local' | 'serveur' | null} mode normalisé, ou null si le paramètre est absent
- *   ou illisible. Une valeur non reconnue est normalisée : elle vaut 'local'.
+ * Mode demandé par l'URL de la page.
+ * @returns {'serveur' | null}
  */
 export function modeParametreUrl() {
-  try {
-    if (typeof window === 'undefined' || !window.location) return null;
-    const recherche = window.location.search;
-    if (typeof recherche !== 'string' || recherche === '') return null;
-    const brut = new URLSearchParams(recherche).get('mode');
-    if (brut === null || String(brut).trim() === '') return null;
-    return normaliserMode(brut);
-  } catch {
-    return null;
-  }
+  return 'serveur';
 }
 
 /**
@@ -166,26 +136,20 @@ export function retirerModeUrl() {
  * @returns {'local' | 'serveur'}
  */
 export function modePersistance() {
-  const depuisUrl = modeParametreUrl();
-  if (depuisUrl !== null) return depuisUrl;
-  const force = lireStockage(SUPABASE_CLE_MODE, null);
-  return force === null ? normaliserMode(MODE_PERSISTANCE) : normaliserMode(force);
+  return 'serveur';
 }
 
 /** @returns {boolean} Vrai si le mode serveur (Supabase) est actif. */
 export function estModeServeur() {
-  return modePersistance() === 'serveur';
+  return true;
 }
 
 /**
- * Force le mode de persistance (pour un poste donné).
- * @param {'local' | 'serveur'} mode
- * @returns {'local' | 'serveur'} le mode retenu
+ * Définit le mode de persistance (fixé sur serveur).
+ * @returns {'serveur'}
  */
-export function definirModePersistance(mode) {
-  const retenu = normaliserMode(mode);
-  ecrireStockage(SUPABASE_CLE_MODE, retenu);
-  return retenu;
+export function definirModePersistance() {
+  return 'serveur';
 }
 
 /* ═══════════════════════════════════════════════════════════════════
