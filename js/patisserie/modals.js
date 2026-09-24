@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TraqHACCP Pâtisserie — Modal Management & Form Submissions
  */
 import { state, saveState, getCurrentOperator, setCurrentOperator } from './state.js';
@@ -14,7 +14,8 @@ import {
   renderTeamGrid, 
   renderOperatorSwitchList, 
   updateOperatorUI, 
-  updateTopMetrics 
+  updateTopMetrics,
+  renderAudit
 } from './views.js';
 
 export function closeModals() {
@@ -55,6 +56,7 @@ export function openWitnessSampleModal() {
 
 export function openInspectionModal() {
   playBeep(620, 0.05);
+  renderAudit();
   const m = document.getElementById('modal-inspection');
   m?.classList.remove('hidden');
   m?.classList.add('flex');
@@ -139,7 +141,11 @@ export function handleSwitchOperator(userId) {
   updateOperatorUI();
   closeModals();
   const op = getCurrentOperator();
-  showToast(`${op.firstName} ${op.lastName} est maintenant en service.`);
+  if (op) {
+    showToast(`${op.firstName} ${op.lastName} est maintenant en service.`);
+  } else {
+    showToast(`L'opérateur est maintenant en service.`);
+  }
   playBeep(680, 0.05);
 }
 
@@ -174,17 +180,11 @@ export function saveAdjustedStock() {
 
 export function executeAutomatedScan() {
   playBeep(880, 0.12);
-  showToast('Extraction OCR réussie !');
+  showToast("Photo jointe — complétez la fiche du lot.");
   closeModals();
 
-  setTimeout(() => {
-    openNewEntryModal();
-    document.getElementById('form-name').value = 'Beurre de Tourage 84% AOP';
-    document.getElementById('form-supplier').value = 'Laiterie Montaigu';
-    document.getElementById('form-lot').value = 'BT-9812';
-    document.getElementById('form-stock-qty').value = '10';
-    document.getElementById('form-unit-price').value = '9.50';
-  }, 250);
+  // OCR non implémenté : la fonction ouvre le formulaire sans injecter de valeurs
+  openNewEntryModal();
 }
 
 export function handleFileUpload(e) {
@@ -460,7 +460,7 @@ export function handleSecondaryDlcSubmit(e) {
     type: type,
     creationDate: new Date().toISOString().split('T')[0],
     expiryDate: exp,
-    operator: getCurrentOperator().firstName + ' (' + getCurrentOperator().role + ')'
+    operator: (() => { const op = getCurrentOperator(); return op ? op.firstName + ' (' + op.role + ')' : ''; })()
   });
 
   saveState();

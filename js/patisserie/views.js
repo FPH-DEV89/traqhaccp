@@ -1,10 +1,11 @@
-﻿/**
+/**
  * TraqHACCP Pâtisserie — UI Render Functions
  */
 import { state, getCurrentOperator } from './state.js';
 import { calculateRecipeMetrics, formatDateFr } from './calculations.js';
 import { playBeep } from './audio-toast.js';
-import { renderSettings } from './settings.js';
+import { renderSettings, readSettings } from './settings.js';
+import { NORMS } from '../../src/domain/haccp_norms.js';
 
 export function renderLots() {
   const grid = document.getElementById('lots-grid');
@@ -405,5 +406,89 @@ export function switchView(tab) {
   if (activeMobile) {
     activeMobile.classList.add('text-emerald-600', 'dark:text-emerald-400', 'font-bold');
     activeMobile.classList.remove('text-zinc-500', 'dark:text-zinc-400');
+  }
+}
+
+export function renderAudit() {
+  const elTrace = document.getElementById('audit-trace');
+  const elFroid = document.getElementById('audit-froid');
+  const elTemoins = document.getElementById('audit-temoins');
+  const elName = document.getElementById('audit-establishment-name');
+  const elSiret = document.getElementById('audit-siret-line');
+
+  if (elName) {
+    elName.textContent = state.establishmentName;
+  }
+
+  if (elSiret) {
+    const siret = (readSettings().establishment || {}).siret || '';
+    if (siret) {
+      elSiret.textContent = `SIRET : ${siret} · Registre de traçabilité 100% numérique`;
+    } else {
+      elSiret.textContent = 'Registre de traçabilité 100% numérique';
+    }
+  }
+
+  if (elTrace) {
+    if (state.lots.length === 0) {
+      elTrace.textContent = '—';
+      elTrace.dataset.audit = 'vide';
+    } else {
+      const tracedCount = state.lots.filter(l => l.lot).length;
+      const pct = Math.round((tracedCount / state.lots.length) * 100);
+      elTrace.textContent = `${pct}% tracé`;
+      elTrace.dataset.audit = pct === 100 ? 'ok' : 'ko';
+    }
+  }
+
+  if (elFroid) {
+    const coldLots = state.lots.filter(l => ['cremerie', 'oeufs', 'fruits'].includes(l.category));
+    if (coldLots.length === 0) {
+      elFroid.textContent = '—';
+      elFroid.dataset.audit = 'vide';
+    } else {
+      const conformCount = coldLots.filter(l => {
+        const limit = l.category === 'fruits' ? NORMS.cold.vegetableMax : NORMS.cold.positiveMax;
+        return l.temp <= limit;
+      }).length;
+      const pct = Math.round((conformCount / coldLots.length) * 100);
+      elFroid.textContent = `${pct}% Conforme`;
+      elFroid.dataset.audit = pct === 100 ? 'ok' : 'ko';
+    }
+  }
+
+  if (elTemoins) {
+    const activeWitnesses = state.witnessSamples.filter(w => new Date(w.expiryDate) >= new Date());
+    if (activeWitnesses.length === 0) {
+      elTemoins.textContent = 'Aucun témoin';
+      elTemoins.dataset.audit = 'vide';
+    } else {
+      const sorted = [...activeWitnesses].sort((a, b) => new Date(b.serviceDate) - new Date(a.serviceDate));
+      const mostRecent = sorted[0];
+      elTemoins.textContent = `${activeWitnesses.length} actifs (${mostRecent.temp})`;
+      elTemoins.dataset.audit = 'ok';
+    }
+  }
+}
+
+export function renderRecallOptions() {
+  const select = document.getElementById('recall-quick-select');
+  if (!select) return;
+
+  select.innerHTML = '<option value="">Sélectionner un lot actif...</option>';
+  
+  if (state.lots && state.lots.length > 0) {
+    const uniqueLots = Array.from(new Set(state.lots.map(l => l.lot)))
+      .map(lotId => state.lots.find(l => l.lot === lotId))
+      .filter(l => l && l.lot);
+    
+    uniqueLots.sort((a, b) => a.lot.localeCompare(b.lot));
+
+    uniqueLots.forEach(l => {
+      const option = document.createElement('option');
+      option.value = l.lot;
+      option.textContent = `${l.lot} — ${l.name}`;
+      select.appendChild(option);
+    });
   }
 }

@@ -849,3 +849,25 @@
   .settings__row-control { width: 100%; }
   .settings__foot { justify-content: stretch; }
 }
+
+/* Anti-flash : masque l'identité tant que l'état réel n'est pas chargé (voir app.js) */
+html[data-boot="pending"] #header-establishment-name,
+html[data-boot="pending"] #current-op-initials,
+html[data-boot="pending"] #current-op-name,
+html[data-boot="pending"] #current-op-role {
+  visibility: hidden;
+}
+
+/* Audit (modal Mode Inspection) — piloté par data-audit, voir renderAudit() */
+#audit-trace[data-audit="ko"],
+#audit-froid[data-audit="ko"],
+#audit-temoins[data-audit="ko"] {
+  background: var(--tile-dlc-bg);
+  color: var(--tile-dlc);
+}
+#audit-trace[data-audit="vide"],
+#audit-froid[data-audit="vide"],
+#audit-temoins[data-audit="vide"] {
+  background: var(--paper-2);
+  color: var(--ink-3);
+}

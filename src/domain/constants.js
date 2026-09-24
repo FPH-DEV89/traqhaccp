@@ -158,22 +158,22 @@ export const NAV = [
    ═══════════════════════════════════════════════════════════════════ */
 
 /**
- * Établissement de démonstration — données fictives mais vraisemblables.
+ * Établissement vide : l'identité réelle est saisie par le client dans Réglages → Établissement
  * Source : DESIGN.md §9. Aucune donnée client réelle.
  */
 export const DEFAULT_ESTABLISHMENT = {
-  name:      'Le Comptoir des Halles',
-  activity:  'Restaurant traditionnel — cuisine sur place',
-  siret:     '812 447 093 00041',
-  address:   '14 rue des Halles',
-  postal:    '26000',
-  city:      'Valence',
-  phone:     '04 75 42 18 06',
-  email:     'contact@comptoir-des-halles.fr',
-  manager:   'Amélie Ferrand',
-  agreement: 'FR 26 118 0042',
-  seats:     48,
-  openedYear:2019,
+  name:      '',
+  activity:  '',
+  siret:     '',
+  address:   '',
+  postal:    '',
+  city:      '',
+  phone:     '',
+  email:     '',
+  manager:   '',
+  agreement: '',
+  seats:     0,
+  openedYear:0,
 };
 
 /**

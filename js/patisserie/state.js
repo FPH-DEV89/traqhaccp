@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TraqHACCP Pâtisserie — State & Persistence Layer
  */
 
@@ -246,21 +246,45 @@ const DEFAULT_TEAM = [
 
 export const state = {
   establishmentId: 'local',
-  establishmentName: 'Maison Saint-Honoré',
-  establishmentSub: 'Maison Saint-Honoré · Labo, Vente & Livraison',
-  lots: [...DEFAULT_LOTS],
-  recipes: [...DEFAULT_RECIPES],
-  secondaryDlcs: [...DEFAULT_SEC_DLC],
-  witnessSamples: [...DEFAULT_WITNESS],
-  salesHistory: [...DEFAULT_SALES],
-  teamMembers: [...DEFAULT_TEAM],
-  currentOperatorId: 'u-1',
+  establishmentName: '',
+  establishmentSub: '',
+  lots: [],
+  recipes: [],
+  secondaryDlcs: [],
+  witnessSamples: [],
+  salesHistory: [],
+  teamMembers: [],
+  currentOperatorId: null,
   currentCategory: 'all',
   alertsOnly: false,
   pendingSaleRecipe: null,
   pendingSaleMultiplier: 1,
   lotToAdjust: null
 };
+
+const CLE_ETAB_COURANT = 'traqhaccp_patisserie_etab_courant_v1';
+
+/** Enregistre l'établissement courant pour éviter de retomber en démo sans réseau. */
+export function enregistrerEtablissementCourant() {
+  try {
+    localStorage.setItem(CLE_ETAB_COURANT, JSON.stringify({ id: state.establishmentId, nom: state.establishmentName }));
+  } catch (e) {
+    console.warn('Erreur de sauvegarde de l\'établissement courant :', e);
+  }
+}
+
+/** Lit le dernier établissement courant connu, renvoie null si invalide. */
+export function lireEtablissementCourant() {
+  try {
+    const raw = localStorage.getItem(CLE_ETAB_COURANT);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return (parsed && typeof parsed === 'object' && parsed.id) ? parsed : null;
+  } catch (e) {
+    console.warn('Erreur de lecture de l\'établissement courant :', e);
+    return null;
+  }
+}
 
 function storageKey(suffix) {
   const scope = state.establishmentId || 'local';
@@ -289,27 +313,29 @@ export function loadState(etabId = 'local', etabName = null) {
     state.establishmentSub = `${etabName} · Labo, Vente & Livraison`;
   }
 
+  const estDemo = state.establishmentId === 'local';
+
   try {
     const rawLots = localStorage.getItem(storageKey('lots'));
-    state.lots = rawLots ? JSON.parse(rawLots) : [...DEFAULT_LOTS];
+    state.lots = rawLots ? JSON.parse(rawLots) : (estDemo ? [...DEFAULT_LOTS] : []);
 
     const rawRecipes = localStorage.getItem(storageKey('recipes'));
-    state.recipes = rawRecipes ? JSON.parse(rawRecipes) : [...DEFAULT_RECIPES];
+    state.recipes = rawRecipes ? JSON.parse(rawRecipes) : (estDemo ? [...DEFAULT_RECIPES] : []);
 
     const rawSec = localStorage.getItem(storageKey('secondaryDlcs'));
-    state.secondaryDlcs = rawSec ? JSON.parse(rawSec) : [...DEFAULT_SEC_DLC];
+    state.secondaryDlcs = rawSec ? JSON.parse(rawSec) : (estDemo ? [...DEFAULT_SEC_DLC] : []);
 
     const rawWitness = localStorage.getItem(storageKey('witnessSamples'));
-    state.witnessSamples = rawWitness ? JSON.parse(rawWitness) : [...DEFAULT_WITNESS];
+    state.witnessSamples = rawWitness ? JSON.parse(rawWitness) : (estDemo ? [...DEFAULT_WITNESS] : []);
 
     const rawSales = localStorage.getItem(storageKey('salesHistory'));
-    state.salesHistory = rawSales ? JSON.parse(rawSales) : [...DEFAULT_SALES];
+    state.salesHistory = rawSales ? JSON.parse(rawSales) : (estDemo ? [...DEFAULT_SALES] : []);
 
     const rawTeam = localStorage.getItem(storageKey('teamMembers'));
-    state.teamMembers = rawTeam ? JSON.parse(rawTeam) : [...DEFAULT_TEAM];
+    state.teamMembers = rawTeam ? JSON.parse(rawTeam) : (estDemo ? [...DEFAULT_TEAM] : []);
 
     const rawOp = localStorage.getItem(storageKey('currentOperatorId'));
-    state.currentOperatorId = rawOp ? JSON.parse(rawOp) : 'u-1';
+    state.currentOperatorId = rawOp ? JSON.parse(rawOp) : (estDemo ? 'u-1' : null);
 
     const savedName = localStorage.getItem(storageKey('establishmentName'));
     if (savedName && !etabName) {
@@ -319,6 +345,8 @@ export function loadState(etabId = 'local', etabName = null) {
   } catch (e) {
     console.warn('Erreur de chargement local :', e);
   }
+
+  if (!estDemo) enregistrerEtablissementCourant();
 }
 
 export function getCurrentOperator() {

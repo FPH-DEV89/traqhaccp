@@ -22,7 +22,7 @@
  * Les chemins ci-dessous correspondent aux fichiers RÉELLEMENT référencés par l'app livrée
  * (patisserie.html → js/patisserie/app.js → fermeture d'imports).
  */
-const CACHE_NAME = 'traqhaccp-patisserie-20260924-v9';
+const CACHE_NAME = 'traqhaccp-patisserie-20260924-v10';
 
 /** Assets same-origin réellement chargés par patisserie.html. */
 const ASSETS_TO_CACHE = [

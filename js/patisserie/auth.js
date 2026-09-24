@@ -4,7 +4,7 @@
 import { supabase } from '../../src/infrastructure/supabase_client.js';
 import { afficherConnexion, masquerConnexion } from '../../src/presentation/connexion.js?v=4.5';
 import { modePersistance, definirModePersistance } from '../../src/infrastructure/config.js';
-import { state, loadState, saveState } from './state.js';
+import { state, loadState, saveState, lireEtablissementCourant } from './state.js';
 import { showToast, playBeep } from './audio-toast.js';
 import { 
   renderLots, 
@@ -41,12 +41,12 @@ export async function initAuth() {
       await synchroniserEtablissementConnecte();
     } catch (e) {
       console.warn('Erreur auth serveur, repli local :', e);
-      loadState('local', 'Maison Saint-Honoré');
+      loadState('local', 'Mon établissement');
       updateHeaderEstablishment();
     }
   } else {
     // Mode local par défaut
-    loadState('local', 'Maison Saint-Honoré');
+    loadState('local', 'Mon établissement');
     updateHeaderEstablishment();
   }
 }
@@ -72,7 +72,7 @@ export async function afficherPortailConnexion() {
     } else {
       // Choix mode local
       definirModePersistance('local');
-      loadState('local', 'Maison Saint-Honoré');
+      loadState('local', 'Mon établissement');
       updateHeaderEstablishment();
       rafraichirToutesLesVues();
       showToast("Mode local actif (données sur cet appareil).");
@@ -100,9 +100,20 @@ async function synchroniserEtablissementConnecte() {
     console.warn('Impossible de charger les infos établissement Supabase :', err);
   }
 
+  // le mode démo (local) ne doit jamais être atteint depuis une session serveur, même en cas de panne réseau
+  if (etabId === 'local') {
+    const dernier = lireEtablissementCourant();
+    if (dernier) {
+      etabId = dernier.id;
+      etabNom = dernier.nom || etabNom;
+    } else {
+      etabId = 'serveur';
+    }
+  }
+
   loadState(etabId, etabNom);
 
-  // Synchroniser l'utilisateur réel connecté pour ne pas afficher le compte de démo Lucas P.
+  // Synchroniser l'utilisateur réel connecté pour ne pas afficher un opérateur de démonstration.
   try {
     const utilisateur = supabase.currentUser();
     if (utilisateur && utilisateur.email) {

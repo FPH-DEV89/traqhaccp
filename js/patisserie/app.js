@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TraqHACCP Pâtisserie — Main Application Entry Point
  */
 import { playBeep, showToast } from './audio-toast.js';
@@ -22,7 +22,9 @@ import {
   renderOperatorSwitchList, 
   updateOperatorUI, 
   updateTopMetrics, 
-  switchView 
+  switchView,
+  renderAudit,
+  renderRecallOptions
 } from './views.js';
 import { 
   closeModals, 
@@ -131,22 +133,28 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.documentElement.classList.remove('dark');
   }
 
-  // Auth Supabase & multi-établissement
-  await initAuth();
+  try {
+    // Auth Supabase & multi-établissement
+    await initAuth();
 
-  // Premier rendu
-  renderLots();
-  renderRecipes();
-  renderSalesCatalog();
-  renderSalesHistory();
-  renderSecondaryDlcs();
-  renderWitnessSamples();
-  renderTeamGrid();
-  updateOperatorUI();
-  updateTopMetrics();
+    // Premier rendu
+    renderLots();
+    renderRecipes();
+    renderSalesCatalog();
+    renderSalesHistory();
+    renderSecondaryDlcs();
+    renderWitnessSamples();
+    renderTeamGrid();
+    renderAudit();
+    renderRecallOptions();
+    updateOperatorUI();
+    updateTopMetrics();
 
-  // Alertes de service : résumé à l'ouverture, puis surveillance périodique
-  demarrerAlertes();
+    // Alertes de service : résumé à l'ouverture, puis surveillance périodique
+    demarrerAlertes();
+  } finally {
+    document.documentElement.dataset.boot = 'ready';
+  }
 });
 
 // PWA Service Worker
