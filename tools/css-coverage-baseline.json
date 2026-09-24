@@ -1,0 +1,5 @@
+{
+  "_comment": "Baseline CSS coverage — générée le 2026-09-24.",
+  "_note": "Classes structurelles (utilisées dans ≥ 2 fichiers) absentes du design system CSS. Mesurées le 24/09/2026 après nettoyage du legacy. Ne peuvent que décroître. shrink-0, uppercase, grid sont des classes Tailwind (couvertes par CDN) — désormais reconnues par l'heuristique, baseline vide.",
+  "known": []
+}

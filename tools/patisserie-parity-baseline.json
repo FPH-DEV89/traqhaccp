@@ -1,0 +1,13 @@
+{
+  "_comment": "Baseline parité patisserie.html ↔ js/patisserie — mesurée le 2026-09-24.",
+  "_note": "Ces écarts étaient pré-existants avant le nettoyage du 24/09/2026. Ils sont dans modals.js (IDs créés dynamiquement dans des modales non présentes dans le HTML statique). NE PEUVENT QU'DÉCROÎTRE.",
+  "known": [
+    "recipe-form-name",
+    "recipe-form-icon",
+    "recipe-form-price",
+    "recipe-ingredients-inputs",
+    "wit-name",
+    "wit-service",
+    "wit-temp"
+  ]
+}

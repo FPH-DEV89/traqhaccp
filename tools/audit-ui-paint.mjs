@@ -93,13 +93,20 @@ const LARGEURS = (process.env.PAINT_WIDTHS || '1440x900,1024x768,900x800,820x900
   .split(',').map((s) => { const [w, h] = s.split('x').map(Number); return { w, h }; });
 
 function modulesDepuisSource() {
-  const r = join(process.cwd(), 'src/presentation/router.js');
-  if (existsSync(r)) {
-    const src = readFileSync(r, 'utf8');
-    const m = src.match(/export const MIGRATED\s*=\s*\[([\s\S]*?)\]/);
-    if (m) return [...m[1].matchAll(/'([^']+)'|"([^"]+)"/g)].map((x) => x[1] || x[2]);
+  // router.js a été supprimé (architecture abandonnée).
+  // L'app livrée est patisserie.html : elle expose window.switchTab(id).
+  // Les vues sont identifiées par les data-view-id dans patisserie.html.
+  const htmlPath = join(process.cwd(), 'patisserie.html');
+  if (existsSync(htmlPath)) {
+    const src = readFileSync(htmlPath, 'utf8');
+    // Extraire les id de vue depuis data-view ou les boutons de navigation
+    const views = [...src.matchAll(/data-view=['"]([\w-]+)['"]/g)].map((m) => m[1]);
+    if (views.length) return [...new Set(views)];
   }
-  return [];
+  // Fallback : vues connues de l'app livrée (mesurées le 24/09/2026)
+  return ['dashboard', 'temperatures', 'cleaning', 'traceability', 'reception',
+    'checklists', 'oil', 'nonconformities', 'cooling', 'defrost',
+    'allergens', 'ph-weight', 'documents', 'audit', 'compte', 'reglages'];
 }
 const MODULES = opt.modules || modulesDepuisSource();
 

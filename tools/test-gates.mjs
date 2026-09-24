@@ -133,6 +133,58 @@ mentionne('le message nomme aussi le module vivant oublié', rSwCasse.stdout, 'm
 const rSwSain = node('check-sw-assets.mjs', ['--sw', join(dSain, 'sw.js'), '--html', 'index.html', '--root', dSain]);
 attendu('précache sain laissé passer', rSwSain.status, 0);
 
+// 5) gate parité patisserie.html ↔ js/patisserie — nouvelle divergence détectée
+console.log('── Gate 5/6 · check-parity.mjs (rebranché patisserie.html ↔ js/patisserie)');
+/* Fixture D — référence DOM orpheline : js référence un id absent de patisserie.html.
+   La baseline est vide dans ce bac à sable → toute divergence est fatale. */
+{
+  const dParity = join(BAC, 'parity');
+  mkdirSync(dParity, { recursive: true });
+  // patisserie.html avec un seul id
+  writeFileSync(join(dParity, 'patisserie.html'), `<!doctype html><html><body>
+    <div id="existant">OK</div>
+  </body></html>`);
+  // js qui référence un id absent
+  mkdirSync(join(dParity, 'js', 'patisserie'), { recursive: true });
+  writeFileSync(join(dParity, 'js', 'patisserie', 'app.js'),
+    "document.getElementById('id-qui-nexiste-pas');\n");
+  // baseline vide
+  mkdirSync(join(dParity, 'tools'), { recursive: true });
+  writeFileSync(join(dParity, 'tools', 'patisserie-parity-baseline.json'),
+    '{"known":[]}\n');
+  // src/ vivant minimal (requis par check-parity.mjs)
+  mkdirSync(join(dParity, 'src', 'domain'), { recursive: true });
+  mkdirSync(join(dParity, 'src', 'infrastructure'), { recursive: true });
+  mkdirSync(join(dParity, 'src', 'presentation'), { recursive: true });
+
+  // check-parity lit process.cwd() ; on utilise spawnSync avec cwd pour pointer sur la fixture
+  const rParityCasseReal = spawnSync(
+    process.execPath, [join(ICI, 'check-parity.mjs')],
+    { encoding: 'utf8', cwd: dParity, timeout: 30000 },
+  );
+  attendu('référence DOM orpheline détectée (gate rebranché patisserie)', rParityCasseReal.status, 1);
+  mentionne('le message nomme l\'id orphelin', (rParityCasseReal.stdout || '') + (rParityCasseReal.stderr || ''), 'id-qui-nexiste-pas');
+
+  // Version saine : le même id existe dans patisserie.html
+  writeFileSync(join(dParity, 'js', 'patisserie', 'app.js'),
+    "document.getElementById('existant');\n");
+  const rParitySainReal = spawnSync(
+    process.execPath, [join(ICI, 'check-parity.mjs')],
+    { encoding: 'utf8', cwd: dParity, timeout: 30000 },
+  );
+  attendu('parité saine laissée passer', rParitySainReal.status, 0);
+}
+
+// 6) gate test-domain --selftest : la panne témoin doit échouer
+console.log('── Gate 6/6 · test-domain.mjs --selftest');
+const rDomainSelftest = node('test-domain.mjs', ['--selftest']);
+attendu('test-domain --selftest : panne témoin détectée (rc=1)', rDomainSelftest.status, 1);
+mentionne('le message nomme le sabotage', rDomainSelftest.stdout, 'sabotée|ÉCHEC');
+
+const rDomainNormal = node('test-domain.mjs', []);
+attendu('test-domain normal : toutes les assertions OK (rc=0)', rDomainNormal.status, 0);
+mentionne('le message indique OK', rDomainNormal.stdout, 'test-domain: OK');
+
 // Détail utile en cas d'échec
 if (ko) {
   console.log('\n── Détail des sorties qui n\'ont pas réagi comme prévu ──');
@@ -144,5 +196,6 @@ if (ko) {
 
 console.log(ko
   ? `\nFAIL — ${ko} assertion(s) : un gate ne joue plus son rôle.`
-  : '\nPASS — les 4 gates détectent bien les pannes du 16-17/09 et du 23/09/2026, et ne crient pas au loup sur du code sain.');
+  : '\nPASS — les 6 gates détectent bien les pannes historiques (16-17/09, 23/09/2026) et les nouvelles (parité patisserie.html, domaine), et ne crient pas au loup sur du code sain.');
 process.exit(ko ? 1 : 0);
+

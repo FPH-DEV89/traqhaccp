@@ -1,0 +1,3 @@
+2026-09-24 — app livrée patisserie.html (js/patisserie/* + socle src/domain/ + src/infrastructure/ + src/presentation/).
+Architecture : modules ES plats, Tailwind CDN, Supabase. Legacy clean-architecture v4 (index.html + src/application + src/presentation/views) retiré le 24/09/2026.
+Dette Tailwind : mesurée et gelée dans tools/tailwind-baseline.json.
