@@ -22,7 +22,7 @@
  * Les chemins ci-dessous correspondent aux fichiers RÉELLEMENT référencés par l'app livrée
  * (patisserie.html → js/patisserie/app.js → fermeture d'imports).
  */
-const CACHE_NAME = 'traqhaccp-patisserie-20260924-v7';
+const CACHE_NAME = 'traqhaccp-patisserie-20260924-v8';
 
 /** Assets same-origin réellement chargés par patisserie.html. */
 const ASSETS_TO_CACHE = [
@@ -34,7 +34,7 @@ const ASSETS_TO_CACHE = [
   './css/components.css',
   './css/views.css',
 
-  // Entrée applicative + ses 7 modules
+  // Entrée applicative + ses 10 modules
   './js/patisserie/app.js',
   './js/patisserie/audio-toast.js',
   './js/patisserie/auth.js',
@@ -43,6 +43,9 @@ const ASSETS_TO_CACHE = [
   './js/patisserie/recall.js',
   './js/patisserie/state.js',
   './js/patisserie/views.js',
+  './js/patisserie/settings.js',
+  './js/patisserie/settings-data.js',
+  './js/patisserie/settings-norms.js',
   // Socle importé par js/patisserie (fermeture d'imports réelle)
   './src/domain/constants.js',
   './src/domain/haccp_norms.js',

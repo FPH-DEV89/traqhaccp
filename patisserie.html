@@ -137,6 +137,10 @@
             <span class="hidden sm:inline">DDPP / Alerte</span>
           </button>
 
+          <button onclick="switchView('reglages')" id="nav-reglages" class="icon-btn" aria-label="Réglages" title="Réglages">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>
+          </button>
+
           <button onclick="toggleDarkMode()" aria-label="Basculer thème sombre" class="p-2 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
             <svg id="theme-moon" class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
             <svg id="theme-sun" class="w-4 h-4 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
@@ -443,6 +447,10 @@
         </div>
         <p class="text-zinc-500 dark:text-zinc-400">Chaque action enregistrée (réception de marchandise, déstockage client, étiquette DLC secondaire) est signée au nom de l'opérateur actuellement en service pour répondre aux exigences des inspecteurs DDPP.</p>
       </div>
+    </div>
+    <!-- VIEW 6 : Réglages (écran V5 — administratif, hors registre quotidien) -->
+    <div id="view-reglages" class="hidden">
+      <div id="settings-root" class="settings"></div>
     </div>
   </main>
 

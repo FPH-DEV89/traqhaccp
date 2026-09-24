@@ -4,6 +4,7 @@
 import { state, getCurrentOperator } from './state.js';
 import { calculateRecipeMetrics, formatDateFr } from './calculations.js';
 import { playBeep } from './audio-toast.js';
+import { renderSettings } from './settings.js';
 
 export function renderLots() {
   const grid = document.getElementById('lots-grid');
@@ -369,7 +370,7 @@ export function updateTopMetrics() {
 
 export function switchView(tab) {
   playBeep(520, 0.03);
-  ['traceability', 'recipes', 'sales', 'dlc', 'team'].forEach(t => {
+  ['traceability', 'recipes', 'sales', 'dlc', 'team', 'reglages'].forEach(t => {
     document.getElementById(`view-${t}`)?.classList.add('hidden');
     
     // Desktop nav
@@ -388,6 +389,9 @@ export function switchView(tab) {
   });
 
   document.getElementById(`view-${tab}`)?.classList.remove('hidden');
+
+  // Écran Réglages : rendu à la demande par le module settings.js
+  if (tab === 'reglages') renderSettings();
 
   // Active desktop button
   const activeDesktop = document.getElementById(`nav-${tab === 'traceability' ? 'trace' : tab}`);
