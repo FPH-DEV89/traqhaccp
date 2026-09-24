@@ -1,7 +1,7 @@
 # Graph Report - traqhaccp_clean_architecture  (2026-09-24)
 
 ## Corpus Check
-- 55 files · ~66,957 words
+- 55 files · ~66,953 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `03a94b26`
+- Built from commit: `47663915`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -134,8 +134,8 @@ Cohesion: 0.33
 Nodes (22): afficherConnexion(), afficherErreur(), afficherEtape(), analyserHashAuth(), champ(), contexte, effacerErreur(), etatOccupe() (+14 more)
 
 ### Community 12 - "HTML/JS Parity Checking"
-Cohesion: 0.10
-Nodes (19): allJsSources, BASELINE, basePath, BROWSER_GLOBALS, definedFns, fatal, htmlPath, idsHtml (+11 more)
+Cohesion: 0.09
+Nodes (20): allJsSources, BASELINE, basePath, BROWSER_GLOBALS, definedFns, fatal, htmlName, htmlPath (+12 more)
 
 ### Community 13 - "Automated Gate Testing"
 Cohesion: 0.11
@@ -170,8 +170,8 @@ Cohesion: 0.33
 Nodes (3): ASSETS_TO_CACHE, CDN_CRITIQUE, TIERS_SECONDAIRES
 
 ### Community 21 - "Vercel Deployment Configuration"
-Cohesion: 0.33
-Nodes (5): cleanUrls, headers, redirects, rewrites, version
+Cohesion: 0.40
+Nodes (4): cleanUrls, headers, redirects, version
 
 ### Community 22 - "AI Assistant Instructions"
 Cohesion: 0.50

@@ -152,7 +152,7 @@ function scan(path, { strict = false } = {}) {
   // Mesuré le 24/09/2026 : en scannant aussi le CSS, une déclaration légitime comme
   // `border-radius: 20px` ou `text-align: center` était comptée comme une classe utilitaire
   // (+1 « total-tw-classes ») et faisait rougir le gate sur du travail CSS correct.
-  const twEligible = rel === 'patisserie.html' || rel.startsWith('js/patisserie/');
+  const twEligible = rel === 'index.html' || rel === 'patisserie.html' || rel.startsWith('js/patisserie/');
   if (twEligible) {
     const scrut = lines.join('\n');
     for (const { key, rx } of TW_COUNTERS) {
@@ -229,7 +229,7 @@ function scan(path, { strict = false } = {}) {
 const cssFiles = walk(join(ROOT, 'css')).filter((f) => extname(f) === '.css');
 cssFiles.forEach((f) => scan(f, { strict: true }));           // css/ = strict
 
-const htmlPath = join(ROOT, 'patisserie.html');
+const htmlPath = join(ROOT, existsSync(join(ROOT, 'index.html')) ? 'index.html' : 'patisserie.html');
 if (existsSync(htmlPath)) scan(htmlPath, { strict: false });   // app livrée = baseline
 
 const jsPatisserie = walk(join(ROOT, 'js/patisserie')).filter((f) => extname(f) === '.js');
@@ -331,7 +331,7 @@ const totalDebt = Object.values(ruleCountsDebt).reduce((s, v) => s + v, 0);
 const totalRules = Object.keys(ruleCountsDebt).length;
 const newRulesCount = dvErrors.filter((e) => e.ref === 0).length;
 
-console.log(`check-design: ${cssFiles.length} CSS · patisserie.html · ${jsPatisserie.length} js/patisserie · ${presFiles.length} présentation.`);
+console.log(`check-design: ${cssFiles.length} CSS · ${existsSync(join(ROOT, 'index.html')) ? 'index.html' : 'patisserie.html'} · ${jsPatisserie.length} js/patisserie · ${presFiles.length} présentation.`);
 console.log(`  Dette Tailwind mesurée : rounded-xl=${twCounts['rounded-xl']} · rounded-2xl=${twCounts['rounded-2xl']} · shadow-sm=${twCounts['shadow-sm']} · backdrop-blur=${twCounts['backdrop-blur']}`);
 console.log(`  AVERTISSEMENT PRODUIT : l'app livrée dépend du CDN Tailwind ; c'est une dette produit mesurée, pas un oubli de gate.`);
 console.log(`check-design: ${totalDebt} violation(s) gelée(s) sur ${totalRules} règle(s) · ${newRulesCount} nouvelle`);

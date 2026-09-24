@@ -14,7 +14,7 @@
     "gate:css": "node tools/check-css-cascade.mjs css",
     "gate:artifact": "node tools/check-artifact-fresh.mjs --tool graphify",
     "gate:artifact:warn": "node tools/check-artifact-fresh.mjs --tool graphify --advisory",
-    "gate:paint": "node tools/audit-ui-paint.mjs --url \"http://127.0.0.1:8899/patisserie.html?mode=local\" --view \"#view-traceability\"",
+    "gate:paint": "node tools/audit-ui-paint.mjs --url \"http://127.0.0.1:8899/index.html?mode=local\" --view \"#view-traceability\"",
     "gate:sw": "node tools/check-sw-assets.mjs",
     "gate:selftest": "node tools/test-gates.mjs",
     "gate": "npm run gate:css && npm run gate:sw && npm run gate:artifact:warn && npm run gate:selftest"

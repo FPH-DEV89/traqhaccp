@@ -20,13 +20,13 @@
  *      `cache.put()` l'accepte. Tailwind est donc récupéré en `no-cors` puis rangé à la main.
  *
  * Les chemins ci-dessous correspondent aux fichiers RÉELLEMENT référencés par l'app livrée
- * (patisserie.html → js/patisserie/app.js → fermeture d'imports).
+ * (index.html → js/patisserie/app.js → fermeture d'imports).
  */
-const CACHE_NAME = 'traqhaccp-patisserie-20260924-v10';
+const CACHE_NAME = 'traqhaccp-patisserie-20260924-v11';
 
-/** Assets same-origin réellement chargés par patisserie.html. */
+/** Assets same-origin réellement chargés par index.html. */
 const ASSETS_TO_CACHE = [
-  './patisserie.html',
+  './index.html',
   './manifest.json',
   './assets/favicon.svg',
   // Design system (chargé par patisserie.html)
@@ -123,7 +123,7 @@ self.addEventListener('notificationclick', (evenement) => {
       }
     }
     if (self.clients.openWindow) {
-      await self.clients.openWindow('./patisserie.html');
+      await self.clients.openWindow('./index.html');
     }
   })());
 });
@@ -162,8 +162,8 @@ async function reseauDAbord(requete) {
     return reponse;
   } catch (erreur) {
     return (await cache.match(requete, { ignoreSearch: true }))
-      || (await cache.match('./patisserie.html'))
       || (await cache.match('./index.html'))
+      || (await cache.match('./patisserie.html'))
       || Response.error();
   }
 }
@@ -178,6 +178,6 @@ async function cacheDAbord(requete) {
     if (reponse && (reponse.ok || reponse.type === 'opaque')) cache.put(requete, reponse.clone());
     return reponse;
   } catch (erreur) {
-    return (await cache.match('./patisserie.html')) || (await cache.match('./index.html')) || Response.error();
+    return (await cache.match('./index.html')) || (await cache.match('./patisserie.html')) || Response.error();
   }
 }

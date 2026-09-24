@@ -8,15 +8,15 @@
 
 | Élément | Fichier | Taille (lignes non vides) |
 | --- | --- | --- |
-| Page unique de l'app | `patisserie.html` | 997 |
-| Modules applicatifs | `js/patisserie/*.js` (8) | 1 847 au total |
+| Page unique de l'app | `index.html` | 997 |
+| Modules applicatifs | `js/patisserie/*.js` (12) | 1 847 au total |
 | Design system | `css/tokens.css`, `css/components.css`, `css/views.css` | 171 / 673 / 666 |
 | Socle partagé | `src/domain/`, `src/infrastructure/`, `src/presentation/` (7 fichiers) | 2 400 |
 | PWA | `manifest.json`, `sw.js` | — |
 | Déploiement | `vercel.json` (Vercel, `https://traqhaccp.vercel.app/`) | — |
 
-L'entrée est **`patisserie.html`**. L'URL racine `/` sert la même page (réécriture `vercel.json`) ;
-`/index.html` redirige en 301 vers `/` (le fichier `index.html` n'existe plus).
+L'entrée est **`index.html`** servie directement à la racine `/`.
+`/patisserie` et `/patisserie.html` redirigent en 308 permanent vers `/`.
 L'application est connectée à Supabase en permanence (avec cache PWA de résilience hors-ligne).
 
 ## 2. Contraintes non négociables
@@ -41,10 +41,10 @@ L'application est connectée à Supabase en permanence (avec cache PWA de résil
 ## 3. Arborescence réelle
 
 ```
-patisserie.html          entrée : shell, vues, navigation, écouteurs onclick
+index.html               entrée : shell, vues, navigation, écouteurs onclick
 manifest.json            PWA
 sw.js                    précache (liste = fermeture d'imports RÉELLE de la page livrée)
-vercel.json              cleanUrls, redirect /index.html → /, rewrite / → /patisserie.html
+vercel.json              cleanUrls, redirect /patisserie → /
 
 css/
   tokens.css             variables, thèmes, échelles, z-index, motion
@@ -78,7 +78,7 @@ docs/                    cette doc, DESIGN.md, BUGS.md, DATA.md, MANUEL_UTILISAT
 
 ## 4. Graphe d'exécution — la seule vérité
 
-`patisserie.html` → `js/patisserie/app.js` → les 7 autres modules → le socle `src/`
+`index.html` → `js/patisserie/app.js` → les autres modules → le socle `src/`
 (7 fichiers vivants). **La fermeture d'imports mesurée depuis la page SERVIE est la seule
 vérité** : un fichier non atteint par ce graphe est du code mort, à supprimer — pas à conserver
 « au cas où ». Cette règle a coûté cher : 50 fichiers de l'ancienne clean architecture sont
@@ -94,11 +94,11 @@ npm run gate        # gate:css (cascade) → gate:sw (précache servable)
 npm run gate:selftest   # rejoue les 7 pannes témoins des gates eux-mêmes
 ```
 
-- `check-syntax` — la page livrée, son `<script>` inline, les 8 modules et le socle compilent.
+- `check-syntax` — la page livrée, son `<script>` inline, les modules et le socle compilent.
 - `check-design` — design system : tolérance **zéro** sur `css/**` et `src/presentation/**` ;
   app livrée gelée **par comptage de règle** (une seule violation nouvelle fait échouer).
 - `check-parity` — chaque `getElementById`/`querySelector('#…')` des modules correspond à un id
-  présent dans `patisserie.html` (baseline des 7 écarts pré-existants de `modals.js`).
+  présent dans `index.html` (baseline des 7 écarts pré-existants de `modals.js`).
 - `check-css-coverage` — chaque classe structurelle utilisée existe dans le CSS ou est une
   classe Tailwind couverte par le CDN.
 - `check-norms` — cohérence des seuils HACCP entre sources (11 égalités, 4 divergences documentées).
@@ -113,12 +113,12 @@ reconnaissent pas la génération livrée, ils sortent en erreur au lieu de rend
 
 ## 6. Dette mesurée au 24/09/2026
 
-- **Tailwind par CDN** : 2 880 classes utilitaires dans `patisserie.html` + `js/patisserie/*.js`,
+- **Tailwind par CDN** : 2 880 classes utilitaires dans `index.html` + `js/patisserie/*.js`,
   et **667 violations du design system** gelées sur 14 règles
   (`tools/tailwind-baseline.json`, `tools/design-violations-baseline.json`).
   Cohérence hors-ligne : dépend du cache du CDN par le service worker (hors-ligne prouvé réseau
   coupé). **Priorité de résorption** : commencer par les couleurs (453) et les rayons (112).
-- **God File** : 4 dépassements (§2.3). `patisserie.html` est le premier candidat à un découpage.
+- **God File** : 4 dépassements (§2.3). `index.html` est le premier candidat à un découpage.
 - **Deux points d'entrée historiques** : `test_clean_arch.js` était servi publiquement (HTTP 200)
   jusqu'au 24/09/2026 — supprimé.
 

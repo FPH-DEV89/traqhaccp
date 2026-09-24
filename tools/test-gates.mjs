@@ -146,8 +146,8 @@ console.log('── Gate 5/7 · check-parity.mjs (rebranché patisserie.html ↔
 {
   const dParity = join(BAC, 'parity');
   mkdirSync(dParity, { recursive: true });
-  // patisserie.html avec un seul id
-  writeFileSync(join(dParity, 'patisserie.html'), `<!doctype html><html><body>
+  // index.html avec un seul id
+  writeFileSync(join(dParity, 'index.html'), `<!doctype html><html><body>
     <div id="existant">OK</div>
   </body></html>`);
   // js qui référence un id absent
@@ -215,12 +215,12 @@ console.log('── Gate 7/7 · check-design.mjs (gel des violations de l\'app l
     { encoding: 'utf8', cwd: dDesign, timeout: 30000 });
   writeFileSync(join(dDesign, 'js', 'patisserie', 'app.js'), 'export const a = 1;\n');
 
-  writeFileSync(join(dDesign, 'patisserie.html'), pageDesign(true));
+  writeFileSync(join(dDesign, 'index.html'), pageDesign(true));
   const rDesignCasse = design();
   attendu('violation d\'une règle non-Tailwind dans l\'app livrée détectée', rDesignCasse.status, 1);
   mentionne('le message nomme la règle violée', (rDesignCasse.stdout || '') + (rDesignCasse.stderr || ''), 'alert\\(\\) interdit');
 
-  writeFileSync(join(dDesign, 'patisserie.html'), pageDesign(false));
+  writeFileSync(join(dDesign, 'index.html'), pageDesign(false));
   const rDesignSain = design();
   attendu('app livrée saine laissée passer', rDesignSain.status, 0);
 

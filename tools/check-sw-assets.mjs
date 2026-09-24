@@ -24,7 +24,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname, normalize, posix } from 'node:path';
 
 const argv = process.argv.slice(2);
-const opt = { sw: 'sw.js', html: 'patisserie.html', root: null };
+const opt = { sw: 'sw.js', html: 'index.html', root: null };
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === '--sw') opt.sw = argv[++i];
   else if (argv[i] === '--html') opt.html = argv[++i];

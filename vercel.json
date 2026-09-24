@@ -8,14 +8,15 @@
       "permanent": true
     },
     {
-      "source": "/",
-      "destination": "/patisserie",
-      "permanent": false
+      "source": "/patisserie",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/patisserie.html",
+      "destination": "/",
+      "permanent": true
     }
-  ],
-  "rewrites": [
-    { "source": "/", "destination": "/patisserie" },
-    { "source": "/patisserie", "destination": "/patisserie.html" }
   ],
   "headers": [
     {

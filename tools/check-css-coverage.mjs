@@ -47,7 +47,7 @@ for (const m of cssText.matchAll(/\.(-?[_a-zA-Z][\w-]*)/g)) defined.add(m[1]);
 
 // --- sources de l'app livrée ------------------------------------------------
 const targets = [];
-const htmlPath = join(ROOT, 'patisserie.html');
+const htmlPath = join(ROOT, existsSync(join(ROOT, 'index.html')) ? 'index.html' : 'patisserie.html');
 if (existsSync(htmlPath)) targets.push(htmlPath);
 
 const jsDir = join(ROOT, 'js/patisserie');

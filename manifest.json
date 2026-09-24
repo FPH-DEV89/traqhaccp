@@ -4,7 +4,7 @@
   "description": "Application Pâtisserie HACCP : traçabilité ingrédients, fiches techniques, calcul des coûts de revient, caisse FIFO et contrôle sanitaire DDPP.",
   "lang": "fr-FR",
   "dir": "ltr",
-  "start_url": "./patisserie.html",
+  "start_url": "./index.html",
   "scope": "./",
   "id": "./",
   "display": "standalone",

@@ -4,9 +4,9 @@ Application web **française** de registre sanitaire HACCP pour la pâtisserie a
 relevés de températures, plan de nettoyage, suivi des huiles de friture, réception et
 traçabilité des denrées, allergènes (INCO), non-conformités, registre DDPP et mode inspection.
 
-- **PWA statique connectée** : `patisserie.html` + modules ES natifs, **aucun build**, **aucune dépendance npm**.
+- **PWA statique connectée** : `index.html` + modules ES natifs, **aucun build**, **aucune dépendance npm**.
 - **Connecté à Supabase & PWA hors-ligne** : registre synchronisé dans le cloud (multi-postes), cache local pour le travail continu en laboratoire.
-- **Modules ES plats** : `js/patisserie/` (8 modules), socle `src/domain/` et `src/infrastructure/` vivants.
+- **Modules ES plats** : `js/patisserie/` (12 modules), socle `src/domain/` et `src/infrastructure/` vivants.
 - Interface, libellés, commentaires et formats en français (virgule décimale, espace fine avant `°C` et `%`).
 
 Architecture détaillée : [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) ·
@@ -16,10 +16,10 @@ App livrée : [`docs/PATISSERIE_COMPLETE`](docs/PATISSERIE_COMPLETE).
 ## Architecture de l'app livrée
 
 ```
-patisserie.html                entrée unique : shell, vues, navigation
+index.html                     entrée unique : shell, vues, navigation
 manifest.json / sw.js          PWA : installation, cache hors-ligne
 css/                           design system : tokens, components, views (+ dette Tailwind CDN)
-js/patisserie/                 8 modules applicatifs (app, auth, views, state, modals…)
+js/patisserie/                 12 modules applicatifs (app, auth, views, state, modals, settings…)
 src/domain/constants.js        données de référence : normes HACCP, brigade, navigation, DLC
 src/domain/haccp_norms.js      seuils réglementaires HACCP (source de vérité documentée)
 src/infrastructure/config.js   variables d'environnement
@@ -30,16 +30,15 @@ src/presentation/ui.js         composants UI (toasts, modales, cartes)
 tools/                         gates statiques + tests du domaine (npm test)
 ```
 
-> **Note architecture** : la tentative « clean architecture v4 » (`index.html` + `src/application`
-> + `src/presentation/views/`) a été **abandonnée** le 23/09/2026 (commits `3c400bf` → `6499947`
-> → `7983395`) et retirée définitivement le 24/09/2026. L'app livrée est `patisserie.html`.
+> **Note architecture** : l'application est servie directement à la racine `/` via `index.html`.
+> Les anciennes URLs `/patisserie` et `/patisserie.html` sont redirigées vers `/`.
 
 ## Démarrage (sans build)
 
 ```bash
 cd traqhaccp
 python3 -m http.server 8899      # ou : npm run serve
-# → http://localhost:8899/patisserie.html
+# → http://localhost:8899/
 ```
 
 Node.js 22 et python3 suffisent. **Ne jamais lancer `npm install`** : le projet n'a pas de
@@ -50,7 +49,7 @@ dépendances npm (Playwright est optionnel pour le gate de peinture).
 L'app livrée charge **Tailwind depuis le CDN** (`cdn.tailwindcss.com`). C'est une dette produit
 mesurée le 24/09/2026 et gelée dans **deux** baselines complémentaires :
 - `tools/tailwind-baseline.json` — compteurs de classes, mesurés uniquement sur les sources qui
-  **consomment** Tailwind (`patisserie.html` + `js/patisserie/*.js` ; le CSS ne compte pas, sinon
+  **consomment** Tailwind (`index.html` + `js/patisserie/*.js` ; le CSS ne compte pas, sinon
   `text-align:` ou `border-radius:` seraient comptés comme des classes) :
   `rounded-xl` 81 · `shadow-sm` 33 · `backdrop-blur` 13 · **total 2 880 occurrences**.
 - `tools/design-violations-baseline.json` — violations du design system dans l'app livrée,
@@ -70,7 +69,7 @@ node tools/check-design.mjs --write-baseline # re-mesure et réécrit les deux b
 
 ## Modules applicatifs
 
-Chargés par `patisserie.html` depuis `js/patisserie/` :
+Chargés par `index.html` depuis `js/patisserie/` :
 - `app.js` — point d'entrée, boot, navigation entre vues
 - `auth.js` — authentification et session Supabase
 - `views.js` — rendu de chaque vue HACCP (traçabilité, recettes, ventes, DLC, équipe)
@@ -95,7 +94,7 @@ npm test                      # suite complète (check-syntax + check-design + c
 node tools/test-domain.mjs               # tests du domaine vivant (89 assertions)
 node tools/test-domain.mjs --selftest    # panne témoin (doit échouer, rc=1)
 node tools/check-norms-consistency.mjs  # cohérence des seuils HACCP
-node tools/check-parity.mjs             # parité patisserie.html ↔ js/patisserie
+node tools/check-parity.mjs             # parité index.html ↔ js/patisserie
 node tools/check-css-coverage.mjs       # classes CSS design system manquantes
 npm run gate                  # gates rapides (CSS cascade + SW précache + fraîcheur graphe + selftest)
 npm run gate:selftest         # toutes les pannes témoins
@@ -107,6 +106,5 @@ Site 100 % statique. **URL de référence :** `https://traqhaccp.vercel.app/`
 
 Chaque `git push origin main` redéploie automatiquement. `vercel.json` active :
 - les URLs propres (`cleanUrls: true`)
-- la réécriture `/` → `patisserie.html`
-- le redirect permanent `/index.html` → `/` (ancienne URL après suppression du fichier)
+- le redirect permanent `/patisserie` et `/patisserie.html` → `/`
 - le `no-store` du service worker.

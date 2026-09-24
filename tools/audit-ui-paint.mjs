@@ -94,9 +94,9 @@ const LARGEURS = (process.env.PAINT_WIDTHS || '1440x900,1024x768,900x800,820x900
 
 function modulesDepuisSource() {
   // router.js a été supprimé (architecture abandonnée).
-  // L'app livrée est patisserie.html : elle expose window.switchTab(id).
-  // Les vues sont identifiées par les data-view-id dans patisserie.html.
-  const htmlPath = join(process.cwd(), 'patisserie.html');
+  // L'app livrée est index.html (anciennement patisserie.html) : elle expose window.switchTab(id).
+  // Les vues sont identifiées par les data-view-id dans index.html.
+  const htmlPath = join(process.cwd(), existsSync(join(process.cwd(), 'index.html')) ? 'index.html' : 'patisserie.html');
   if (existsSync(htmlPath)) {
     const src = readFileSync(htmlPath, 'utf8');
     // Extraire les id de vue depuis data-view ou les boutons de navigation

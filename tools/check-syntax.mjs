@@ -53,10 +53,10 @@ function checkFile(path, label) {
 
 files.forEach((f) => checkFile(f, relative(ROOT, f)));
 
-// --- scripts inline de patisserie.html ---
-const htmlPath = join(ROOT, 'patisserie.html');
+// --- scripts inline de index.html ---
+const htmlPath = join(ROOT, 'index.html');
 let html = '';
-try { html = readFileSync(htmlPath, 'utf8'); } catch { /* pas de patisserie.html */ }
+try { html = readFileSync(htmlPath, 'utf8'); } catch { /* pas de index.html */ }
 const re = /<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/gi;
 let m;
 let n = 0;
@@ -67,7 +67,7 @@ while ((m = re.exec(html))) {
   n++;
   const p = join(tmp, `inline-${n}.mjs`);
   writeFileSync(p, body);
-  checkFile(p, `patisserie.html <script> inline #${n}`);
+  checkFile(p, `index.html <script> inline #${n}`);
 }
 
 console.log(`check-syntax: ${checked} fichier(s) JS valides, ${files.length} source(s), ${n} script(s) inline.`);

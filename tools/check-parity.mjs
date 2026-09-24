@@ -38,8 +38,9 @@ function walk(dir, out = []) {
 const read = (p) => readFileSync(p, 'utf8');
 
 // --- sources ----------------------------------------------------------------
-const htmlPath = join(ROOT, 'patisserie.html');
+const htmlPath = join(ROOT, existsSync(join(ROOT, 'index.html')) ? 'index.html' : 'patisserie.html');
 const html = existsSync(htmlPath) ? read(htmlPath) : '';
+const htmlName = relative(ROOT, htmlPath);
 
 // js/patisserie/*.js — modules de l'app livrée
 const jsDir = join(ROOT, 'js/patisserie');
@@ -48,7 +49,7 @@ const jsFiles = existsSync(jsDir) ? walk(jsDir).filter((f) => extname(f) === '.j
 // src/ vivant (constants.js, haccp_norms.js, config.js, supabase_client.js, connexion.js, icons.js, ui.js)
 const srcFiles = walk(join(ROOT, 'src')).filter((f) => extname(f) === '.js');
 
-// scripts inline de patisserie.html
+// scripts inline de l'app livrée
 const inlineScripts = [];
 {
   const re = /<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/gi;
@@ -62,7 +63,7 @@ const inlineScripts = [];
 const allJsSources = [
   ...jsFiles.map((f) => ({ path: relative(ROOT, f), src: read(f) })),
   ...srcFiles.map((f) => ({ path: relative(ROOT, f), src: read(f) })),
-  ...inlineScripts.map((src, i) => ({ path: `patisserie.html <script>#${i + 1}`, src })),
+  ...inlineScripts.map((src, i) => ({ path: `${htmlName} <script>#${i + 1}`, src })),
 ];
 
 // --- 1. inventaire des ids --------------------------------------------------
@@ -105,7 +106,7 @@ for (const m of html.matchAll(/\bon(?:click|change|input|submit|change)\s*=\s*"(
     const fn = fm[1];
     if (BROWSER_GLOBALS.has(fn)) continue;
     if (!definedFns.has(fn)) {
-      problems.push(`patisserie.html: onclick="${fn}(…)" → fonction « ${fn} » non définie dans js/patisserie`);
+      problems.push(`${htmlName}: onclick="${fn}(…)" → fonction « ${fn} » non définie dans js/patisserie`);
     }
   }
 }
