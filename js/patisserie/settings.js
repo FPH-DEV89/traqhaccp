@@ -279,6 +279,22 @@ const TABS_SOCLE = [
 
 export const SETTINGS_TABS = TABS_SOCLE.concat(TABS_NORMS, TABS_DATA);
 
+/* ── Points d'extension ouverts aux modules d'onglets ────────────────────
+   settings-norms.js et settings-data.js n'importent jamais settings.js (pas de
+   cycle) : ils reçoivent `ctx` au rendu et y trouvent de quoi s'enregistrer.  */
+const submitHandlers = new Map();
+const actionHandlers = new Map();
+
+/** Traitement du formulaire d'un onglet : (form, ctx) => void. */
+export function registerSettingsSubmit(formName, handler) {
+  submitHandlers.set(formName, handler);
+}
+
+/** Traitement d'une action d'onglet (bouton data-settings-action) : (ctx, bouton) => void. */
+export function registerSettingsAction(actionName, handler) {
+  actionHandlers.set(actionName, handler);
+}
+
 let activeTabId = 'etablissement';
 
 function tabContext() {
@@ -291,6 +307,10 @@ function tabContext() {
     switchControl,
     writeSettings,
     showToast,
+    rerender: renderSettings,
+    switchTab: switchSettingsTab,
+    registerSubmit: registerSettingsSubmit,
+    registerAction: registerSettingsAction,
   };
 }
 
@@ -416,9 +436,8 @@ function saveForm(formName, form) {
     renderSettings();
     return;
   }
-  if (typeof window.settingsTabSubmit === 'function') {
-    window.settingsTabSubmit(formName, form);
-  }
+  const handler = submitHandlers.get(formName);
+  if (handler) handler(form, tabContext());
 }
 
 let deferredInstall = null;
@@ -450,6 +469,13 @@ function onSettingsClick(event) {
   const actionBtn = event.target.closest('[data-settings-action]');
   if (!actionBtn) return;
   const action = actionBtn.dataset.settingsAction;
+
+  // Un module d'onglet peut prendre la main sur une action qui lui appartient.
+  const custom = actionHandlers.get(action);
+  if (custom) {
+    custom(tabContext(), actionBtn);
+    return;
+  }
 
   if (action === 'install') {
     if (deferredInstall) {
