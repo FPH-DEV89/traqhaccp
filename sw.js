@@ -22,7 +22,7 @@
  * Les chemins ci-dessous correspondent aux fichiers RÉELLEMENT référencés par l'app livrée
  * (index.html → js/patisserie/app.js → fermeture d'imports).
  */
-const CACHE_NAME = 'traqhaccp-patisserie-20260925-v12';
+const CACHE_NAME = 'traqhaccp-patisserie-20260925-v13';
 
 /** Assets same-origin réellement chargés par index.html. */
 const ASSETS_TO_CACHE = [
@@ -34,7 +34,7 @@ const ASSETS_TO_CACHE = [
   './css/components.css',
   './css/views.css',
 
-  // Entrée applicative + ses 12 modules
+  // Entrée applicative + ses 13 modules
   './js/patisserie/app.js',
   './js/patisserie/ai-scanner.js',
   './js/patisserie/audio-toast.js',
@@ -56,6 +56,10 @@ const ASSETS_TO_CACHE = [
   './src/presentation/connexion.js',
   './src/presentation/icons.js',
   './src/presentation/ui.js',
+  // Registre DDPP : importé par js/patisserie/recall.js. Absents du précache, l'export
+  // du registre sanitaire tombait au premier démarrage hors-ligne (gate:sw rouge).
+  './src/presentation/ddpp_documents.js',
+  './src/presentation/ddpp_report.js',
 ];
 
 /** Tiers indispensable au rendu : sans lui l'app est peinte mais nue. */
