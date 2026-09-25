@@ -80,6 +80,12 @@ effet immédiatement, sans réémission de jeton.
 
 ## 4. Cloisonnement (RLS)
 
+> ⚠️ **Le socle décrit dans cette section a été conçu et appliqué le 18/09/2026, mais l'app
+> livrée ne l'utilise plus.** Depuis le 24/09/2026 (`8560223`), l'app n'écrit dans aucune de ces
+> tables : le registre vit en `localStorage` (cf. §5). Les migrations restent dans
+> `supabase/migrations/` et s'appliquent toujours, mais elles protègent un socle que l'app ne
+> remplit plus. À lire comme une conception disponible, pas comme le fonctionnement actuel.
+
 19 tables, 19 en RLS, 72 politiques. Les fonctions de contrôle sont `security definer`
 pour éviter la récursion RLS sur `memberships` :
 
@@ -101,26 +107,28 @@ sans authentification ne retourne rien.
 
 | Mode | Persistance | Compte requis |
 |---|---|---|
-| `local` (**défaut**) | `localStorage`, clés `traqhaccp_v2_*` | non |
-| `serveur` | Supabase (PostgREST + GoTrue) | oui |
+| `serveur` (**seul mode**) | Registre sur l'appareil (`localStorage`) + comptes & établissement sur Supabase | oui pour l'auth, **non** pour les données |
 
-Le mode serveur ne remplace rien : `src/infrastructure/supabase_repository.js` expose
-`SupabaseHACCPRepository`, qui implémente **la même interface** que
-`LocalStorageHACCPRepository` (26 méthodes). Les vues n'ont pas été modifiées.
+⚠️ **Réalité vérifiée le 25/09/2026.** Un seul mode, câblé en dur : `MODE_PERSISTANCE = 'serveur'`,
+et `normaliserMode()` / `modePersistance()` / `modeParametreUrl()` renvoient tous `'serveur'`.
+Attention au contresens : « serveur » ne signifie **pas** que le registre est stocké sur un serveur.
 
-```js
-import { SupabaseHACCPRepository } from './infrastructure/supabase_repository.js';
-const repo = new SupabaseHACCPRepository({ onErreur: (e, t) => ui.toast(`${t} : ${e.message}`) });
-await repo.client.signIn(email, motDePasse);   // GoTrue
-await repo.hydrate();                          // charge l'établissement + les collections
-repo.getEquipments();                          // synchrone : lecture depuis le cache hydraté
-repo.saveEquipments(liste);                    // met à jour le cache puis écrit (Promise)
-```
+- **Sur Supabase** : uniquement les comptes (`signUp`, session GoTrue), les adhésions
+  (`memberships`) et l'établissement (`create_establishment`, `establishments`).
+- **Sur l'appareil** : **tout le registre HACCP** — `lots`, `recipes`, `secondaryDlcs`,
+  `witnessSamples`, `salesHistory`, `teamMembers` — écrit par `saveState()` dans
+  `localStorage` (`js/patisserie/state.js`), clés `traqhaccp_patisserie_<etabId>_<suffix>_v1`.
+  **Aucun appel de table Supabase** pour ces données.
 
-**Écart d'interface assumé** : les lectures restent synchrones (cache mémoire hydraté par
-`hydrate()`), mais les écritures renvoient une `Promise` — le serveur est asynchrone et une
-écriture peut être refusée par RLS. `onErreur` est appelé en cas de refus ; l'échec
-n'interrompt jamais l'interface. `await repo.flush()` attend les écritures en attente.
+Conséquence directe : le registre est **par appareil, sans sauvegarde serveur ni partage**
+entre membres d'un même établissement. Un poste perdu ou un cache vidé = registre perdu.
+
+Cette couche a été **supprimée le 24/09/2026** (commit `8560223`, « retirer le legacy
+abandonné » : 50 fichiers de clean architecture retirés, décision produit du 23/09).
+`SupabaseHACCPRepository`, les lectures hydratées (`hydrate()`) et les écritures en
+`Promise` (`flush()`, `onErreur`) **n'existent plus** : `src/infrastructure/` ne contient
+que `config.js` et `supabase_client.js`. Plus aucun dépôt ne sait synchroniser le
+registre — `js/patisserie/state.js` écrit `localStorage` en direct.
 
 ## 6. Bootstrap d'un établissement
 
@@ -129,9 +137,11 @@ L'insertion directe d'un établissement est impossible : écrire exige de relire
 bootstrap passe donc par une fonction atomique :
 
 ```js
-const id = await repo.creerEtablissement('Restaurant Le Port');
-// create_establishment(nom) : crée l'établissement ET rattache l'appelant comme gerant
+const id = await supabase.rpc('create_establishment', { p_name: nom });
+// create_establishment(nom) : crée l'établissement ET rattache l'appelant comme gérant
+// (js/patisserie/auth.js:59 — c'est le seul RPC encore vivant)
 ```
+
 
 ## 7. Appliquer les migrations
 
@@ -152,48 +162,47 @@ En pratique : `python3 /opt/data/scripts/traqhaccp-socle/apply-migration.py <fic
 ## 8. Ce qui n'est pas fait
 
 - Aucune interface de **gestion des comptes** : pas d'écran d'invitation, pas de
-  réinitialisation de mot de passe, pas de changement d'établissement (le bloc « Session
-  serveur » de la vue Compte ne sait que fermer la session).
-- `getSession`/`saveSession` restent en `localStorage` (aucune table de session).
-- `resetToDemo()` **refuse** de s'exécuter en mode serveur : un registre partagé réel ne se
-  réinitialise pas comme une démo.
+  réinitialisation de mot de passe, pas de changement d'établissement. Le bloc « Session »
+  de la vue Compte ne sait que fermer la session.
+- La session GoTrue reste en `localStorage` (aucune table de session).
+- **Aucune sauvegarde ni restauration du registre** : ni export serveur, ni duplication entre
+  appareils. C'est le manque le plus lourd pour un registre à valeur légale.
 
-## 9. Écran de connexion (chantier 2, livré le 18/09/2026)
+## 9. Écran de connexion
 
-Le mode serveur est désormais **atteignable par l'écran**, sans rien changer au mode local.
-
-**Comment on entre en mode serveur**
+Le portail de connexion Supabase (`src/presentation/connexion.js`) prend tout l'écran tant
+qu'aucune session GoTrue valide n'existe. **Il n'existe plus de sortie « sans compte »** :
+c'est un passage obligé, même si le registre, lui, ne quitte jamais l'appareil (cf. §5).
 
 | Entrée | Effet |
 | --- | --- |
-| `index.html?mode=serveur` | Sans effet depuis le 25/09/2026 : le mode serveur est le seul mode. |
-| `index.html?mode=local` | **Ne fait plus rien** — le mode local n'est plus atteignable (`MODES_PERSISTANCE = ['serveur']` dans `src/infrastructure/config.js`). |
-| Réglages (bascule de mode) | Persiste le choix. |
-| *(défaut)* | **Mode serveur** (Supabase) — `normaliserMode()` renvoie toujours `'serveur'`. |
+| `index.html?mode=serveur` | Sans effet : `'serveur'` est le seul mode. |
+| `index.html?mode=local` | **Ne fait plus rien** — plus aucun code ne lit ce paramètre. |
+| *(défaut)* | Mode serveur : `normaliserMode()` renvoie toujours `'serveur'`. |
 
-> ⚠️ Le service worker et l'UI restent conçus pour fonctionner hors-ligne (cache d'assets), mais
-> la persistance des données est **exclusivement Supabase** : plus aucun repli `localStorage` complet.
+> ⚠️ Ne pas confondre **hors-ligne** et **mode local**. Le service worker précache les assets,
+> donc l'app s'ouvre sans réseau et lit son registre dans `localStorage` : le fonctionnement
+> hors-ligne est réel et complet. Ce qui a disparu, c'est seulement le *commutateur* `?mode=local`
+> qui servait à sauter le portail d'authentification.
 
-**Séquence de démarrage (`boot()` dans `src/presentation/context.js`)**
+**Séquence de démarrage (`js/patisserie/auth.js`)**
 
-1. `estModeServeur()` est faux → `createApp()` historique, aucun module Supabase chargé.
-2. Sinon : `SupabaseHACCPRepository` est instancié, la session GoTrue est vérifiée
-   (`verifierSession()` + `rafraichirSession()`), puis hydratée (`await hydrate()`).
-3. Sans session valide, le **portail de connexion** (`src/presentation/connexion.js`) prend
-   tout l'écran : e-mail, mot de passe, création d'établissement au premier compte, et une
-   sortie « Continuer sans compte » qui repasse en local.
-4. Une fois la session ouverte, `createApp(depotServeur)` est réétalé sur `app`
-   (`Object.assign`) : **les 17 vues ne changent pas d'une ligne**, elles consomment le même
-   contrat `store → useCases → repository`.
-5. `session_serveur.js` ajoute le seul élément d'interface propre au mode serveur : un bloc
-   « Session serveur » dans la vue Compte (identité connectée + « Se déconnecter »), vide en
-   mode local. Sans lui, le portail serait définitivement hors d'atteinte après la 1re connexion.
+1. `supabase.hasSession()` est testé. Sans session → le portail s'affiche (e-mail, mot de
+   passe, inscription possible avec `establishment_name`).
+2. Session présente : `loadState()` restaure le **dernier établissement connu** (id + nom,
+   relus depuis `localStorage`).
+3. Première connexion d'un compte : `supabase.rpc('create_establishment', { p_name })`, puis
+   `select('memberships')` (rôle + `establishment_id`), puis
+   `select('establishments', { id })` pour le nom, et enfin `loadState(etabId, etabNom)`.
+4. Le registre est alors lu **depuis `localStorage`**, pas depuis le serveur (cf. §5).
+5. Déconnexion : `supabase.signOut()` + `supabase.effacerSession()`.
 
 **Pièges connus**
 
-- Le paramètre `mode` de l'URL prime sur `localStorage` : tout choix explicite contraire doit
-  appeler `retirerModeUrl()` (`config.js`) avant de recharger, sinon boucle sur le portail.
 - Le portail est un `<div>` plein écran (`z-index: var(--z-modal)`) inséré dans `.app` : il est
-  retiré du DOM (`masquerConnexion()`) et non simplement masqué.
+  **retiré du DOM** par `masquerConnexion()` (idempotent), pas simplement masqué. Pour tester
+  l'UI en headless, il faut donc le retirer ou s'authentifier — `?mode=local` ne saute plus rien.
+- Le mode subsiste sous deux noms dans `config.js` : `MODE_PERSISTANCE = 'serveur'` (ligne 62)
+  et son alias gelé `MODES_PERSISTANCE` (ligne 68). Plusieurs guides citent encore le pluriel.
 
 
