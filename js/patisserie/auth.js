@@ -5,6 +5,7 @@ import { supabase } from '../../src/infrastructure/supabase_client.js';
 import { afficherConnexion, masquerConnexion } from '../../src/presentation/connexion.js?v=4.5';
 import { modePersistance, definirModePersistance } from '../../src/infrastructure/config.js';
 import { state, loadState, saveState, lireEtablissementCourant } from './state.js';
+import { synchroniser, demarrerSync } from './sync.js';
 import { showToast, playBeep } from './audio-toast.js';
 import { 
   renderLots, 
@@ -105,6 +106,12 @@ async function synchroniserEtablissementConnecte() {
 
   loadState(etabId, etabNom);
 
+  // Adopter le registre du serveur AVANT de toucher à la brigade : la fusion
+  // peut ramener des membres saisis sur un autre appareil, et l'étape
+  // suivante ne doit pas les écraser.
+  await synchroniser();
+  demarrerSync();
+
   // Synchroniser l'utilisateur réel connecté pour ne pas afficher un opérateur de démonstration.
   try {
     const utilisateur = supabase.currentUser();
@@ -128,8 +135,10 @@ async function synchroniserEtablissementConnecte() {
           active: true,
           joinedDate: new Date().toISOString().split('T')[0]
         };
-        // Remplacer la brigade par défaut de démo par l'utilisateur connecté
-        state.teamMembers = [profilConnecte];
+        // Ajouter l'utilisateur connecté à la brigade. On AJOUTE, on ne
+        // remplace plus : depuis que le registre se synchronise, écraser la
+        // brigade propagerait la suppression des membres créés ailleurs.
+        state.teamMembers = [...state.teamMembers, profilConnecte];
         state.currentOperatorId = profilConnecte.id;
         saveState();
       } else {

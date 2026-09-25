@@ -22,6 +22,7 @@ import { state, saveState, getCurrentOperator } from './state.js';
 import { DEFAULT_SETTINGS, STORAGE_KEYS, APP_VERSION } from '../../src/domain/constants.js';
 import { TABS_NORMS } from './settings-norms.js';
 import { TABS_DATA } from './settings-data.js';
+import { planifierEnvoi } from './sync.js';
 
 const THEME_KEY = 'theme';
 
@@ -106,6 +107,9 @@ export function writeSettings(patch) {
   } catch (error) {
     console.warn('[Réglages] écriture impossible :', error && error.message);
   }
+  // Les réglages sont cloisonnés par établissement côté serveur : on demande
+  // l'envoi, `sync.js` décide s'ils sont attribuables à l'établissement courant.
+  planifierEnvoi();
   return next;
 }
 

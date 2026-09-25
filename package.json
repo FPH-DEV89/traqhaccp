@@ -5,7 +5,7 @@
   "type": "module",
   "description": "TraqHACCP Pro - Plan de Maitrise Sanitaire (PMS). Application web statique, sans build, ES modules natifs.",
   "scripts": {
-    "test": "node tools/check-syntax.mjs && node tools/check-design.mjs && node tools/check-parity.mjs && node tools/check-css-coverage.mjs && node tools/check-norms-consistency.mjs && node tools/test-domain.mjs",
+    "test": "node tools/check-syntax.mjs && node tools/check-design.mjs && node tools/check-parity.mjs && node tools/check-css-coverage.mjs && node tools/check-norms-consistency.mjs && node tools/check-sync-contract.mjs && node tools/test-domain.mjs",
     "check": "node tools/check-syntax.mjs && node tools/check-design.mjs && node tools/check-parity.mjs",
     "test:domain": "node tools/test-domain.mjs",
     "check:norms": "node tools/check-norms-consistency.mjs",
@@ -19,8 +19,11 @@
     "gate:artifact:warn": "node tools/check-artifact-fresh.mjs --tool graphify --advisory",
     "gate:paint": "node tools/audit-ui-paint.mjs --url \"http://127.0.0.1:8899/index.html?mode=local\" --view \"#view-traceability\"",
     "gate:sw": "node tools/check-sw-assets.mjs",
+    "gate:sync": "node tools/check-sync-contract.mjs",
     "gate:selftest": "node tools/test-gates.mjs",
-    "gate": "npm run gate:css && npm run gate:sw && npm run gate:artifact:warn && npm run gate:selftest"
+    "recette:provisionner": "python3 tools/recette-sync/provisionner.py",
+    "recette:sync": "PLAYWRIGHT_BROWSERS_PATH=/opt/data/.pw-browsers node tools/recette-sync/recette-sync.mjs",
+    "gate": "npm run gate:css && npm run gate:sw && npm run gate:sync && npm run gate:artifact:warn && npm run gate:selftest"
   },
   "gates": {
     "_comment": "Gates exécutables issus des bugs du 16-17/09/2026. gate = ce qui tourne avant push (rapide, sans navigateur). gate:paint exige un serveur local (npm run serve) ou APP_URL.",

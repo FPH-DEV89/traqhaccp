@@ -291,6 +291,22 @@ function storageKey(suffix) {
   return `traqhaccp_patisserie_${scope}_${suffix}_v1`;
 }
 
+/**
+ * Notifié après chaque sauvegarde locale. Branché par `sync.js` plutôt
+ * qu'importé : `sync.js` dépend déjà de ce module, un import en retour
+ * fermerait un cycle.
+ * @type {Function|null}
+ */
+let notifierSauvegarde = null;
+
+/**
+ * Branche la synchronisation distante.
+ * @param {Function|null} fn
+ */
+export function brancherSauvegarde(fn) {
+  notifierSauvegarde = typeof fn === 'function' ? fn : null;
+}
+
 export function saveState() {
   try {
     localStorage.setItem(storageKey('lots'), JSON.stringify(state.lots));
@@ -303,6 +319,15 @@ export function saveState() {
     localStorage.setItem(storageKey('establishmentName'), state.establishmentName);
   } catch (e) {
     console.warn('Erreur de sauvegarde locale :', e);
+  }
+  // Jamais bloquant : le local est déjà écrit, la synchronisation n'est qu'un
+  // rattrapage. Un échec ici ne doit pas remonter à l'appelant.
+  if (notifierSauvegarde) {
+    try {
+      notifierSauvegarde();
+    } catch (e) {
+      console.warn('Erreur de notification de synchronisation :', e);
+    }
   }
 }
 

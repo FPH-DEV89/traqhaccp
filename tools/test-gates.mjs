@@ -87,16 +87,16 @@ mkdirSync(BAC, { recursive: true });
 // 1) gate cascade
 writeFileSync(join(BAC, 'bug.css'), css(true));
 writeFileSync(join(BAC, 'sain.css'), css(false));
-console.log('── Gate 1/7 · check-css-cascade.mjs');
+console.log('── Gate 1/8 · check-css-cascade.mjs');
 attendu('contradiction @media détectée', node('check-css-cascade.mjs', [join(BAC, 'bug.css')]).status, 1);
 attendu('CSS légitime laissé passer', node('check-css-cascade.mjs', [join(BAC, 'sain.css')]).status, 0);
 
 // 2) gate artefact périmé
-console.log('── Gate 2/7 · check-artifact-fresh.mjs');
+console.log('── Gate 2/8 · check-artifact-fresh.mjs');
 attendu('artefact absent = silence', node('check-artifact-fresh.mjs', ['--dir', join(BAC, 'inexistant')]).status, 0);
 
 // 3) gate peinture (fixtures chargées en file://)
-console.log('── Gate 3/7 · audit-ui-paint.mjs');
+console.log('── Gate 3/8 · audit-ui-paint.mjs');
 const ENV = { PAINT_WIDTHS: '1024x768' };
 writeFileSync(join(BAC, 'clippee.html'), page(true));
 writeFileSync(join(BAC, 'saine.html'), page(false));
@@ -110,7 +110,7 @@ const rSaine = node('audit-ui-paint.mjs', ['--url', urlFichier('saine.html'), '-
 attendu('page saine laissée passer', rSaine.status, 0);
 
 // 4) gate hors-ligne : le précache du service worker doit être servable
-console.log('── Gate 4/7 · check-sw-assets.mjs');
+console.log('── Gate 4/8 · check-sw-assets.mjs');
 /* Fixture C — panne du 23/09/2026 : ASSETS_TO_CACHE contenait une entrée qui n'existe pas sur
    disque (résolue par une réécriture de l'hébergeur). cache.addAll() étant tout-ou-rien, ce 404
    rejetait install() : plus aucun service worker, donc plus d'hors-ligne, sans message d'erreur.
@@ -140,7 +140,7 @@ const rSwSain = node('check-sw-assets.mjs', ['--sw', join(dSain, 'sw.js'), '--ht
 attendu('précache sain laissé passer', rSwSain.status, 0);
 
 // 5) gate parité patisserie.html ↔ js/patisserie — nouvelle divergence détectée
-console.log('── Gate 5/7 · check-parity.mjs (rebranché patisserie.html ↔ js/patisserie)');
+console.log('── Gate 5/8 · check-parity.mjs (rebranché patisserie.html ↔ js/patisserie)');
 /* Fixture D — référence DOM orpheline : js référence un id absent de patisserie.html.
    La baseline est vide dans ce bac à sable → toute divergence est fatale. */
 {
@@ -182,7 +182,7 @@ console.log('── Gate 5/7 · check-parity.mjs (rebranché patisserie.html ↔
 }
 
 // 6) gate test-domain --selftest : la panne témoin doit échouer
-console.log('── Gate 6/7 · test-domain.mjs --selftest');
+console.log('── Gate 6/8 · test-domain.mjs --selftest');
 const rDomainSelftest = node('test-domain.mjs', ['--selftest']);
 attendu('test-domain --selftest : panne témoin détectée (rc=1)', rDomainSelftest.status, 1);
 mentionne('le message nomme le sabotage', rDomainSelftest.stdout, 'sabotée|ÉCHEC');
@@ -192,7 +192,7 @@ attendu('test-domain normal : toutes les assertions OK (rc=0)', rDomainNormal.st
 mentionne('le message indique OK', rDomainNormal.stdout, 'test-domain: OK');
 
 // 7) gate design — le gel des violations doit être COMPLET, pas seulement Tailwind
-console.log('── Gate 7/7 · check-design.mjs (gel des violations de l\'app livrée)');
+console.log('── Gate 7/8 · check-design.mjs (gel des violations de l\'app livrée)');
 /* Fixture E — le trou corrigé le 24/09/2026 : check-design gelait TOUTE violation trouvée dans
    patisserie.html / js/patisserie par simple filtre de chemin, sans la compter. Une nouvelle
    violation d'une règle non-Tailwind (ici alert()) passait donc inaperçue. La mesure par règle
@@ -234,6 +234,47 @@ console.log('── Gate 7/7 · check-design.mjs (gel des violations de l\'app l
   attendu('rayon tokenisé (var(--r-2)) laissé passer', rRayonSain.status, 0);
 }
 
+// 8) contrat de synchronisation du registre — nouvelle source de divergence
+console.log('── Gate 8/8 · check-sync-contract.mjs');
+/* Fixture G — le contrat de la synchronisation. La version cassée envoie une
+   collection mappée sur un champ ABSENT du modèle `state` : la fusion écrirait
+   dans une propriété fantôme et les relevés disparaîtraient de l'écran, sans
+   aucune erreur visible. Le socle serveur (migration), l'état, l'auth et le
+   précache sont relus DEPUIS LE DÉPÔT — jamais dupliqués dans le banc — pour
+   que le test porte sur le contrat réellement livré. */
+{
+  const dSync = join(BAC, 'sync-casse');
+  const DEPOT = join(ICI, '..');
+  const repris = ['supabase/migrations/0004_registre_sync.sql', 'js/patisserie/state.js',
+    'js/patisserie/auth.js', 'sw.js'];
+  for (const rel of repris) {
+    mkdirSync(join(dSync, dirname(rel)), { recursive: true });
+    writeFileSync(join(dSync, rel), readFileSync(join(DEPOT, rel), 'utf8'));
+  }
+  const syncSain = readFileSync(join(DEPOT, 'js', 'patisserie', 'sync.js'), 'utf8');
+  mkdirSync(join(dSync, 'js', 'patisserie'), { recursive: true });
+
+  // Panne témoin : la collection « teamMembers » vise un champ qui n'existe pas.
+  writeFileSync(join(dSync, 'js', 'patisserie', 'sync.js'),
+    syncSain.replace("champ: 'teamMembers'", "champ: 'brigadeFantome'"));
+  const rSyncCasse = node('check-sync-contract.mjs', ['--root', dSync]);
+  attendu('collection mappée sur un champ fantôme détectée', rSyncCasse.status, 1);
+  mentionne('le message nomme le champ fantôme', rSyncCasse.stdout, 'CHAMP_FANTOME');
+
+  writeFileSync(join(dSync, 'js', 'patisserie', 'sync.js'), syncSain);
+  const rSyncSain = node('check-sync-contract.mjs', ['--root', dSync]);
+  attendu('contrat de synchronisation sain laissé passer', rSyncSain.status, 0);
+
+  // Panne témoin (vidage) : viderFile() ne déclenche plus la détection, donc
+  // « vider la file » rend la main sur une file encore vide et la modification
+  // reste sur l'appareil. Trouvée par la recette navigateur du 25/09/2026.
+  writeFileSync(join(dSync, 'js', 'patisserie', 'sync.js'),
+    syncSain.replace('  detecterChangements();\n\n  const file = lireFile();', '  const file = lireFile();'));
+  const rSyncVidage = node('check-sync-contract.mjs', ['--root', dSync]);
+  attendu('vidage laissant la donnée sur l\u2019appareil détecté', rSyncVidage.status, 1);
+  mentionne('le message nomme le vidage incomplet', rSyncVidage.stdout, 'VIDAGE');
+}
+
 // Détail utile en cas d'échec
 if (ko) {
   console.log('\n── Détail des sorties qui n\'ont pas réagi comme prévu ──');
@@ -245,6 +286,6 @@ if (ko) {
 
 console.log(ko
   ? `\nFAIL — ${ko} assertion(s) : un gate ne joue plus son rôle.`
-  : '\nPASS — les 7 gates détectent bien les pannes historiques (16-17/09, 23/09/2026) et les nouvelles (parité patisserie.html, domaine), et ne crient pas au loup sur du code sain.');
+  : '\nPASS — les 8 gates détectent bien les pannes historiques (16-17/09, 23/09/2026) et les nouvelles (parité patisserie.html, domaine, contrat de synchronisation), et ne crient pas au loup sur du code sain.');
 process.exit(ko ? 1 : 0);
 
