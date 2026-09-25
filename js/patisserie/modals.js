@@ -560,9 +560,9 @@ export function handleSecondaryDlcSubmit(e) {
 
 export function handleWitnessFormSubmit(e) {
   e.preventDefault();
-  const name = document.getElementById('wit-name').value;
-  const service = document.getElementById('wit-service').value;
-  const temp = document.getElementById('wit-temp').value;
+  const name = document.getElementById('witness-name').value;
+  const service = document.getElementById('witness-service').value;
+  const temp = document.getElementById('witness-temp').value;
 
   const now = new Date();
   const exp = new Date(now.getTime() + 5 * 86400000).toISOString().split('T')[0];

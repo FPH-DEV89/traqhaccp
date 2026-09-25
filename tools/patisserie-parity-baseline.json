@@ -1,13 +1,6 @@
 {
-  "_comment": "Baseline parité patisserie.html ↔ js/patisserie — mesurée le 2026-09-24.",
-  "_note": "Ces écarts étaient pré-existants avant le nettoyage du 24/09/2026. Ils sont dans modals.js (IDs créés dynamiquement dans des modales non présentes dans le HTML statique). NE PEUVENT QU'DÉCROÎTRE.",
-  "known": [
-    "recipe-form-name",
-    "recipe-form-icon",
-    "recipe-form-price",
-    "recipe-ingredients-inputs",
-    "wit-name",
-    "wit-service",
-    "wit-temp"
-  ]
+  "_comment": "Baseline parité index.html ↔ js/patisserie — vidée le 2026-09-25.",
+  "_note": "Les 7 entrées précédentes sont résorbées : 4 (recipe-form-*) étaient obsolètes — ces ids existent bien dans le HTML statique d'index.html ; 3 (wit-*) masquaient une VRAIE panne — handleWitnessFormSubmit() lisait #wit-name/#wit-service/#wit-temp alors que le formulaire déclare #witness-name/#witness-service/#witness-temp, ce qui levait « Cannot read properties of null » à chaque enregistrement d'échantillon témoin. Leçon : une entrée de baseline n'est pas forcément un id « créé dynamiquement » — vérifier avant d'excuser.",
+  "_regle": "Toute nouvelle divergence échoue (exit 1). NE PEUT QUE DÉCROÎTRE : après correction, supprimer l'entrée correspondante.",
+  "known": []
 }
