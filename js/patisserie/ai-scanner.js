@@ -76,10 +76,9 @@ export function demoLabelData() {
 
 /**
  * Envoie l'image d'étiquette pour extraction par Vision IA.
- * Tente d'abord le endpoint Vercel Serverless `/api/extract-label`.
- * Tente le endpoint Vercel Serverless `/api/extract-label`, puis une clé Gemini
- * configurée localement. En l'absence des deux, LÈVE une erreur explicite : aucune
- * donnée d'étiquette n'est inventée (voir DEMO_LABEL_DATA_URL pour la démo explicite).
+ * Tente le endpoint Vercel Serverless `/api/extract-label` (OpenRouter côté serveur),
+ * puis une clé OpenRouter configurée localement. En l'absence des deux, LÈVE une erreur
+ * explicite : aucune donnée d'étiquette n'est inventée (voir DEMO_LABEL_DATA_URL).
  * 
  * @param {string} dataUrl - Image encodée en data URL
  * @returns {Promise<{ name: string, supplier: string, lot: string, dlcDate: string, category: string, confidence: string }>}
@@ -121,15 +120,16 @@ export async function extractLabelData(dataUrl) {
     console.warn("Analyse d'étiquette indisponible via l'endpoint serveur.", err);
   }
 
-  // 2. Mode secours : Clé API personnalisée stockée localement (pratique pour tester en local)
-  const localApiKey = localStorage.getItem('traqhaccp_gemini_api_key');
+  // 2. Mode secours : clé OpenRouter propre à l'utilisateur, stockée localement
+  //    (utile pour tester sans serveur serverless). Aucune clé par défaut.
+  const localApiKey = localStorage.getItem('traqhaccp_openrouter_api_key');
   if (localApiKey) {
     try {
-      const directData = await callGeminiDirect(localApiKey, base64Data);
+      const directData = await callOpenRouterDirect(localApiKey, base64Data);
       if (directData) return directData;
     } catch (errDirect) {
-      console.error("Échec de l'appel direct Gemini avec clé locale :", errDirect);
-      throw new Error(`Erreur API Gemini : ${errDirect.message}`);
+      console.error("Échec de l'appel direct OpenRouter avec clé locale :", errDirect);
+      throw new Error(`Erreur du service d'analyse d'images : ${errDirect.message}`);
     }
   }
 
@@ -140,10 +140,10 @@ export async function extractLabelData(dataUrl) {
 }
 
 /**
- * Appel direct client Gemini (utilisé uniquement si l'utilisateur a configuré sa propre clé en local).
+ * Appel direct client OpenRouter (utilisé uniquement si l'utilisateur a configuré
+ * sa propre clé en local). Même modèle et même contrat que la fonction serverless.
  */
-async function callGeminiDirect(apiKey, base64Data) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+async function callOpenRouterDirect(apiKey, base64Data) {
   const prompt = `Extrais fidèlement sous forme d'un objet JSON strict :
 - "name" (nom du produit)
 - "supplier" (marque ou fournisseur)
@@ -152,28 +152,35 @@ async function callGeminiDirect(apiKey, base64Data) {
 - "category" ("cremerie", "chocolat", "fruits", "farine", ou "oeufs")
 - "confidence" ("high", "medium", ou "low")`;
 
-  const resp = await fetch(url, {
+  const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': window.location.origin,
+      'X-Title': 'TraqHACCP'
+    },
     body: JSON.stringify({
-      contents: [{
+      model: 'google/gemini-2.5-flash',
+      temperature: 0.1,
+      max_tokens: 500,
+      messages: [{
         role: 'user',
-        parts: [
-          { text: prompt },
-          { inline_data: { mime_type: 'image/jpeg', data: base64Data } }
+        content: [
+          { type: 'text', text: prompt },
+          { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Data}` } }
         ]
-      }],
-      generationConfig: { response_mime_type: 'application/json', temperature: 0.1 }
+      }]
     })
   });
 
   if (!resp.ok) {
     const errText = await resp.text();
-    throw new Error(`API Gemini status ${resp.status}: ${errText}`);
+    throw new Error(`OpenRouter status ${resp.status}: ${errText}`);
   }
 
   const result = await resp.json();
-  const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+  const text = result.choices?.[0]?.message?.content;
   if (!text) return null;
   return JSON.parse(text);
 }
