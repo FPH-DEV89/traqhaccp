@@ -372,11 +372,20 @@ La fiche rejoint immédiatement la carte, avec son coût matière, son food cost
 
 ![Scanner une étiquette](captures/modale-scanner-etiquette.png)
 
-### 11.1 Scanner une étiquette
+### 11.1 Scanner une étiquette (reconnaissance automatique)
 
-**Traçabilité & Stocks → Scanner Étiquette** ouvre le module de reconnaissance d'étiquette fournisseur : présentation de l'étiquette devant la caméra, extraction des informations (numéro de lot, DLC, désignation), puis création du lot.
+**Traçabilité & Stocks → Scanner Étiquette** ouvre le module de reconnaissance d'étiquette fournisseur. Le parcours :
 
-> ⚠️ **Limite de cette version** — La reconnaissance automatique (OCR) n'est pas encore active : le module ouvre le formulaire de saisie, qui reste **à compléter au clavier**. La saisie manuelle (chapitre 7) est donc la méthode de travail normale aujourd'hui. Utilisez le scan pour la formation, pas pour la production.
+1. **Prendre photo** mobilise l'appareil photo du poste (tablette ou téléphone) ; **Importer photo** prend une image déjà présente sur l'appareil.
+2. L'application **compresse la photo** (1 280 px de côté au maximum) puis l'envoie au service d'analyse d'images. Un voile « **Analyse IA de l'étiquette…** — *Extraction du lot, de la DLC et du produit* » s'affiche pendant le traitement.
+3. Le **formulaire de réception s'ouvre pré-rempli** avec ce que porte l'étiquette : désignation du produit, fournisseur, **numéro de lot**, **DLC** et **catégorie HACCP**. Un message confirme : « *Étiquette reconnue par IA — vérifiez les champs*. »
+4. **Relisez et corrigez** — en priorité le numéro de lot et la DLC — puis **Valider et Entrer en Stock** (chapitre 7).
+
+![Formulaire de réception pré-rempli après analyse de l'étiquette](captures/scan-etiquette-prefill.png)
+
+> ⚠️ **L'IA propose, l'utilisateur valide.** Une photo de biais, un reflet, une étiquette froissée ou une écriture effacée donnent une extraction incomplète ou erronée. **Le registre engage l'établissement : aucune donnée d'étiquette n'est enregistrée sans relecture humaine.**
+
+> ⓘ **État de l'installation** — la reconnaissance automatique suppose une **clé d'analyse d'images configurée sur le serveur**. Tant qu'elle ne l'est pas (chapitre 18), l'appui sur **Prendre photo** affiche « *Information : Clé API Gemini non configurée sur le serveur…* » et le formulaire s'ouvre **vide** : la saisie manuelle (chapitre 7) reste la méthode de travail. Le lien **Tester avec l'étiquette de démonstration** déroule tout le parcours sur une étiquette d'exemple ; les valeurs alors proposées sont des valeurs de démonstration, **à ne jamais conserver pour un lot réel**.
 
 ### 11.2 Ajuster le stock d'un lot (inventaire)
 
@@ -666,7 +675,7 @@ Vérifiez les deux champs obligatoires (**Nom de la Pâtisserie** et **Prix de v
 Le PDF est bien produit : vérifiez que le navigateur **n'a pas bloqué le téléchargement** (icône de blocage dans la barre d'adresse, ou autorisation « Téléchargements » sur tablette) et que l'appareil dispose d'espace libre. Le document part dans **Téléchargements** (ou **Fichiers** sur iPad). En cas de doute, le rapport reste consultable à l'écran : présentez-le à l'inspecteur et remettez l'**archive JSON** du registre (chapitre 16.2).
 
 **10. Le scan d'étiquette ne remplit pas le formulaire.**
-L'OCR n'est pas encore actif (chapitre 11.1). Utilisez **Saisie Manuelle** : c'est la méthode de travail actuelle.
+L'application vous a affiché un message d'information, puis ouvert le formulaire vide : c'est le comportement prévu lorsque l'analyse d'images n'est pas disponible. Trois causes, dans l'ordre de fréquence : **(a)** la clé d'analyse d'images n'est pas configurée sur l'hébergement — le message le dit explicitement (« *Clé API Gemini non configurée sur le serveur* »), c'est l'état actuel de l'installation (chapitre 18) ; **(b)** la photo est inexploitable (floue, de biais, reflet, étiquette froissée) — recadrez la zone **lot + DLC** et recommencez ; **(c)** le navigateur n'a pas l'autorisation d'utiliser l'appareil photo. Dans les trois cas, la **saisie manuelle (chapitre 7) produit exactement le même registre** : dix secondes de plus, rien de moins.
 
 **Bonus — La remise à zéro des réglages efface-t-elle mon registre ?**
 Non. *Préférences → Remettre les réglages à zéro* ne touche que le thème, les préférences et les fiches livrées. **Le registre sanitaire n'est jamais effacé** par cette action. Seuls l'effacement des données du navigateur ou une restauration d'archive modifient le registre.
@@ -679,7 +688,7 @@ Pour éviter toute promesse non tenue devant un client, un fournisseur ou un ins
 
 - **Pas de synchronisation du registre entre appareils** : les comptes utilisateurs et l'identification de l'établissement sont gérés en ligne, mais les données du registre (lots, recettes, DLC, témoins, ventes, brigade) restent propres à chaque appareil — le transfert se fait par archive JSON (chapitre 16).
 - **Pas d'export PDF de l'étiquette thermique** : le rapport d'audit DDPP et la fiche d'alerte s'exportent désormais en PDF (chapitre 12.1), mais l'étiquette thermique ne produit pas de fichier — le bouton « Imprimer Étiquette Thermique » **enregistre la DLC secondaire** sans piloter d'imprimante.
-- **Pas de reconnaissance automatique d'étiquette** (OCR) : le module Scanner ouvre le formulaire, à compléter au clavier.
+- **Reconnaissance d'étiquette à activer sur l'hébergement** : le module de scan (photo → analyse → formulaire pré-rempli, chapitre 11.1) est **livré et fonctionnel**, mais il dépend d'une **clé d'analyse d'images côté serveur**. Tant qu'elle n'est pas configurée, l'application le dit elle-même (« *Clé API Gemini non configurée sur le serveur* ») et ouvre le formulaire vide : la saisie manuelle (chapitre 7) reste alors la méthode de travail. Il s'agit d'un confort de saisie, **jamais d'un blocage** : le registre produit est identique dans les deux cas.
 - **Pas d'écran de relevés de température** au quotidien : la température est relevée **à réception** (champ obligatoire du formulaire de lot) ; les équipements et les plages réglementaires servent de référentiel de contrôle.
 - **Pas d'allergènes, de plan de nettoyage ni de traçabilité DLC au niveau du produit fini** : le suivi des allergènes du référentiel (14 allergènes INCO) n'est pas encore exposé dans l'interface.
 

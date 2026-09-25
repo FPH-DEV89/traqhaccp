@@ -10,6 +10,7 @@
     "test:domain": "node tools/test-domain.mjs",
     "check:norms": "node tools/check-norms-consistency.mjs",
     "serve": "python3 -m http.server 8899",
+    "guide:pdf": "node tools/build-guide-pdf.mjs",
     "setup:playwright": "PLAYWRIGHT_BROWSERS_PATH=/opt/data/.playwright npx playwright install chromium-headless-shell",
     "gate:css": "node tools/check-css-cascade.mjs css",
     "gate:artifact": "node tools/check-artifact-fresh.mjs --tool graphify",
