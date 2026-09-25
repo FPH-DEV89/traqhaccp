@@ -344,7 +344,27 @@ Trois usages concrets :
 
 Le bouton **Vendre & Déstocker** en bas de fiche lance exactement la même opération que depuis l'onglet Caisse : le bon de vente, le client et le déstockage FIFO (chapitre 9).
 
-> ⚠️ **Limite de cette version** — Le bouton **Nouvelle Fiche Recette** ouvre un formulaire dont l'enregistrement n'est pas encore actif. Les fiches de la carte sont créées à la mise en service avec l'éditeur. En attendant la mise à jour, ne présentez pas ce bouton comme fonctionnel devant un client.
+### 10.4 Créer une nouvelle fiche recette
+
+![Créer une fiche technique recette](captures/modale-creer-fiche-recette.png)
+
+Le bouton **Nouvelle Fiche Recette**, en haut de l'onglet, ouvre la modale **Créer une Fiche Technique Recette**. Aucune connaissance comptable n'est requise : le coût matière, le food cost et la marge sont calculés par l'application à partir des **lots réellement en stock**.
+
+1. **Nom de la Pâtisserie** *(obligatoire)* — le nom tel qu'il apparaîtra sur la carte.
+2. **Icône / Émoji** — la vignette affichée sur la carte (ex. 🍋, 🍓).
+3. **Prix de vente TTC conseillé (€)** *(obligatoire)* — le prix de vente public ; l'application en déduit le HT, puis le food cost et la marge.
+4. **Composition par unité** → bouton **+ Ingrédient**, une ligne par matière première :
+   - **Associer au lot FIFO…** — choisissez le lot à déstocker : le **nom de l'ingrédient** et son **unité** se remplissent automatiquement (c'est le lot qui sera déstocké en caisse, chapitre 9) ;
+   - **Nom ingrédient** — corriger si besoin ;
+   - **Qté** — la quantité pour **une seule pièce** (ex. `0.12` pour 120 g) ;
+   - **Unité** — kg, L ou u ;
+   - **✕** — retire la ligne ajoutée par erreur. La **dernière ligne ne peut pas être supprimée** : le formulaire conserve toujours une ligne de saisie disponible.
+5. Répétez **+ Ingrédient** pour chaque ingrédient de la recette, puis **Créer la Fiche**.
+
+La fiche rejoint immédiatement la carte, avec son coût matière, son food cost et sa marge calculés, et elle est **aussitôt vendable depuis la Caisse**.
+
+> 💡 **Seules les lignes complètes sont enregistrées** — une ligne sans lot, sans nom d'ingrédient ou avec une quantité égale à 0 est ignorée à l'enregistrement. Un ingrédient non rattaché à un lot ne peut pas être déstocké : il ne peut donc pas entrer dans le calcul de la marge.
+> 💡 **Pas de lot en stock ?** Créez d'abord la réception du lot (chapitre 7) : la liste déroulante ne propose que des lots existants. Pour une recette de travail sans déstockage, utilisez un lot de référence et ajustez son stock (chapitre 11.2).
 
 ---
 
@@ -387,7 +407,16 @@ L'application présente d'elle-même les trois points qu'un inspecteur vérifie 
 
 Le bouton **Export Audit DDPP** lance la constitution du rapport d'audit.
 
-> ⚠️ **Limite de cette version** — Les deux boutons d'export du module (**Export Audit DDPP** et **Exporter Fiche d'Alerte DDPP (PDF)**) affichent un accusé de génération mais ne téléchargent pas encore de fichier. Pour un contrôle réel, présentez l'écran à l'inspecteur et remettez l'archive JSON du registre (chapitre 16).
+**Les deux exports du module produisent un vrai fichier PDF**, imprimable et archivable sans connexion :
+
+- **Export Audit DDPP** → `traqhaccp-registre-sanitaire-<AAAA-MM-JJ>-<HHMM>.pdf`
+  Le **Registre Sanitaire d'Établissement** complet, en sept sections : *1. Synthèse de conformité* (traçabilité amont/aval, chaîne du froid, DLC dérivées, échantillons témoins) · *2. Registre des réceptions et des stocks* · *3. Préparations secondaires — DLC dérivées* · *4. Échantillons témoins (conservation 5 jours)* · *5. Traçabilité descendante — déstockages clients* · *6. Opérateurs déclarés dans le registre* · *7. Mentions et signature*. Le document rappelle la durée de conservation réglementaire des enregistrements (3 ans minimum, règlement (CE) n° 852/2004).
+- **Exporter Fiche d'Alerte DDPP (PDF)** → `traqhaccp-fiche-alerte-<N° LOT>-<AAAA-MM-JJ>-<HHMM>.pdf`
+  La fiche du lot recherché : matière première, fournisseur, DLC, date de réception, **préparations intermédiaires à retirer de la vente** et **clients à prévenir**, suivis de la conduite à tenir.
+
+Les deux documents sont en-têtés au nom de l'établissement (raison sociale, SIRET, n° d'agrément, adresse, responsable légal), repris de **Réglages → Établissement** (chapitre 15) : **renseignez cet écran dès la mise en service**, sinon les documents sortent avec la mention « établissement non renseigné ».
+
+> 💡 Aucune cellule n'est tronquée : les libellés longs et les numéros de lot passent à la ligne, pour rester lisibles à l'écran comme à l'impression.
 
 ### 12.2 Enquête sanitaire et traçabilité descendante (le rappel produit)
 
@@ -399,6 +428,7 @@ C'est la fonction la plus précieuse de l'application : **savoir en une minute �
 2. **Lancer l'Enquête**.
 3. L'application produit le **Rapport de Traçabilité Descendante** : la matière, le fournisseur, la **date d'entrée du lot**, le **stock physique restant à consigner immédiatement**, et la **liste des clients servis** (nom, mode de vente, heure d'achat, produits et quantités, référence de commande, téléphone, éventuellement adresse de livraison).
 4. Bouton **Copier les N mobiles** : tous les numéros partent dans le presse-papier, prêts à coller dans un SMS d'alerte groupé.
+5. Bouton **Exporter Fiche d'Alerte DDPP (PDF)** : télécharge la **fiche d'alerte du lot** — le document à remettre au fournisseur, à transmettre à la DDPP ou à afficher en réserve (chapitre 12.1).
 
 > **Le bon réflexe en cas d'alerte fournisseur** : lancement de l'enquête → copie des mobiles → SMS aux clients → consignation du stock restant → note du fournisseur classée avec la fiche. Comptez **moins de deux minutes**, au lieu d'un après-midi de recherche dans un cahier.
 
@@ -630,10 +660,10 @@ Les codes PIN **ne sont jamais affichés ni transmis** : ils ne sont pas récup�
 Vérifiez son état sur sa carte : s'il est désactivé, réactivez-le depuis **Équipe & Utilisateurs** (ou Réglages → Compte → **Brigade et codes PIN → Ouvrir**).
 
 **8. Le bouton « Nouvelle Fiche Recette » ne crée rien.**
-Limite connue de cette version (chapitre 10.3) : les fiches de la carte sont créées à la mise en service. Consultez, analysez, vendez depuis les fiches existantes.
+Vérifiez les deux champs obligatoires (**Nom de la Pâtisserie** et **Prix de vente TTC**) et la composition : une ligne d'ingrédient n'est enregistrée que si elle associe un **lot**, un **nom** et une **quantité supérieure à 0** (chapitre 10.4). Si le formulaire reste bloqué après une mise à jour de l'application, **rechargez la page** (Ctrl+F5, ou fermez et rouvrez la PWA installée) : le navigateur a pu conserver l'ancienne version en cache.
 
 **9. « Export Audit DDPP » ne télécharge pas de fichier.**
-Limite connue (chapitre 12.1) : les deux exports du module de contrôle affichent un accusé, sans fichier. Pour un contrôle : présentez l'écran à l'inspecteur et remettez l'**archive JSON** du registre (chapitre 16.2).
+Le PDF est bien produit : vérifiez que le navigateur **n'a pas bloqué le téléchargement** (icône de blocage dans la barre d'adresse, ou autorisation « Téléchargements » sur tablette) et que l'appareil dispose d'espace libre. Le document part dans **Téléchargements** (ou **Fichiers** sur iPad). En cas de doute, le rapport reste consultable à l'écran : présentez-le à l'inspecteur et remettez l'**archive JSON** du registre (chapitre 16.2).
 
 **10. Le scan d'étiquette ne remplit pas le formulaire.**
 L'OCR n'est pas encore actif (chapitre 11.1). Utilisez **Saisie Manuelle** : c'est la méthode de travail actuelle.
@@ -648,11 +678,9 @@ Non. *Préférences → Remettre les réglages à zéro* ne touche que le thème
 Pour éviter toute promesse non tenue devant un client, un fournisseur ou un inspecteur :
 
 - **Pas de synchronisation du registre entre appareils** : les comptes utilisateurs et l'identification de l'établissement sont gérés en ligne, mais les données du registre (lots, recettes, DLC, témoins, ventes, brigade) restent propres à chaque appareil — le transfert se fait par archive JSON (chapitre 16).
-- **Pas d'export PDF** : ni le rapport d'audit DDPP, ni la fiche d'alerte, ni l'étiquette thermique ne produisent de fichier. L'export existant est l'**archive JSON**.
-- **Pas d'impression d'étiquette** : le bouton « Imprimer Étiquette Thermique » **enregistre la DLC secondaire** mais ne pilote aucune imprimante.
+- **Pas d'export PDF de l'étiquette thermique** : le rapport d'audit DDPP et la fiche d'alerte s'exportent désormais en PDF (chapitre 12.1), mais l'étiquette thermique ne produit pas de fichier — le bouton « Imprimer Étiquette Thermique » **enregistre la DLC secondaire** sans piloter d'imprimante.
 - **Pas de reconnaissance automatique d'étiquette** (OCR) : le module Scanner ouvre le formulaire, à compléter au clavier.
 - **Pas d'écran de relevés de température** au quotidien : la température est relevée **à réception** (champ obligatoire du formulaire de lot) ; les équipements et les plages réglementaires servent de référentiel de contrôle.
-- **Pas de création de fiche recette** depuis l'application (les fiches sont livrées avec la carte).
 - **Pas d'allergènes, de plan de nettoyage ni de traçabilité DLC au niveau du produit fini** : le suivi des allergènes du référentiel (14 allergènes INCO) n'est pas encore exposé dans l'interface.
 
 Ces points sont des développements prévus, pas des défauts de conformité du registre : les enregistrements réellement exigés en contrôle (réception, températures de réception, DLC, témoins, ventes nominatives, rappel produit) sont bien couverts.
@@ -753,8 +781,9 @@ Ces valeurs sont préremplies dans **Réglages → Normes & seuils**. Un seuil p
 **EN CONTRÔLE DDPP**
 
 1. Bouton **DDPP / Alerte** : les trois points de contrôle et les taux de conformité.
-2. Archive JSON du registre exportée le jour même.
-3. Fiche établissement à jour (Réglages → Établissement) : SIRET, agrément, adresse, responsable légal.
+2. Bouton **Export Audit DDPP** : remettez le **PDF du Registre Sanitaire d'Établissement** (chapitre 12.1) ; en cas d'alerte, **Exporter Fiche d'Alerte DDPP (PDF)** pour le lot concerné.
+3. Archive JSON du registre exportée le jour même (sauvegarde complète, chapitre 16.2).
+4. Fiche établissement à jour (Réglages → Établissement) : SIRET, agrément, adresse, responsable légal — c'est l'en-tête imprimé des deux PDF remis.
 
 ---
 

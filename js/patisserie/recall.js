@@ -4,6 +4,9 @@
 import { state } from './state.js';
 import { formatDateFr } from './calculations.js';
 import { playBeep, showToast } from './audio-toast.js';
+import { readSettings } from './settings.js';
+import { construireRegistreDdpp, construireFicheAlerteRecherche, nomFichierRegistre, nomFichierFicheAlerte } from '../../src/presentation/ddpp_documents.js';
+import { telechargerPdf } from '../../src/presentation/ddpp_report.js';
 
 export function testRecallSearch() {
   const val = (document.getElementById('recall-input')?.value || '').trim().toUpperCase();
@@ -119,7 +122,7 @@ export function testRecallSearch() {
 
   html += `
     <div class="pt-2 flex justify-end gap-2 border-t border-zinc-200 dark:border-zinc-800">
-      <button onclick="downloadSanitaryReport()" class="px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-xs font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-800">
+      <button onclick="downloadSanitaryReport('alerte')" class="px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-xs font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-800">
         Exporter Fiche d'Alerte DDPP (PDF)
       </button>
     </div>
@@ -150,7 +153,42 @@ export function copyCustomerPhonesForAlert() {
   showToast("Numéros des clients copiés ! Prêts pour l'envoi de SMS.");
 }
 
-export function downloadSanitaryReport() {
+export function downloadSanitaryReport(contexte = 'registre') {
   playBeep(900, 0.08);
-  showToast("Génération du rapport d'audit DDPP certifié...");
+  const etablissement = readSettings().establishment || {};
+  const maintenant = new Date();
+
+  if (contexte === 'alerte') {
+    const val = (document.getElementById('recall-input')?.value || '').trim().toUpperCase();
+    if (!val) {
+      showToast("Indiquez ou choisissez d'abord un numéro de lot, puis exportez la fiche d'alerte.");
+      return;
+    }
+    const lot = state.lots.find(l => l.lot.includes(val) || l.name.toUpperCase().includes(val)) || null;
+    const preparations = state.secondaryDlcs.filter(s => s.parentLot.includes(val));
+    const ventes = state.salesHistory.filter(s => s.lotsUsed.includes(val));
+    const octets = construireFicheAlerteRecherche({
+      etablissement,
+      recherche: val,
+      lot,
+      preparations,
+      ventes,
+      now: maintenant
+    });
+    telechargerPdf(octets, nomFichierFicheAlerte(val, maintenant));
+    showToast(`Fiche d'alerte DDPP (PDF) générée : ${ventes.length} client(s) à prévenir, ${preparations.length} préparation(s) à retirer.`);
+    return;
+  }
+
+  const octets = construireRegistreDdpp({
+    etablissement,
+    lots: state.lots,
+    secondaryDlcs: state.secondaryDlcs,
+    witnessSamples: state.witnessSamples,
+    salesHistory: state.salesHistory,
+    teamMembers: state.teamMembers,
+    now: maintenant
+  });
+  telechargerPdf(octets, nomFichierRegistre(maintenant));
+  showToast(`Registre sanitaire DDPP (PDF) généré : ${state.lots.length} lot(s), ${state.salesHistory.length} déstockage(s).`);
 }

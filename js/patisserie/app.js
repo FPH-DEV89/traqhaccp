@@ -49,6 +49,7 @@ import {
   handleTraceFormSubmit, 
   handleRecipeFormSubmit, 
   addRecipeIngredientRow, 
+  removeRecipeIngredientRow,
   autoFillIngName, 
   startSaleWorkflow, 
   adjustDestockMultiplier, 
@@ -108,6 +109,7 @@ window.handleFileUpload = handleFileUpload;
 window.handleTraceFormSubmit = handleTraceFormSubmit;
 window.handleRecipeFormSubmit = handleRecipeFormSubmit;
 window.addRecipeIngredientRow = addRecipeIngredientRow;
+window.removeRecipeIngredientRow = removeRecipeIngredientRow;
 window.autoFillIngName = autoFillIngName;
 window.startSaleWorkflow = startSaleWorkflow;
 window.adjustDestockMultiplier = adjustDestockMultiplier;

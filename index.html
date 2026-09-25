@@ -831,7 +831,7 @@
             <p id="audit-establishment-name" class="font-bold text-sm text-zinc-900 dark:text-white"></p>
             <p id="audit-siret-line" class="text-zinc-500 text-xs"></p>
           </div>
-          <button onclick="downloadSanitaryReport()" class="px-3.5 py-2 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-semibold hover:opacity-90 transition flex items-center gap-1.5 shrink-0 active:scale-95">
+          <button onclick="downloadSanitaryReport('registre')" class="px-3.5 py-2 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-semibold hover:opacity-90 transition flex items-center gap-1.5 shrink-0 active:scale-95">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
             Export Audit DDPP
           </button>
@@ -903,27 +903,26 @@
         <div class="grid grid-cols-3 gap-3">
           <div class="col-span-2">
             <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Nom de la Pâtisserie *</label>
-            <input type="text" id="recipe-new-name" required placeholder="ex. Mille-Feuille Croustillant Vanille" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+            <input type="text" id="recipe-form-name" required placeholder="ex. Mille-Feuille Croustillant Vanille" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
           </div>
           <div>
             <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Icône / Émoji</label>
-            <input type="text" id="recipe-new-icon" value="🍰" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl text-center text-lg">
+            <input type="text" id="recipe-form-icon" value="🍰" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl text-center text-lg">
           </div>
         </div>
 
         <div>
           <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Prix de vente TTC conseillé (€) *</label>
-          <input type="number" step="0.10" id="recipe-new-price" required value="5.20" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold text-emerald-600">
+          <input type="number" step="0.10" id="recipe-form-price" required value="5.20" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold text-emerald-600">
         </div>
 
         <div class="p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700 space-y-2">
-          <span class="font-bold text-zinc-700 dark:text-zinc-300 block">Composition par unité (exemples d'ingrédients liés) :</span>
-          <div class="grid grid-cols-2 gap-2 text-[11px] text-zinc-500">
-            <div>• Beurre AOP : 0.050 kg</div>
-            <div>• Crème 35% : 0.080 L</div>
-            <div>• Farine T55 : 0.040 kg</div>
-            <div>• Œufs Bio : 1 unité</div>
+          <div class="recipe-compose__entete">
+            <span class="recipe-compose__titre">Composition par unité</span>
+            <button type="button" onclick="addRecipeIngredientRow()" class="btn btn--primary btn--sm">+ Ingrédient</button>
           </div>
+          <div id="recipe-ingredients-inputs" class="space-y-2"></div>
+          <p class="recipe-compose__aide">Associez chaque ingrédient à un lot en stock : la marge et la traçabilité FIFO sont calculées automatiquement.</p>
         </div>
 
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">

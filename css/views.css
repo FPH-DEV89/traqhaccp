@@ -913,4 +913,21 @@ html[data-boot="pending"] #current-op-role {
   font-size: var(--t-xs);
 }
 
+/* Fiche recette — entête du bloc « Composition par unité » (modale recette) */
+.recipe-compose__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-5);
+}
 
+.recipe-compose__titre {
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.recipe-compose__aide {
+  color: var(--ink-3);
+  font-size: 10px;
+  line-height: 1.4;
+}

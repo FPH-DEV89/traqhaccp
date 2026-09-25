@@ -44,6 +44,10 @@ export function openNewEntryModal() {
 export function openNewRecipeModal() {
   playBeep(590, 0.04);
   const m = document.getElementById('modal-recipe');
+  document.getElementById('recipe-form')?.reset();
+  const rows = document.getElementById('recipe-ingredients-inputs');
+  if (rows) rows.innerHTML = '';
+  addRecipeIngredientRow();
   m?.classList.remove('hidden');
   m?.classList.add('flex');
 }
@@ -325,6 +329,8 @@ export function handleRecipeFormSubmit(e) {
   renderSalesCatalog();
   showToast(`Fiche technique "${name}" créée avec succès.`);
   e.target.reset();
+  const rowsContainer = document.getElementById('recipe-ingredients-inputs');
+  if (rowsContainer) rowsContainer.innerHTML = '';
 }
 
 export function addRecipeIngredientRow() {
@@ -337,7 +343,7 @@ export function addRecipeIngredientRow() {
   const row = document.createElement('div');
   row.className = 'recipe-ing-row grid grid-cols-12 gap-2 items-center';
   row.innerHTML = `
-    <div class="col-span-5">
+    <div class="col-span-4">
       <select class="ing-lot-select w-full px-2.5 py-1.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs" onchange="autoFillIngName(this)">
         <option value="">Associer au lot FIFO...</option>
         ${lotOptions}
@@ -356,8 +362,24 @@ export function addRecipeIngredientRow() {
         <option value="u">u</option>
       </select>
     </div>
+    <div class="col-span-1 flex justify-end">
+      <button type="button" class="icon-btn ing-remove-btn" title="Retirer cette ligne" aria-label="Retirer cet ingrédient" onclick="removeRecipeIngredientRow(this)">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
   `;
   container.appendChild(row);
+}
+
+/** Retire une ligne d'ingrédient ajoutée par erreur (bouton ✕ de la ligne). */
+export function removeRecipeIngredientRow(bouton) {
+  const row = bouton?.closest('.recipe-ing-row');
+  if (!row) return;
+  const container = row.parentElement;
+  row.remove();
+  if (container && container.querySelectorAll('.recipe-ing-row').length === 0) {
+    addRecipeIngredientRow();
+  }
 }
 
 export function autoFillIngName(selectEl) {
