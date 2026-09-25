@@ -9,6 +9,8 @@ Ce guide s'adresse à toute personne qui utilise l'application au quotidien : g�
 
 > **Lecture conseillée** — Gérant : chapitres 3, 4, 10 et 14. Équipe en production : chapitres 5, 6, 7, 8 et 9 (routine quotidienne). Contrôle sanitaire : chapitres 12 et annexe A.
 
+> **À propos des captures d'écran** — Toutes les illustrations de ce guide présentent un **registre d'exemple** appartenant à un établissement fictif (produits, fournisseurs, clients et historique d'un jeu de démonstration pédagogique). Les écrans de votre établissement afficheront vos propres données, et un registre nouvellement créé démarre vide.
+
 ---
 
 ## Sommaire
@@ -102,11 +104,13 @@ Au premier lancement, l'application affiche l'écran **TraqHACCP — Registre sa
 
 Lien **Mot de passe oublié ?** sous le formulaire : saisissez l'adresse e-mail du compte, un message de réinitialisation est envoyé. Le nouveau mot de passe doit respecter la même règle (8 caractères minimum).
 
-### 3.4 Mode de démonstration local
+### 3.4 Un compte est obligatoire (l'application est en mode connecté)
 
-Si l'application est ouverte sans compte (ou hors ligne), elle démarre en **mode local** : un jeu de données de démonstration (6 lots, 3 recettes, 2 DLC secondaires, 1 témoin, 3 ventes, une brigade de 3 personnes) est créé **dans le navigateur de cet appareil uniquement**.
+L'application livrée fonctionne **exclusivement en mode connecté** : sans compte, aucun écran de travail ne s'ouvre. Il n'existe pas de mode « démonstration » ni de mode « hors compte ».
 
-> ⚠️ **À savoir** — Le mode local sert à la découverte et à la formation. Les données qu'il contient ne sont **ni partagées entre appareils, ni sauvegardées ailleurs** : elles vivent dans le navigateur de l'appareil et disparaissent si l'on vide les données du navigateur. Pour un usage réel, travaillez avec un **compte établissement** (3.1).
+Un établissement **nouvellement créé démarre avec un registre vide** — sans lot, sans recette, sans brigade. C'est normal : les écrans se remplissent au fil des réceptions et des préparations (chapitres 6 à 9). Pour visualiser à quoi ressemble un registre rempli, ce guide contient des captures d'écran d'exemple (voir l'encadré en tête de document).
+
+> ⚠️ **À savoir** — Les données saisies sont conservées **dans le navigateur de l'appareil utilisé**, rattachées à l'identifiant de l'établissement. Vider les données du navigateur efface le registre : exportez régulièrement votre archive (chapitre 16). La synchronisation automatique entre plusieurs postes n'est pas encore active dans cette version (chapitre 18).
 
 ### 3.5 Changer d'établissement / se déconnecter
 
@@ -565,7 +569,7 @@ Le message d'ouverture est un résumé : *« 2 alertes de service, dont 1 urgent
 
 ### 16.1 Où vivent les données (à comprendre absolument)
 
-Dans cette version, **le registre est conservé dans le navigateur de l'appareil utilisé** (stockage local, rattaché à l'identifiant de l'établissement). Cela a trois conséquences pratiques :
+Le compte établissement sert à identifier l'établissement et à ouvrir la session (comptes et habilitations gérés en ligne). En revanche, **les données du registre — lots, recettes, DLC, témoins, ventes, brigade — sont conservées dans le navigateur de l'appareil utilisé**, rattachées à l'identifiant de l'établissement. **La synchronisation du registre entre plusieurs postes n'est pas encore active** (chapitre 18). Trois conséquences pratiques :
 
 1. **Le registre n'est pas encore synchronisé entre appareils.** Travailler sur deux postes en parallèle donne deux registres distincts. La règle de travail : **un appareil principal** par établissement (celui du laboratoire, ou une tablette dédiée).
 2. **Vider les données du navigateur efface le registre.** Il faut donc exporter régulièrement (16.2).
@@ -607,8 +611,8 @@ Le règlement (CE) n° 852/2004 (annexe II, chapitre IX) impose de conserver les
 **1. J'ai ouvert l'application sur un second appareil : je ne vois pas mes lots.**
 Le registre est **local à l'appareil** dans cette version. Solution : exporter l'archive depuis l'appareil principal (Réglages → Données → Télécharger) puis la restaurer sur le second. Ne saisissez pas sur deux appareils en parallèle.
 
-**2. L'application affiche des données qui ne sont pas les miennes (Chocolat Noir Caraïbe, Beurre AOP…).**
-Vous êtes en **mode démonstration local**. Ces données ne concernent pas votre établissement et ne sont pas partagées. Fermez la session et **connectez-vous avec le compte de l'établissement** (chapitre 3).
+**2. Mon registre est vide : aucun lot, aucune recette. Est-ce une panne ?**
+Non. Un établissement nouvellement créé démarre avec un **registre vide** : les lots apparaissent à la première réception (chapitre 7), la brigade se crée dans **Équipe & Utilisateurs** (chapitre 13), les fiches recettes sont livrées à la mise en service. Si vous attendiez des données déjà saisies, vérifiez d'abord que vous travaillez **sur le bon appareil** : le registre est propre à chaque poste (chapitre 16.1) — restaurez au besoin une archive (chapitre 16.3).
 
 **3. Je ne reçois aucune alerte sur mon téléphone.**
 Trois vérifications, dans l'ordre : (a) Réglages → **Alertes** → *Autorisation du navigateur* : si elle est **REFUSÉE**, cliquez **Demander** et autorisez dans le navigateur, puis rechargez la page ; (b) cliquez **Tester** (envoi de test) ; (c) vérifiez que vous n'êtes pas dans la **plage des heures calmes** et que l'**horizon des dates limites** n'est pas réglé trop court (24 h). Rappel : les alertes s'affichent quand l'application est ouverte.
@@ -643,7 +647,7 @@ Non. *Préférences → Remettre les réglages à zéro* ne touche que le thème
 
 Pour éviter toute promesse non tenue devant un client, un fournisseur ou un inspecteur :
 
-- **Pas de synchronisation entre appareils** : le registre est propre à l'appareil (transfert par archive JSON).
+- **Pas de synchronisation du registre entre appareils** : les comptes utilisateurs et l'identification de l'établissement sont gérés en ligne, mais les données du registre (lots, recettes, DLC, témoins, ventes, brigade) restent propres à chaque appareil — le transfert se fait par archive JSON (chapitre 16).
 - **Pas d'export PDF** : ni le rapport d'audit DDPP, ni la fiche d'alerte, ni l'étiquette thermique ne produisent de fichier. L'export existant est l'**archive JSON**.
 - **Pas d'impression d'étiquette** : le bouton « Imprimer Étiquette Thermique » **enregistre la DLC secondaire** mais ne pilote aucune imprimante.
 - **Pas de reconnaissance automatique d'étiquette** (OCR) : le module Scanner ouvre le formulaire, à compléter au clavier.
