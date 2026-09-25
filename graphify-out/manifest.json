@@ -10,8 +10,8 @@
     "semantic_hash": ""
   },
   "sw.js": {
-    "mtime": 1790275805.9606125,
-    "ast_hash": "155a181b6a239b1c3c26ebcfa3e0009b",
+    "mtime": 1790323262.9729612,
+    "ast_hash": "aea0d10d07a142bbdef2d02946a909d1",
     "semantic_hash": ""
   },
   "vercel.json": {
@@ -225,8 +225,8 @@
     "semantic_hash": ""
   },
   "js/patisserie/modals.js": {
-    "mtime": 1790246263.0878808,
-    "ast_hash": "e818860f9c17a24cb52702d8d65a41f8",
+    "mtime": 1790323378.0831468,
+    "ast_hash": "0050b3adb31150f831c63977a888604d",
     "semantic_hash": ""
   },
   "js/patisserie/recall.js": {
@@ -290,8 +290,18 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1790248437.9535506,
-    "ast_hash": "17e8c1c1d844ef85dc069089ce6a9abc",
+    "mtime": 1790323607.8890984,
+    "ast_hash": "90680bba3b2f10134ed5c75b3e5713a7",
+    "semantic_hash": ""
+  },
+  "api/extract-label.js": {
+    "mtime": 1790323193.8089502,
+    "ast_hash": "d346d4512a4336567d5b94e7063f8d04",
+    "semantic_hash": ""
+  },
+  "js/patisserie/ai-scanner.js": {
+    "mtime": 1790323205.8118813,
+    "ast_hash": "49c2b1513eadaca0a2bc6e8a3bcab7d1",
     "semantic_hash": ""
   }
 }

@@ -871,3 +871,46 @@ html[data-boot="pending"] #current-op-role {
   background: var(--paper-2);
   color: var(--ink-3);
 }
+
+/* Scanner d'étiquettes sanitaires IA */
+.scan-loading-box {
+  display: none;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--ink);
+  color: var(--sheet);
+  text-align: center;
+  padding: var(--s-4);
+  z-index: var(--z-rail);
+}
+.scan-loading-box.is-active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.scan-loading-title {
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--ok);
+}
+.scan-loading-desc {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  margin-top: var(--s-1);
+}
+.scan-preview {
+  display: none;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+.scan-demo-box {
+  text-align: center;
+  margin-top: var(--s-2);
+}
+.scan-demo-box .link {
+  font-size: var(--t-xs);
+}
+
+

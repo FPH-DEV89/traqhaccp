@@ -22,7 +22,7 @@
  * Les chemins ci-dessous correspondent aux fichiers RÉELLEMENT référencés par l'app livrée
  * (index.html → js/patisserie/app.js → fermeture d'imports).
  */
-const CACHE_NAME = 'traqhaccp-patisserie-20260924-v11';
+const CACHE_NAME = 'traqhaccp-patisserie-20260925-v12';
 
 /** Assets same-origin réellement chargés par index.html. */
 const ASSETS_TO_CACHE = [
@@ -34,8 +34,9 @@ const ASSETS_TO_CACHE = [
   './css/components.css',
   './css/views.css',
 
-  // Entrée applicative + ses 11 modules
+  // Entrée applicative + ses 12 modules
   './js/patisserie/app.js',
+  './js/patisserie/ai-scanner.js',
   './js/patisserie/audio-toast.js',
   './js/patisserie/auth.js',
   './js/patisserie/calculations.js',

@@ -1,16 +1,16 @@
-# Graph Report - traqhaccp_clean_architecture  (2026-09-24)
+# Graph Report - traqhaccp_clean_architecture  (2026-09-25)
 
 ## Corpus Check
-- 55 files · ~66,953 words
+- 57 files · ~68,509 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 620 nodes · 1213 edges · 41 communities (27 shown, 14 thin omitted)
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 56 edges (avg confidence: 0.55)
+- 627 nodes · 1226 edges · 41 communities (27 shown, 14 thin omitted)
+- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 57 edges (avg confidence: 0.55)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `47663915`
+- Built from commit: `e1f6d970`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -69,6 +69,8 @@
 10. `confirmStockDepletion()` - 12 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `saveForm()` --calls--> `handler()`  [INFERRED]
+  js/patisserie/settings.js → api/extract-label.js
 - `afficherPortailConnexion()` --calls--> `afficherConnexion()`  [INFERRED]
   js/patisserie/auth.js → src/presentation/connexion.js
 - `renderNormes()` --calls--> `icon()`  [INFERRED]
@@ -77,8 +79,6 @@
   js/patisserie/settings-norms.js → src/presentation/icons.js
 - `renderDurees()` --calls--> `icon()`  [INFERRED]
   js/patisserie/settings-norms.js → src/presentation/icons.js
-- `tabContext()` --indirect_call--> `icon()`  [INFERRED]
-  js/patisserie/settings.js → src/presentation/icons.js
 
 ## Import Cycles
 - None detected.
@@ -86,8 +86,8 @@
 ## Communities (41 total, 14 thin omitted)
 
 ### Community 0 - "App UI State Management"
-Cohesion: 0.10
-Nodes (72): playBeep(), showToast(), afficherPortailConnexion(), deconnecterEtablissement(), initAuth(), rafraichirToutesLesVues(), synchroniserEtablissementConnecte(), updateHeaderEstablishment() (+64 more)
+Cohesion: 0.09
+Nodes (76): callGeminiDirect(), compressImage(), extractLabelData(), playBeep(), showToast(), afficherPortailConnexion(), deconnecterEtablissement(), initAuth() (+68 more)
 
 ### Community 1 - "Supabase Persistence Configuration"
 Cohesion: 0.08
@@ -98,8 +98,8 @@ Cohesion: 0.20
 Nodes (9): 1. 16/09/2026 — « les titres s'affichent mais rien d'autre », 2. 17/09/2026 — artefact généré périmé + raccourci cassé, 3. 16/09/2026 — écrasement silencieux en cascade, 4. 17/09/2026 — les pièges des gates eux-mêmes (appris en les posant), 5. 18/09/2026 — le gate ne pouvait plus mordre (binaire Playwright absent), 6. 23/09/2026 — le « hors-ligne » qui n'existait pas (service worker jeté en silence), 7. 24/09/2026 — la chaîne de vérification validait du code mort, BUGS.md — pannes vécues et le gate qui les rend re-livables impossibles (+1 more)
 
 ### Community 3 - "HACCP Data Repository"
-Cohesion: 0.14
-Nodes (33): actionHandlers, armConfirm(), armed, bindSettingsEvents(), clone(), TABS_DATA, esc(), isDarkTheme() (+25 more)
+Cohesion: 0.12
+Nodes (35): handler(), actionHandlers, armConfirm(), armed, bindSettingsEvents(), clone(), TABS_DATA, esc() (+27 more)
 
 ### Community 4 - "Multi-tenant Security Schema"
 Cohesion: 0.18
@@ -107,11 +107,11 @@ Nodes (10): 1. Le tenant, c'est l'établissement, 2. Schéma (20 tables), 3. Rô
 
 ### Community 5 - "Icon and Overlay UI"
 Cohesion: 0.13
-Nodes (33): NAV, icon(), ICON_ALIAS, iconFor(), ICONS, TRACES, banner(), camera() (+25 more)
+Nodes (32): icon(), ICON_ALIAS, iconFor(), ICONS, TRACES, banner(), camera(), closeAllOverlays() (+24 more)
 
 ### Community 6 - "Application Constants and Norms"
 Cohesion: 0.08
-Nodes (44): clone(), DLC_DEFAULTS, DLC_FAMILIES, dlcOf(), EQUIPMENT_TYPES, equipmentType(), frNumber(), frRange() (+36 more)
+Nodes (43): clone(), DLC_DEFAULTS, DLC_FAMILIES, dlcOf(), EQUIPMENT_TYPES, equipmentType(), frNumber(), frRange() (+35 more)
 
 ### Community 7 - "User Onboarding Documentation"
 Cohesion: 0.07
@@ -178,8 +178,8 @@ Cohesion: 0.50
 Nodes (3): Automatisation Git (Push après correctif et vérifications), Instructions pour l'assistant, Publication (déploiement)
 
 ### Community 25 - "Git Pre-push Hooks"
-Cohesion: 0.15
-Nodes (25): ALERT_FALLBACK, applyArchive(), archiveField(), archiveFileName(), backupState(), buildArchive(), chooseArchiveFile(), demanderAutorisation() (+17 more)
+Cohesion: 0.14
+Nodes (26): ALERT_FALLBACK, applyArchive(), archiveField(), archiveFileName(), backupState(), buildArchive(), chooseArchiveFile(), demanderAutorisation() (+18 more)
 
 ### Community 28 - "notifications.js"
 Cohesion: 0.27
@@ -200,14 +200,14 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `icon()` connect `Icon and Overlay UI` to `Authentication UI Logic`, `HACCP Data Repository`, `Application Constants and Norms`?**
   _High betweenness centrality (0.030) - this node is a cross-community bridge._
 - **Why does `showToast()` connect `App UI State Management` to `HACCP Data Repository`, `notifications.js`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+  _High betweenness centrality (0.020) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `icon()` (e.g. with `renderDurees()` and `renderEquipements()`) actually correct?**
   _`icon()` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `DEFAUTS`, `ALERT_FALLBACK`, `REMINDER_LABELS` to the rest of the system?**
   _258 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App UI State Management` be split into smaller, more focused modules?**
-  _Cohesion score 0.10030864197530864 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09192886456908345 - nodes in this community are weakly interconnected._
 - **Should `Supabase Persistence Configuration` be split into smaller, more focused modules?**
   _Cohesion score 0.07890070921985816 - nodes in this community are weakly interconnected._
 - **Should `HACCP Data Repository` be split into smaller, more focused modules?**
-  _Cohesion score 0.14260249554367202 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.12462462462462462 - nodes in this community are weakly interconnected._
