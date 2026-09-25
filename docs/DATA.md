@@ -166,10 +166,13 @@ Le mode serveur est désormais **atteignable par l'écran**, sans rien changer a
 
 | Entrée | Effet |
 | --- | --- |
-| `index.html?mode=serveur` | Force + persiste le mode serveur (l'URL prime sur le stockage). |
-| `index.html?mode=local` | Revient au mode local. |
+| `index.html?mode=serveur` | Sans effet depuis le 25/09/2026 : le mode serveur est le seul mode. |
+| `index.html?mode=local` | **Ne fait plus rien** — le mode local n'est plus atteignable (`MODES_PERSISTANCE = ['serveur']` dans `src/infrastructure/config.js`). |
 | Réglages (bascule de mode) | Persiste le choix. |
-| *(défaut)* | Mode local — comportement historique inchangé. |
+| *(défaut)* | **Mode serveur** (Supabase) — `normaliserMode()` renvoie toujours `'serveur'`. |
+
+> ⚠️ Le service worker et l'UI restent conçus pour fonctionner hors-ligne (cache d'assets), mais
+> la persistance des données est **exclusivement Supabase** : plus aucun repli `localStorage` complet.
 
 **Séquence de démarrage (`boot()` dans `src/presentation/context.js`)**
 
