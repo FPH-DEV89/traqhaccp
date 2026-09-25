@@ -17,6 +17,7 @@
 
 import { state, saveState } from './state.js';
 import { STORAGE_KEYS, APP_VERSION } from '../../src/domain/constants.js';
+import { renderArchivePdf, brancherArchivePdf } from './archive.js';
 
 /* ── Valeurs livrées — jamais persistées telles quelles ─────────────── */
 
@@ -414,6 +415,8 @@ function renderDonnees(ctx) {
     ['Brigade', (state.teamMembers || []).length],
   ];
 
+  brancherArchivePdf(ctx);
+
   ctx.registerAction('archive-exporter', (c) => {
     try {
       downloadJson(archiveFileName(), JSON.stringify(buildArchive(), null, 2));
@@ -507,6 +510,8 @@ function renderDonnees(ctx) {
       ${ctx.settingRow('Rythme du rappel de sauvegarde', `Rappel actuel : ${rappel}. Le rythme se règle avec les préférences de l'appareil.`,
         `<button type="button" class="btn btn--ghost" data-settings-go="preferences">Voir les préférences</button>`)}
     </div>
+    <div class="rule"></div>
+    ${renderArchivePdf(ctx)}
     <div class="rule"></div>
     <div class="section__head"><span class="section__title">Hors-ligne</span></div>
     <div class="settings__rows">

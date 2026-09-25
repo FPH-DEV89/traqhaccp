@@ -22,7 +22,7 @@
  * Les chemins ci-dessous correspondent aux fichiers RÉELLEMENT référencés par l'app livrée
  * (index.html → js/patisserie/app.js → fermeture d'imports).
  */
-const CACHE_NAME = 'traqhaccp-patisserie-20260926-v14';
+const CACHE_NAME = 'traqhaccp-patisserie-20260926-v15';
 
 /** Assets same-origin réellement chargés par index.html. */
 const ASSETS_TO_CACHE = [
@@ -34,9 +34,10 @@ const ASSETS_TO_CACHE = [
   './css/components.css',
   './css/views.css',
 
-  // Entrée applicative + ses 14 modules
+  // Entrée applicative + ses 15 modules
   './js/patisserie/app.js',
   './js/patisserie/ai-scanner.js',
+  './js/patisserie/archive.js',
   './js/patisserie/audio-toast.js',
   './js/patisserie/auth.js',
   './js/patisserie/calculations.js',
@@ -57,8 +58,10 @@ const ASSETS_TO_CACHE = [
   './src/presentation/connexion.js',
   './src/presentation/icons.js',
   './src/presentation/ui.js',
-  // Registre DDPP : importé par js/patisserie/recall.js. Absents du précache, l'export
-  // du registre sanitaire tombait au premier démarrage hors-ligne (gate:sw rouge).
+  // Registre DDPP et archive opposable (archive_registre.js, ddpp_documents.js, ddpp_report.js) :
+  // importés par archive.js et recall.js. Absents du précache, l'export du registre
+  // sanitaire tombait au premier démarrage hors-ligne (gate:sw rouge).
+  './src/presentation/archive_registre.js',
   './src/presentation/ddpp_documents.js',
   './src/presentation/ddpp_report.js',
 ];
