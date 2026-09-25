@@ -10,7 +10,7 @@
     "semantic_hash": ""
   },
   "sw.js": {
-    "mtime": 1790323262.9729612,
+    "mtime": 1790323801.617532,
     "ast_hash": "aea0d10d07a142bbdef2d02946a909d1",
     "semantic_hash": ""
   },
@@ -225,7 +225,7 @@
     "semantic_hash": ""
   },
   "js/patisserie/modals.js": {
-    "mtime": 1790323378.0831468,
+    "mtime": 1790323801.6064818,
     "ast_hash": "0050b3adb31150f831c63977a888604d",
     "semantic_hash": ""
   },
@@ -290,18 +290,158 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1790323607.8890984,
+    "mtime": 1790323801.6064818,
     "ast_hash": "90680bba3b2f10134ed5c75b3e5713a7",
     "semantic_hash": ""
   },
   "api/extract-label.js": {
-    "mtime": 1790323193.8089502,
-    "ast_hash": "d346d4512a4336567d5b94e7063f8d04",
+    "mtime": 1790323801.596175,
+    "ast_hash": "ae863548a43f063dc89c8b5d1df5afae",
     "semantic_hash": ""
   },
   "js/patisserie/ai-scanner.js": {
-    "mtime": 1790323205.8118813,
-    "ast_hash": "49c2b1513eadaca0a2bc6e8a3bcab7d1",
+    "mtime": 1790323801.6064818,
+    "ast_hash": "bd1b28cfd97c29c5f9a9a42a97f504a2",
+    "semantic_hash": ""
+  },
+  "docs/GUIDE_UTILISATEUR.md": {
+    "mtime": 1790323801.425527,
+    "ast_hash": "56568bb66b8755d3bd00274a7c6fd783",
+    "semantic_hash": ""
+  },
+  "docs/GUIDE_UTILISATEUR.pdf": {
+    "mtime": 1790323801.4515634,
+    "ast_hash": "2e569be09105694d9e5f9bcd715a804f",
+    "semantic_hash": ""
+  },
+  "docs/captures/enquete-sanitaire-resultat.png": {
+    "mtime": 1790323801.4556901,
+    "ast_hash": "2021f3276f8abb1d07ae0922736a4795",
+    "semantic_hash": ""
+  },
+  "docs/captures/modale-ajout-utilisateur.png": {
+    "mtime": 1790323801.457203,
+    "ast_hash": "a7259ca8f93fb4ed8d3177e6210e1c48",
+    "semantic_hash": ""
+  },
+  "docs/captures/modale-ajustement-stock.png": {
+    "mtime": 1790323801.457203,
+    "ast_hash": "834fff3c54536cb21f73465b20bee8e7",
+    "semantic_hash": ""
+  },
+  "docs/captures/modale-ddp.png": {
+    "mtime": 1790323801.457203,
+    "ast_hash": "998c0968e675fbc4a34a5b4b13ed7394",
+    "semantic_hash": ""
+  },
+  "docs/captures/modale-devalidation-fifo.png": {
+    "mtime": 1790323801.457203,
+    "ast_hash": "9556523e366ff645d17c8b6357db77b4",
+    "semantic_hash": ""
+  },
+  "docs/captures/modale-dlc-secondaire.png": {
+    "mtime": 1790323801.457203,
+    "ast_hash": "cca1c44266cffde1255a4f069d2159bd",
+    "semantic_hash": ""
+  },
+  "docs/captures/modale-nouvelle-recette.png": {
+    "mtime": 1790323801.467958,
+    "ast_hash": "73853dbbc4637651b3fc82c5d3f531bc",
+    "semantic_hash": ""
+  },
+  "docs/captures/modale-operateur.png": {
+    "mtime": 1790323801.467958,
+    "ast_hash": "7ff0cd248f8501c90d2e04c500f37389",
+    "semantic_hash": ""
+  },
+  "docs/captures/modale-reception-lot.png": {
+    "mtime": 1790323801.4722648,
+    "ast_hash": "1ffb873ce398240e0fb9555b1f82fd21",
+    "semantic_hash": ""
+  },
+  "docs/captures/modale-scanner-etiquette.png": {
+    "mtime": 1790323801.4738326,
+    "ast_hash": "7ef68c419b47533d3af6e5deeaf6a2d7",
+    "semantic_hash": ""
+  },
+  "docs/captures/modale-temoin.png": {
+    "mtime": 1790323801.475351,
+    "ast_hash": "a29517e6b761a53da06cb304774b9f50",
+    "semantic_hash": ""
+  },
+  "docs/captures/modale-vente-personnalisee.png": {
+    "mtime": 1790323801.475351,
+    "ast_hash": "848a0ad1a40f96bbab3a937bd93dde4e",
+    "semantic_hash": ""
+  },
+  "docs/captures/premier-ecran.png": {
+    "mtime": 1790323801.4786487,
+    "ast_hash": "ea1ceafceec4ab568ab13959dd139e84",
+    "semantic_hash": ""
+  },
+  "docs/captures/reglages-1-etablissement.png": {
+    "mtime": 1790323801.4786487,
+    "ast_hash": "507d210ac4e96301fe3a9f6ec523c388",
+    "semantic_hash": ""
+  },
+  "docs/captures/reglages-2-preferences.png": {
+    "mtime": 1790323801.4786487,
+    "ast_hash": "1e94a9e804ad7724c189a64d3a2d6268",
+    "semantic_hash": ""
+  },
+  "docs/captures/reglages-3-compte.png": {
+    "mtime": 1790323801.4835112,
+    "ast_hash": "9641e16168ffb077ccdc5de1fa9429eb",
+    "semantic_hash": ""
+  },
+  "docs/captures/reglages-4-normes-seuils.png": {
+    "mtime": 1790323801.4835112,
+    "ast_hash": "d6b542df4ed74764b2df71829bd8b2ed",
+    "semantic_hash": ""
+  },
+  "docs/captures/reglages-5-equipements.png": {
+    "mtime": 1790323801.4835112,
+    "ast_hash": "2111fb292afa25f59dd3d29e44c890fa",
+    "semantic_hash": ""
+  },
+  "docs/captures/reglages-6-durees-de-vie.png": {
+    "mtime": 1790323801.4879386,
+    "ast_hash": "e6cb7b26748a3c17e3542e5e927ae803",
+    "semantic_hash": ""
+  },
+  "docs/captures/reglages-7-alertes.png": {
+    "mtime": 1790323801.490479,
+    "ast_hash": "31c22d649a9acb1b615a6e2ff73590bd",
+    "semantic_hash": ""
+  },
+  "docs/captures/reglages-8-donnees-sauvegardes.png": {
+    "mtime": 1790323801.490479,
+    "ast_hash": "fe6d60e8862dde87549cf2f9776b2c82",
+    "semantic_hash": ""
+  },
+  "docs/captures/vue-dlc.png": {
+    "mtime": 1790323801.490479,
+    "ast_hash": "5f58c3309d2780003fe2ca02d54ea9f7",
+    "semantic_hash": ""
+  },
+  "docs/captures/vue-recipes.png": {
+    "mtime": 1790323801.490479,
+    "ast_hash": "88a54a8f4fd7c88389c97ca528a8bacf",
+    "semantic_hash": ""
+  },
+  "docs/captures/vue-sales.png": {
+    "mtime": 1790323801.490479,
+    "ast_hash": "6c7d05a33d6d9608a5674ecf704a7f0c",
+    "semantic_hash": ""
+  },
+  "docs/captures/vue-team.png": {
+    "mtime": 1790323801.490479,
+    "ast_hash": "ee2c47842b76caecebcf7def0fb4133a",
+    "semantic_hash": ""
+  },
+  "docs/captures/vue-traceability.png": {
+    "mtime": 1790323801.500073,
+    "ast_hash": "21d0b4fceda47b65d77e4f08f25b21a8",
     "semantic_hash": ""
   }
 }

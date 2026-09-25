@@ -1020,7 +1020,7 @@
       "source_location": "L528",
       "_origin": "ast",
       "id": "js_patisserie_settings_data_tabs_data",
-      "community": 3,
+      "community": 25,
       "norm_label": "tabs_data"
     },
     {
@@ -1260,7 +1260,7 @@
       "source_location": "L526",
       "_origin": "ast",
       "id": "js_patisserie_settings_norms_tabs_norms",
-      "community": 3,
+      "community": 6,
       "norm_label": "tabs_norms"
     },
     {
@@ -2350,7 +2350,7 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "src_domain_constants_nav",
-      "community": 6,
+      "community": 5,
       "norm_label": "nav"
     },
     {
@@ -2390,7 +2390,7 @@
       "source_location": "L250",
       "_origin": "ast",
       "id": "src_domain_constants_default_settings",
-      "community": 3,
+      "community": 6,
       "norm_label": "default_settings"
     },
     {
@@ -2400,7 +2400,7 @@
       "source_location": "L270",
       "_origin": "ast",
       "id": "src_domain_constants_storage_keys",
-      "community": 25,
+      "community": 6,
       "norm_label": "storage_keys"
     },
     {
@@ -5852,6 +5852,746 @@
       "id": "docs_design_10_d\u00e9finition_de_fini_checklist_de_revue_visuelle",
       "community": 15,
       "norm_label": "10. definition de \u00ab fini \u00bb (checklist de revue visuelle)"
+    },
+    {
+      "label": "GUIDE_UTILISATEUR.md",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur",
+      "community": 41,
+      "norm_label": "guide_utilisateur.md"
+    },
+    {
+      "label": "TraqHACCP \u2014 Guide utilisateur",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "community": 41,
+      "norm_label": "traqhaccp \u2014 guide utilisateur"
+    },
+    {
+      "label": "Sommaire",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_sommaire",
+      "community": 41,
+      "norm_label": "sommaire"
+    },
+    {
+      "label": "1. \u00c0 quoi sert TraqHACCP",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L42",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_1_\u00e0_quoi_sert_traqhaccp",
+      "community": 41,
+      "norm_label": "1. a quoi sert traqhaccp"
+    },
+    {
+      "label": "2. Installer l'application sur le poste de travail",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L60",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_2_installer_l_application_sur_le_poste_de_travail",
+      "community": 49,
+      "norm_label": "2. installer l'application sur le poste de travail"
+    },
+    {
+      "label": "2.1 Sur ordinateur (laboratoire ou bureau)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L62",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_2_1_sur_ordinateur_laboratoire_ou_bureau",
+      "community": 49,
+      "norm_label": "2.1 sur ordinateur (laboratoire ou bureau)"
+    },
+    {
+      "label": "2.2 Sur tablette ou t\u00e9l\u00e9phone (poste de production, salle de vente)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L70",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_2_2_sur_tablette_ou_t\u00e9l\u00e9phone_poste_de_production_salle_de_vente",
+      "community": 49,
+      "norm_label": "2.2 sur tablette ou telephone (poste de production, salle de vente)"
+    },
+    {
+      "label": "2.3 Mode sombre et sons",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L77",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_2_3_mode_sombre_et_sons",
+      "community": 49,
+      "norm_label": "2.3 mode sombre et sons"
+    },
+    {
+      "label": "3. Compte, connexion et mode de d\u00e9monstration",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L86",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_3_compte_connexion_et_mode_de_d\u00e9monstration",
+      "community": 44,
+      "norm_label": "3. compte, connexion et mode de demonstration"
+    },
+    {
+      "label": "3.1 Cr\u00e9er le compte de l'\u00e9tablissement (recommand\u00e9)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L90",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_3_1_cr\u00e9er_le_compte_de_l_\u00e9tablissement_recommand\u00e9",
+      "community": 44,
+      "norm_label": "3.1 creer le compte de l'etablissement (recommande)"
+    },
+    {
+      "label": "3.2 Se connecter",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L98",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_3_2_se_connecter",
+      "community": 44,
+      "norm_label": "3.2 se connecter"
+    },
+    {
+      "label": "3.3 Mot de passe oubli\u00e9",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L103",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_3_3_mot_de_passe_oubli\u00e9",
+      "community": 44,
+      "norm_label": "3.3 mot de passe oublie"
+    },
+    {
+      "label": "3.4 Un compte est obligatoire (l'application est en mode connect\u00e9)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L107",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_3_4_un_compte_est_obligatoire_l_application_est_en_mode_connect\u00e9",
+      "community": 44,
+      "norm_label": "3.4 un compte est obligatoire (l'application est en mode connecte)"
+    },
+    {
+      "label": "3.5 Changer d'\u00e9tablissement / se d\u00e9connecter",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L115",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_3_5_changer_d_\u00e9tablissement_se_d\u00e9connecter",
+      "community": 44,
+      "norm_label": "3.5 changer d'etablissement / se deconnecter"
+    },
+    {
+      "label": "4. Premier param\u00e9trage de l'\u00e9tablissement (10 minutes)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L121",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_4_premier_param\u00e9trage_de_l_\u00e9tablissement_10_minutes",
+      "community": 41,
+      "norm_label": "4. premier parametrage de l'etablissement (10 minutes)"
+    },
+    {
+      "label": "5. Se rep\u00e9rer : l'anatomie de l'\u00e9cran principal",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L140",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_5_se_rep\u00e9rer_l_anatomie_de_l_\u00e9cran_principal",
+      "community": 50,
+      "norm_label": "5. se reperer : l'anatomie de l'ecran principal"
+    },
+    {
+      "label": "5.1 La barre sup\u00e9rieure",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L144",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_5_1_la_barre_sup\u00e9rieure",
+      "community": 50,
+      "norm_label": "5.1 la barre superieure"
+    },
+    {
+      "label": "5.2 Les 4 indicateurs (en haut de l'\u00e9cran)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L155",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_5_2_les_4_indicateurs_en_haut_de_l_\u00e9cran",
+      "community": 50,
+      "norm_label": "5.2 les 4 indicateurs (en haut de l'ecran)"
+    },
+    {
+      "label": "5.3 Vocabulaire des statuts (chapitre 15 pour le d\u00e9tail)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L164",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_5_3_vocabulaire_des_statuts_chapitre_15_pour_le_d\u00e9tail",
+      "community": 50,
+      "norm_label": "5.3 vocabulaire des statuts (chapitre 15 pour le detail)"
+    },
+    {
+      "label": "6. La routine quotidienne en trois passes",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L171",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_6_la_routine_quotidienne_en_trois_passes",
+      "community": 51,
+      "norm_label": "6. la routine quotidienne en trois passes"
+    },
+    {
+      "label": "Passe 1 \u2014 \u00c0 la livraison (3 \u00e0 5 minutes, \u00e0 chaque r\u00e9ception)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L175",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_passe_1_\u00e0_la_livraison_3_\u00e0_5_minutes_\u00e0_chaque_r\u00e9ception",
+      "community": 51,
+      "norm_label": "passe 1 \u2014 a la livraison (3 a 5 minutes, a chaque reception)"
+    },
+    {
+      "label": "Passe 2 \u2014 \u00c0 la production (1 minute par pr\u00e9paration)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L181",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_passe_2_\u00e0_la_production_1_minute_par_pr\u00e9paration",
+      "community": 51,
+      "norm_label": "passe 2 \u2014 a la production (1 minute par preparation)"
+    },
+    {
+      "label": "Passe 3 \u2014 En fin de service (5 minutes)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L187",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_passe_3_en_fin_de_service_5_minutes",
+      "community": 51,
+      "norm_label": "passe 3 \u2014 en fin de service (5 minutes)"
+    },
+    {
+      "label": "7. R\u00e9ception d'une marchandise dans le registre",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L197",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_7_r\u00e9ception_d_une_marchandise_dans_le_registre",
+      "community": 45,
+      "norm_label": "7. reception d'une marchandise dans le registre"
+    },
+    {
+      "label": "7.1 Ouvrir le formulaire",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L203",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_7_1_ouvrir_le_formulaire",
+      "community": 45,
+      "norm_label": "7.1 ouvrir le formulaire"
+    },
+    {
+      "label": "7.2 Les champs du formulaire",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L208",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_7_2_les_champs_du_formulaire",
+      "community": 45,
+      "norm_label": "7.2 les champs du formulaire"
+    },
+    {
+      "label": "7.3 Valider",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L225",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_7_3_valider",
+      "community": 45,
+      "norm_label": "7.3 valider"
+    },
+    {
+      "label": "7.4 Exemple complet (cas r\u00e9el)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L229",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_7_4_exemple_complet_cas_r\u00e9el",
+      "community": 45,
+      "norm_label": "7.4 exemple complet (cas reel)"
+    },
+    {
+      "label": "7.5 Filtres et lecture de la liste des lots",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L235",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_7_5_filtres_et_lecture_de_la_liste_des_lots",
+      "community": 45,
+      "norm_label": "7.5 filtres et lecture de la liste des lots"
+    },
+    {
+      "label": "8. DLC secondaires et t\u00e9moins sanitaires",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L243",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_8_dlc_secondaires_et_t\u00e9moins_sanitaires",
+      "community": 55,
+      "norm_label": "8. dlc secondaires et temoins sanitaires"
+    },
+    {
+      "label": "8.1 Cr\u00e9er une DLC secondaire",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L249",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_8_1_cr\u00e9er_une_dlc_secondaire",
+      "community": 55,
+      "norm_label": "8.1 creer une dlc secondaire"
+    },
+    {
+      "label": "8.2 Enregistrer un \u00e9chantillon t\u00e9moin",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L268",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_8_2_enregistrer_un_\u00e9chantillon_t\u00e9moin",
+      "community": 55,
+      "norm_label": "8.2 enregistrer un echantillon temoin"
+    },
+    {
+      "label": "9. Ventes et d\u00e9stockage FIFO",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L282",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_9_ventes_et_d\u00e9stockage_fifo",
+      "community": 46,
+      "norm_label": "9. ventes et destockage fifo"
+    },
+    {
+      "label": "9.1 Vendre une p\u00e2tisserie de la carte",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L288",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_9_1_vendre_une_p\u00e2tisserie_de_la_carte",
+      "community": 46,
+      "norm_label": "9.1 vendre une patisserie de la carte"
+    },
+    {
+      "label": "9.2 Enregistrer une vente hors carte (plusieurs produits, commande)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L295",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_9_2_enregistrer_une_vente_hors_carte_plusieurs_produits_commande",
+      "community": 46,
+      "norm_label": "9.2 enregistrer une vente hors carte (plusieurs produits, commande)"
+    },
+    {
+      "label": "9.3 Les champs du d\u00e9stockage",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L299",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_9_3_les_champs_du_d\u00e9stockage",
+      "community": 46,
+      "norm_label": "9.3 les champs du destockage"
+    },
+    {
+      "label": "9.4 Historique des ventes et d\u00e9stockages",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L309",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_9_4_historique_des_ventes_et_d\u00e9stockages",
+      "community": 46,
+      "norm_label": "9.4 historique des ventes et destockages"
+    },
+    {
+      "label": "10. Fiches co\u00fbt, recettes et marges",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L318",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_10_fiches_co\u00fbt_recettes_et_marges",
+      "community": 47,
+      "norm_label": "10. fiches cout, recettes et marges"
+    },
+    {
+      "label": "10.1 Comment lire une fiche",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L324",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_10_1_comment_lire_une_fiche",
+      "community": 47,
+      "norm_label": "10.1 comment lire une fiche"
+    },
+    {
+      "label": "10.2 Utiliser une fiche pour d\u00e9cider",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L335",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_10_2_utiliser_une_fiche_pour_d\u00e9cider",
+      "community": 47,
+      "norm_label": "10.2 utiliser une fiche pour decider"
+    },
+    {
+      "label": "10.3 Vendre depuis une fiche",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L343",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_10_3_vendre_depuis_une_fiche",
+      "community": 47,
+      "norm_label": "10.3 vendre depuis une fiche"
+    },
+    {
+      "label": "11. Saisie assist\u00e9e : scan d'\u00e9tiquette et ajustement d'inventaire",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L351",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_11_saisie_assist\u00e9e_scan_d_\u00e9tiquette_et_ajustement_d_inventaire",
+      "community": 52,
+      "norm_label": "11. saisie assistee : scan d'etiquette et ajustement d'inventaire"
+    },
+    {
+      "label": "11.1 Scanner une \u00e9tiquette",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L355",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_11_1_scanner_une_\u00e9tiquette",
+      "community": 52,
+      "norm_label": "11.1 scanner une etiquette"
+    },
+    {
+      "label": "11.2 Ajuster le stock d'un lot (inventaire)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L361",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_11_2_ajuster_le_stock_d_un_lot_inventaire",
+      "community": 52,
+      "norm_label": "11.2 ajuster le stock d'un lot (inventaire)"
+    },
+    {
+      "label": "12. Contr\u00f4le sanitaire DDPP et enqu\u00eate de tra\u00e7abilit\u00e9",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L374",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_12_contr\u00f4le_sanitaire_ddpp_et_enqu\u00eate_de_tra\u00e7abilit\u00e9",
+      "community": 53,
+      "norm_label": "12. controle sanitaire ddpp et enquete de tracabilite"
+    },
+    {
+      "label": "12.1 Le rapport de contr\u00f4le en trois points",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L380",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_12_1_le_rapport_de_contr\u00f4le_en_trois_points",
+      "community": 53,
+      "norm_label": "12.1 le rapport de controle en trois points"
+    },
+    {
+      "label": "12.2 Enqu\u00eate sanitaire et tra\u00e7abilit\u00e9 descendante (le rappel produit)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L392",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_12_2_enqu\u00eate_sanitaire_et_tra\u00e7abilit\u00e9_descendante_le_rappel_produit",
+      "community": 53,
+      "norm_label": "12.2 enquete sanitaire et tracabilite descendante (le rappel produit)"
+    },
+    {
+      "label": "13. \u00c9quipe, r\u00f4les et codes PIN",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L407",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_13_\u00e9quipe_r\u00f4les_et_codes_pin",
+      "community": 48,
+      "norm_label": "13. equipe, roles et codes pin"
+    },
+    {
+      "label": "13.1 Ajouter un membre de la brigade",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L413",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_13_1_ajouter_un_membre_de_la_brigade",
+      "community": 48,
+      "norm_label": "13.1 ajouter un membre de la brigade"
+    },
+    {
+      "label": "13.2 Codes PIN",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L427",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_13_2_codes_pin",
+      "community": 48,
+      "norm_label": "13.2 codes pin"
+    },
+    {
+      "label": "13.3 Changer d'op\u00e9rateur en cours de service",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L433",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_13_3_changer_d_op\u00e9rateur_en_cours_de_service",
+      "community": 48,
+      "norm_label": "13.3 changer d'operateur en cours de service"
+    },
+    {
+      "label": "14. Les r\u00e9glages de l'\u00e9tablissement (8 onglets)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L441",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_14_les_r\u00e9glages_de_l_\u00e9tablissement_8_onglets",
+      "community": 42,
+      "norm_label": "14. les reglages de l'etablissement (8 onglets)"
+    },
+    {
+      "label": "14.1 \u00c9tablissement \u2014 la fiche officielle",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L447",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_14_1_\u00e9tablissement_la_fiche_officielle",
+      "community": 42,
+      "norm_label": "14.1 etablissement \u2014 la fiche officielle"
+    },
+    {
+      "label": "14.2 Pr\u00e9f\u00e9rences \u2014 confort d'usage",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L453",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_14_2_pr\u00e9f\u00e9rences_confort_d_usage",
+      "community": 42,
+      "norm_label": "14.2 preferences \u2014 confort d'usage"
+    },
+    {
+      "label": "14.3 Compte \u2014 session, brigade, \u00e9tablissement",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L465",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_14_3_compte_session_brigade_\u00e9tablissement",
+      "community": 42,
+      "norm_label": "14.3 compte \u2014 session, brigade, etablissement"
+    },
+    {
+      "label": "14.4 Normes & seuils \u2014 le r\u00e9f\u00e9rentiel de contr\u00f4le",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L476",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_14_4_normes_seuils_le_r\u00e9f\u00e9rentiel_de_contr\u00f4le",
+      "community": 42,
+      "norm_label": "14.4 normes & seuils \u2014 le referentiel de controle"
+    },
+    {
+      "label": "14.5 \u00c9quipements \u2014 le parc des enceintes",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L490",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_14_5_\u00e9quipements_le_parc_des_enceintes",
+      "community": 42,
+      "norm_label": "14.5 equipements \u2014 le parc des enceintes"
+    },
+    {
+      "label": "14.6 Dur\u00e9es de vie \u2014 le bar\u00e8me des DLC secondaires",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L502",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_14_6_dur\u00e9es_de_vie_le_bar\u00e8me_des_dlc_secondaires",
+      "community": 42,
+      "norm_label": "14.6 durees de vie \u2014 le bareme des dlc secondaires"
+    },
+    {
+      "label": "14.7 Alertes \u2014 ce que l'appareil signale",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L515",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_14_7_alertes_ce_que_l_appareil_signale",
+      "community": 42,
+      "norm_label": "14.7 alertes \u2014 ce que l'appareil signale"
+    },
+    {
+      "label": "14.8 Donn\u00e9es & sauvegardes",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L528",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_14_8_donn\u00e9es_sauvegardes",
+      "community": 42,
+      "norm_label": "14.8 donnees & sauvegardes"
+    },
+    {
+      "label": "15. Couleurs, statuts et alertes",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L541",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_15_couleurs_statuts_et_alertes",
+      "community": 54,
+      "norm_label": "15. couleurs, statuts et alertes"
+    },
+    {
+      "label": "15.1 Les statuts de lot",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L543",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_15_1_les_statuts_de_lot",
+      "community": 54,
+      "norm_label": "15.1 les statuts de lot"
+    },
+    {
+      "label": "15.2 Les alertes de service",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L552",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_15_2_les_alertes_de_service",
+      "community": 54,
+      "norm_label": "15.2 les alertes de service"
+    },
+    {
+      "label": "16. Sauvegarde, restauration et usage hors connexion",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L568",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_16_sauvegarde_restauration_et_usage_hors_connexion",
+      "community": 43,
+      "norm_label": "16. sauvegarde, restauration et usage hors connexion"
+    },
+    {
+      "label": "16.1 O\u00f9 vivent les donn\u00e9es (\u00e0 comprendre absolument)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L570",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_16_1_o\u00f9_vivent_les_donn\u00e9es_\u00e0_comprendre_absolument",
+      "community": 43,
+      "norm_label": "16.1 ou vivent les donnees (a comprendre absolument)"
+    },
+    {
+      "label": "16.2 Exporter le registre (sauvegarde)",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L580",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_16_2_exporter_le_registre_sauvegarde",
+      "community": 43,
+      "norm_label": "16.2 exporter le registre (sauvegarde)"
+    },
+    {
+      "label": "16.3 Restaurer une archive",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L589",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_16_3_restaurer_une_archive",
+      "community": 43,
+      "norm_label": "16.3 restaurer une archive"
+    },
+    {
+      "label": "16.4 Utilisation hors connexion",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L597",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_16_4_utilisation_hors_connexion",
+      "community": 43,
+      "norm_label": "16.4 utilisation hors connexion"
+    },
+    {
+      "label": "16.5 Dur\u00e9e de conservation",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L603",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_16_5_dur\u00e9e_de_conservation",
+      "community": 43,
+      "norm_label": "16.5 duree de conservation"
+    },
+    {
+      "label": "17. D\u00e9pannage : les 10 questions les plus fr\u00e9quentes",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L609",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_17_d\u00e9pannage_les_10_questions_les_plus_fr\u00e9quentes",
+      "community": 41,
+      "norm_label": "17. depannage : les 10 questions les plus frequentes"
+    },
+    {
+      "label": "18. Ce que cette version ne fait pas encore",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L646",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_18_ce_que_cette_version_ne_fait_pas_encore",
+      "community": 41,
+      "norm_label": "18. ce que cette version ne fait pas encore"
+    },
+    {
+      "label": "Annexe A \u2014 R\u00e9f\u00e9rentiel r\u00e9glementaire et seuils livr\u00e9s",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L662",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_annexe_a_r\u00e9f\u00e9rentiel_r\u00e9glementaire_et_seuils_livr\u00e9s",
+      "community": 41,
+      "norm_label": "annexe a \u2014 referentiel reglementaire et seuils livres"
+    },
+    {
+      "label": "Annexe B \u2014 Glossaire m\u00e9tier",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L702",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_annexe_b_glossaire_m\u00e9tier",
+      "community": 41,
+      "norm_label": "annexe b \u2014 glossaire metier"
+    },
+    {
+      "label": "Annexe C \u2014 M\u00e9mo d'une page \u00e0 afficher en laboratoire",
+      "file_type": "document",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L722",
+      "_origin": "ast",
+      "id": "docs_guide_utilisateur_annexe_c_m\u00e9mo_d_une_page_\u00e0_afficher_en_laboratoire",
+      "community": 41,
+      "norm_label": "annexe c \u2014 memo d'une page a afficher en laboratoire"
     },
     {
       "label": "MANUEL_UTILISATEUR.md",
@@ -19000,6 +19740,736 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur",
+      "target": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L318",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_10_fiches_co\u00fbt_recettes_et_marges",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L351",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_11_saisie_assist\u00e9e_scan_d_\u00e9tiquette_et_ajustement_d_inventaire",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L374",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_12_contr\u00f4le_sanitaire_ddpp_et_enqu\u00eate_de_tra\u00e7abilit\u00e9",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L407",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_13_\u00e9quipe_r\u00f4les_et_codes_pin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L441",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_14_les_r\u00e9glages_de_l_\u00e9tablissement_8_onglets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L541",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_15_couleurs_statuts_et_alertes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L568",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_16_sauvegarde_restauration_et_usage_hors_connexion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L609",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_17_d\u00e9pannage_les_10_questions_les_plus_fr\u00e9quentes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L646",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_18_ce_que_cette_version_ne_fait_pas_encore",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_1_\u00e0_quoi_sert_traqhaccp",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L60",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_2_installer_l_application_sur_le_poste_de_travail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L86",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_3_compte_connexion_et_mode_de_d\u00e9monstration",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L121",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_4_premier_param\u00e9trage_de_l_\u00e9tablissement_10_minutes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L140",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_5_se_rep\u00e9rer_l_anatomie_de_l_\u00e9cran_principal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L171",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_6_la_routine_quotidienne_en_trois_passes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L197",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_7_r\u00e9ception_d_une_marchandise_dans_le_registre",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L243",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_8_dlc_secondaires_et_t\u00e9moins_sanitaires",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L282",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_9_ventes_et_d\u00e9stockage_fifo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L662",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_annexe_a_r\u00e9f\u00e9rentiel_r\u00e9glementaire_et_seuils_livr\u00e9s",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L702",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_annexe_b_glossaire_m\u00e9tier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L722",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_annexe_c_m\u00e9mo_d_une_page_\u00e0_afficher_en_laboratoire",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_traqhaccp_guide_utilisateur",
+      "target": "docs_guide_utilisateur_sommaire",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L62",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_2_installer_l_application_sur_le_poste_de_travail",
+      "target": "docs_guide_utilisateur_2_1_sur_ordinateur_laboratoire_ou_bureau",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L70",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_2_installer_l_application_sur_le_poste_de_travail",
+      "target": "docs_guide_utilisateur_2_2_sur_tablette_ou_t\u00e9l\u00e9phone_poste_de_production_salle_de_vente",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L77",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_2_installer_l_application_sur_le_poste_de_travail",
+      "target": "docs_guide_utilisateur_2_3_mode_sombre_et_sons",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L90",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_3_compte_connexion_et_mode_de_d\u00e9monstration",
+      "target": "docs_guide_utilisateur_3_1_cr\u00e9er_le_compte_de_l_\u00e9tablissement_recommand\u00e9",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L98",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_3_compte_connexion_et_mode_de_d\u00e9monstration",
+      "target": "docs_guide_utilisateur_3_2_se_connecter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L103",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_3_compte_connexion_et_mode_de_d\u00e9monstration",
+      "target": "docs_guide_utilisateur_3_3_mot_de_passe_oubli\u00e9",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L107",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_3_compte_connexion_et_mode_de_d\u00e9monstration",
+      "target": "docs_guide_utilisateur_3_4_un_compte_est_obligatoire_l_application_est_en_mode_connect\u00e9",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L115",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_3_compte_connexion_et_mode_de_d\u00e9monstration",
+      "target": "docs_guide_utilisateur_3_5_changer_d_\u00e9tablissement_se_d\u00e9connecter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L144",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_5_se_rep\u00e9rer_l_anatomie_de_l_\u00e9cran_principal",
+      "target": "docs_guide_utilisateur_5_1_la_barre_sup\u00e9rieure",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L155",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_5_se_rep\u00e9rer_l_anatomie_de_l_\u00e9cran_principal",
+      "target": "docs_guide_utilisateur_5_2_les_4_indicateurs_en_haut_de_l_\u00e9cran",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L164",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_5_se_rep\u00e9rer_l_anatomie_de_l_\u00e9cran_principal",
+      "target": "docs_guide_utilisateur_5_3_vocabulaire_des_statuts_chapitre_15_pour_le_d\u00e9tail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L175",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_6_la_routine_quotidienne_en_trois_passes",
+      "target": "docs_guide_utilisateur_passe_1_\u00e0_la_livraison_3_\u00e0_5_minutes_\u00e0_chaque_r\u00e9ception",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L181",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_6_la_routine_quotidienne_en_trois_passes",
+      "target": "docs_guide_utilisateur_passe_2_\u00e0_la_production_1_minute_par_pr\u00e9paration",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L187",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_6_la_routine_quotidienne_en_trois_passes",
+      "target": "docs_guide_utilisateur_passe_3_en_fin_de_service_5_minutes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L203",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_7_r\u00e9ception_d_une_marchandise_dans_le_registre",
+      "target": "docs_guide_utilisateur_7_1_ouvrir_le_formulaire",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L208",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_7_r\u00e9ception_d_une_marchandise_dans_le_registre",
+      "target": "docs_guide_utilisateur_7_2_les_champs_du_formulaire",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L225",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_7_r\u00e9ception_d_une_marchandise_dans_le_registre",
+      "target": "docs_guide_utilisateur_7_3_valider",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L229",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_7_r\u00e9ception_d_une_marchandise_dans_le_registre",
+      "target": "docs_guide_utilisateur_7_4_exemple_complet_cas_r\u00e9el",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L235",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_7_r\u00e9ception_d_une_marchandise_dans_le_registre",
+      "target": "docs_guide_utilisateur_7_5_filtres_et_lecture_de_la_liste_des_lots",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L249",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_8_dlc_secondaires_et_t\u00e9moins_sanitaires",
+      "target": "docs_guide_utilisateur_8_1_cr\u00e9er_une_dlc_secondaire",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L268",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_8_dlc_secondaires_et_t\u00e9moins_sanitaires",
+      "target": "docs_guide_utilisateur_8_2_enregistrer_un_\u00e9chantillon_t\u00e9moin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L288",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_9_ventes_et_d\u00e9stockage_fifo",
+      "target": "docs_guide_utilisateur_9_1_vendre_une_p\u00e2tisserie_de_la_carte",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L295",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_9_ventes_et_d\u00e9stockage_fifo",
+      "target": "docs_guide_utilisateur_9_2_enregistrer_une_vente_hors_carte_plusieurs_produits_commande",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L299",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_9_ventes_et_d\u00e9stockage_fifo",
+      "target": "docs_guide_utilisateur_9_3_les_champs_du_d\u00e9stockage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L309",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_9_ventes_et_d\u00e9stockage_fifo",
+      "target": "docs_guide_utilisateur_9_4_historique_des_ventes_et_d\u00e9stockages",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L324",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_10_fiches_co\u00fbt_recettes_et_marges",
+      "target": "docs_guide_utilisateur_10_1_comment_lire_une_fiche",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L335",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_10_fiches_co\u00fbt_recettes_et_marges",
+      "target": "docs_guide_utilisateur_10_2_utiliser_une_fiche_pour_d\u00e9cider",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L343",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_10_fiches_co\u00fbt_recettes_et_marges",
+      "target": "docs_guide_utilisateur_10_3_vendre_depuis_une_fiche",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L355",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_11_saisie_assist\u00e9e_scan_d_\u00e9tiquette_et_ajustement_d_inventaire",
+      "target": "docs_guide_utilisateur_11_1_scanner_une_\u00e9tiquette",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L361",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_11_saisie_assist\u00e9e_scan_d_\u00e9tiquette_et_ajustement_d_inventaire",
+      "target": "docs_guide_utilisateur_11_2_ajuster_le_stock_d_un_lot_inventaire",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L380",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_12_contr\u00f4le_sanitaire_ddpp_et_enqu\u00eate_de_tra\u00e7abilit\u00e9",
+      "target": "docs_guide_utilisateur_12_1_le_rapport_de_contr\u00f4le_en_trois_points",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L392",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_12_contr\u00f4le_sanitaire_ddpp_et_enqu\u00eate_de_tra\u00e7abilit\u00e9",
+      "target": "docs_guide_utilisateur_12_2_enqu\u00eate_sanitaire_et_tra\u00e7abilit\u00e9_descendante_le_rappel_produit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L413",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_13_\u00e9quipe_r\u00f4les_et_codes_pin",
+      "target": "docs_guide_utilisateur_13_1_ajouter_un_membre_de_la_brigade",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L427",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_13_\u00e9quipe_r\u00f4les_et_codes_pin",
+      "target": "docs_guide_utilisateur_13_2_codes_pin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L433",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_13_\u00e9quipe_r\u00f4les_et_codes_pin",
+      "target": "docs_guide_utilisateur_13_3_changer_d_op\u00e9rateur_en_cours_de_service",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L447",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_14_les_r\u00e9glages_de_l_\u00e9tablissement_8_onglets",
+      "target": "docs_guide_utilisateur_14_1_\u00e9tablissement_la_fiche_officielle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L453",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_14_les_r\u00e9glages_de_l_\u00e9tablissement_8_onglets",
+      "target": "docs_guide_utilisateur_14_2_pr\u00e9f\u00e9rences_confort_d_usage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L465",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_14_les_r\u00e9glages_de_l_\u00e9tablissement_8_onglets",
+      "target": "docs_guide_utilisateur_14_3_compte_session_brigade_\u00e9tablissement",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L476",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_14_les_r\u00e9glages_de_l_\u00e9tablissement_8_onglets",
+      "target": "docs_guide_utilisateur_14_4_normes_seuils_le_r\u00e9f\u00e9rentiel_de_contr\u00f4le",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L490",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_14_les_r\u00e9glages_de_l_\u00e9tablissement_8_onglets",
+      "target": "docs_guide_utilisateur_14_5_\u00e9quipements_le_parc_des_enceintes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L502",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_14_les_r\u00e9glages_de_l_\u00e9tablissement_8_onglets",
+      "target": "docs_guide_utilisateur_14_6_dur\u00e9es_de_vie_le_bar\u00e8me_des_dlc_secondaires",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L515",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_14_les_r\u00e9glages_de_l_\u00e9tablissement_8_onglets",
+      "target": "docs_guide_utilisateur_14_7_alertes_ce_que_l_appareil_signale",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L528",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_14_les_r\u00e9glages_de_l_\u00e9tablissement_8_onglets",
+      "target": "docs_guide_utilisateur_14_8_donn\u00e9es_sauvegardes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L543",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_15_couleurs_statuts_et_alertes",
+      "target": "docs_guide_utilisateur_15_1_les_statuts_de_lot",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L552",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_15_couleurs_statuts_et_alertes",
+      "target": "docs_guide_utilisateur_15_2_les_alertes_de_service",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L570",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_16_sauvegarde_restauration_et_usage_hors_connexion",
+      "target": "docs_guide_utilisateur_16_1_o\u00f9_vivent_les_donn\u00e9es_\u00e0_comprendre_absolument",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L580",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_16_sauvegarde_restauration_et_usage_hors_connexion",
+      "target": "docs_guide_utilisateur_16_2_exporter_le_registre_sauvegarde",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L589",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_16_sauvegarde_restauration_et_usage_hors_connexion",
+      "target": "docs_guide_utilisateur_16_3_restaurer_une_archive",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L597",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_16_sauvegarde_restauration_et_usage_hors_connexion",
+      "target": "docs_guide_utilisateur_16_4_utilisation_hors_connexion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/GUIDE_UTILISATEUR.md",
+      "source_location": "L603",
+      "weight": 1.0,
+      "source": "docs_guide_utilisateur_16_sauvegarde_restauration_et_usage_hors_connexion",
+      "target": "docs_guide_utilisateur_16_5_dur\u00e9e_de_conservation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "docs/MANUEL_UTILISATEUR.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -19269,5 +20739,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e1f6d970015df3763d66ac8615cd3511a0508247"
+  "built_at_commit": "ce940a4fa46cda43d330d5c2deb00c7945eb0779"
 }
