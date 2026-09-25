@@ -26,6 +26,13 @@ d'env sont caviardées dans les sorties d'outils).
 """
 from __future__ import annotations
 
+# Cible par défaut : dossier Drive « Projet professionnel / HACCP » de Florian.
+# Les deux fichiers sont mis à jour EN PLACE (même fileId) pour que le lien de
+# partage déjà transmis au client reste valable.
+DEFAULT_FOLDER_ID = '19z5NSlPA5sMrZdx0OsPbyvXzFRcf8yPe'
+DEFAULT_DOC_ID = '12Gx2bYbpCAlmf-HKLeX7vj4ZdHEmXMrQ1nDGDkmtSEs'
+DEFAULT_PDF_ID = '1XbKZL3gwv5fFYiJKNjC5MZAlEK9mX1PN'
+
 import argparse
 import hashlib
 import os
@@ -139,9 +146,12 @@ def main() -> int:
     ap.add_argument("--token", default="/opt/data/google_token.json")
     ap.add_argument("--html", default="docs/.guide-doc.html")
     ap.add_argument("--pdf", default="docs/GUIDE_UTILISATEUR.pdf")
-    ap.add_argument("--folder-id")
-    ap.add_argument("--doc-id")
-    ap.add_argument("--pdf-id")
+    ap.add_argument("--folder-id", default=DEFAULT_FOLDER_ID,
+                    help="dossier Drive cible (défaut : Projet professionnel / HACCP)")
+    ap.add_argument("--doc-id", default=DEFAULT_DOC_ID,
+                    help="fileId du Google Doc existant à mettre à jour (défaut : guide TraqHACCP)")
+    ap.add_argument("--pdf-id", default=DEFAULT_PDF_ID,
+                    help="fileId du PDF existant à mettre à jour (défaut : guide TraqHACCP)")
     ap.add_argument("--doc-name", default="TraqHACCP — Guide utilisateur (v4.0-registre)")
     ap.add_argument("--pdf-name", default="TraqHACCP — Guide utilisateur imprimable (v4.0-registre).pdf")
     ap.add_argument("--check-only", action="store_true")
