@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ 
-      error: 'Clé API Gemini non configurée sur le serveur (variable GEMINI_API_KEY manquante).' 
+      error: 'Clé API Gemini non configurée sur le serveur (variable GEMINI_API_KEY manquante)' 
     });
   }
 

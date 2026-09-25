@@ -54,17 +54,45 @@ export async function compressImage(file, maxDimension = 1280, quality = 0.8) {
 }
 
 /**
+ * Data URL sentinelle du lien « Tester avec l'étiquette de démonstration »
+ * (js/patisserie/modals.js, executeAutomatedScan -> processLabelImage(null)).
+ * SEULE cette valeur déclenche le jeu de démonstration : une vraie photo ne doit
+ * jamais produire de données inventées dans un registre HACCP.
+ */
+export const DEMO_LABEL_DATA_URL = 'data:image/jpeg;base64,demo';
+
+/** Valeurs du jeu de démonstration — à ne jamais conserver pour un lot réel. */
+export function demoLabelData() {
+  const futureDlc = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+  return {
+    name: "Beurre de Tourage AOP 84%",
+    supplier: "Laiterie Montaigu",
+    lot: "L-" + Math.floor(1000 + Math.random() * 9000),
+    dlcDate: futureDlc.toISOString().split('T')[0],
+    category: "cremerie",
+    confidence: "medium"
+  };
+}
+
+/**
  * Envoie l'image d'étiquette pour extraction par Vision IA.
  * Tente d'abord le endpoint Vercel Serverless `/api/extract-label`.
- * En environnement local ou de test, bascule sur une clé configurée ou un mock démonstratif.
+ * Tente le endpoint Vercel Serverless `/api/extract-label`, puis une clé Gemini
+ * configurée localement. En l'absence des deux, LÈVE une erreur explicite : aucune
+ * donnée d'étiquette n'est inventée (voir DEMO_LABEL_DATA_URL pour la démo explicite).
  * 
  * @param {string} dataUrl - Image encodée en data URL
  * @returns {Promise<{ name: string, supplier: string, lot: string, dlcDate: string, category: string, confidence: string }>}
  */
 export async function extractLabelData(dataUrl) {
+  // Jeu de démonstration explicite : jamais de données inventées pour une vraie photo.
+  if (dataUrl === DEMO_LABEL_DATA_URL) return demoLabelData();
+
   const base64Data = dataUrl.replace(/^data:image\/[a-z]+;base64,/, '');
 
-  // 1. Tentative d'appel au endpoint Serverless Vercel
+  // 1. Endpoint serverless. Toute défaillance est MÉMORISÉE puis remontée à l'appelant :
+  //    une panne ne doit jamais se transformer en étiquette inventée (registre HACCP).
+  let endpointError = null;
   try {
     const response = await fetch('/api/extract-label', {
       method: 'POST',
@@ -77,20 +105,20 @@ export async function extractLabelData(dataUrl) {
       if (res.success && res.data) {
         return res.data;
       }
-    }
-
-    // Si le endpoint renvoie une erreur explicite avec corps JSON
-    if (response.status !== 404) {
+      endpointError = new Error(res.error || "Réponse inexploitable du service d'analyse.");
+    } else if (response.status !== 404) {
+      // 404 = serveur statique sans fonction /api (poste de dev) : on poursuit.
       const errJson = await response.json().catch(() => null);
-      if (errJson && errJson.error) {
-        throw new Error(errJson.error);
-      }
+      endpointError = new Error(
+        (errJson && errJson.error) || `Service d'analyse d'images indisponible (HTTP ${response.status}).`
+      );
     }
   } catch (err) {
-    // Si ce n'est pas un 404 (serveur local sans /api), propager l'erreur
-    if (err.message && !err.message.includes('404') && !err.message.includes('Failed to fetch')) {
-      console.warn("API Serverless indisponible, vérification des modes de secours...", err);
-    }
+    // Panne réseau ou exception : mémorisée, plus jamais avalée en silence.
+    endpointError = /Failed to fetch|NetworkError|load failed/i.test(err.message || '')
+      ? new Error("Service d'analyse d'images injoignable (réseau).")
+      : err;
+    console.warn("Analyse d'étiquette indisponible via l'endpoint serveur.", err);
   }
 
   // 2. Mode secours : Clé API personnalisée stockée localement (pratique pour tester en local)
@@ -105,20 +133,10 @@ export async function extractLabelData(dataUrl) {
     }
   }
 
-  // 3. Fallback gracieux en environnement de test purement local sans clé
-  console.info("Mode démonstration local activé pour l'extraction d'étiquette.");
-  const today = new Date();
-  const futureDlc = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
-  const dlcFormatted = futureDlc.toISOString().split('T')[0];
-
-  return {
-    name: "Beurre de Tourage AOP 84%",
-    supplier: "Laiterie Montaigu",
-    lot: "L-" + Math.floor(1000 + Math.random() * 9000),
-    dlcDate: dlcFormatted,
-    category: "cremerie",
-    confidence: "medium"
-  };
+  // 3. Aucun moyen d'analyse disponible : on le dit explicitement à l'appelant.
+  //    On n'invente JAMAIS de lot, de DLC ni de fournisseur : le formulaire de
+  //    saisie manuelle reste vide et l'opérateur saisit les valeurs de l'étiquette.
+  throw endpointError || new Error("Analyse d'images non configurée sur le serveur.");
 }
 
 /**

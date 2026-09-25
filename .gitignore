@@ -31,3 +31,4 @@ specs/
 
 # Intermédiaire de build du guide (le PDF livré est versionné, pas le HTML)
 docs/.guide-print.html
+docs/.guide-doc.html
