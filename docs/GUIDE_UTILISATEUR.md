@@ -37,6 +37,8 @@ Ce guide s'adresse à toute personne qui utilise l'application au quotidien : g�
 - Annexe B — Glossaire métier
 - Annexe C — Mémo d'une page à afficher en laboratoire
 
+*Corriger ou supprimer une saisie déjà enregistrée : chapitres 7.6 (lot), 9.5 et 9.6 (ventes), 10.5 (recettes).*
+
 ---
 
 ## 1. À quoi sert TraqHACCP
@@ -240,6 +242,20 @@ La **date de réception est enregistrée automatiquement** (jour de la saisie) :
 
 ---
 
+### 7.6 Modifier un lot déjà enregistré
+
+Un libellé mal orthographié, une DLC mal recopiée ou un numéro de lot inversé se corrigent **sans ressaisir la fiche** :
+
+1. Dans la vue **Lots en stock**, repérez la ligne concernée.
+2. Touchez l'icône **crayon** au bout de la ligne (*Modifier ce lot*) : le formulaire de réception se rouvre, **déjà rempli** avec les valeurs enregistrées.
+3. Corrigez le ou les champs concernés, puis validez sur **Enregistrer les modifications**.
+
+![Modifier un lot déjà enregistré](captures/modale-modifier-lot.png)
+
+> ⚠️ **La correction remplace l'enregistrement existant** : elle ne crée pas une seconde ligne. Le lot garde son numéro, son historique de déstockage et son éventuelle DLC secondaire — seul le contenu des champs change.
+
+> 💡 **Le stock initial se corrige aussi ici.** Si vous avez saisi 5 kg au lieu de 8 kg à la réception, corrigez le champ *Quantité en stock* : la ligne reste unique dans le registre.
+
 ## 8. DLC secondaires et témoins sanitaires
 
 ![DLC secondaires et témoins](captures/vue-dlc.png)
@@ -315,6 +331,34 @@ C'est cette dernière colonne qui rend l'enquête sanitaire possible : elle reli
 > **Règle FIFO** — On déstocke toujours le lot dont la DLC est la plus proche. C'est le meilleur moyen de réduire les pertes et de justifier une gestion irréprochable en contrôle : l'application applique cette règle automatiquement, elle ne demande pas de la connaître.
 ---
 
+### 9.5 Corriger une vente (nom de client erroné)
+
+Une erreur sur une vente déjà enregistrée se corrige **directement dans l'historique**, sans créer de doublon :
+
+1. Dans **Historique des ventes et déstockages**, touchez l'icône **crayon** de la ligne (*Modifier les coordonnées client*).
+2. La fenêtre **Modifier la vente** s'ouvre avec les valeurs d'origine : nom du client, téléphone, référence de commande, canal (emporter / livraison / sur place) et adresse de livraison.
+3. Corrigez, puis **Enregistrer les modifications** : la ligne est mise à jour **sur place**.
+
+![Corriger une vente](captures/modale-modifier-vente.png)
+
+> 💡 **Ce qui se corrige ici** : les coordonnées du client et l'adresse de livraison — les informations qui figurent sur le bon de commande et servent au rappel produit. La quantité vendue et le montant, eux, relèvent de la suppression puis d'une nouvelle saisie (chapitre 9.6) : le déstockage FIFO a réellement consommé des lots, on ne le réécrit pas à l'aveugle.
+
+### 9.6 Supprimer une vente saisie en double (ou une fausse manipulation)
+
+Si la même vente a été saisie deux fois, ou si la saisie est irrécupérable, la ligne se **retire du registre** — et le stock consommé est **rendu aux lots** :
+
+1. Touchez l'icône **corbeille** au bout de la ligne (*Supprimer cette ligne*).
+2. La confirmation rappelle **ce qui va disparaître** : heure, produit, nombre de pièces, montant TTC, client — et **le lot et la quantité rendus au stock** (par exemple `CR-4410-B +0.2 L`).
+3. **Supprimer et rendre le stock** (bouton rouge) — ou **Annuler** pour tout laisser en place.
+
+![Supprimer une vente](captures/modale-supprimer-vente.png)
+
+Le stock revient immédiatement sur le lot concerné, les indicateurs du jour (chiffre d'affaires, marge) sont recalculés, et la ligne disparaît de l'historique comme du rapport d'audit.
+
+> ⚠️ **La suppression est définitive.** Contrairement à une correction (chapitre 9.5), la ligne n'est pas conservée : vérifiez le rappel affiché avant de confirmer, c'est la dernière fois que vous voyez la ligne.
+
+> 💡 **Vente enregistrée avant cette mise à jour** : l'application recalcule les quantités à rendre à partir de la recette utilisée (FIFO). Le détail s'affiche dans la confirmation, exactement comme pour les ventes récentes.
+
 ## 10. Fiches coût, recettes et marges
 
 ![Fiches coût et recettes](captures/vue-recipes.png)
@@ -367,6 +411,24 @@ La fiche rejoint immédiatement la carte, avec son coût matière, son food cost
 > 💡 **Pas de lot en stock ?** Créez d'abord la réception du lot (chapitre 7) : la liste déroulante ne propose que des lots existants. Pour une recette de travail sans déstockage, utilisez un lot de référence et ajustez son stock (chapitre 11.2).
 
 ---
+
+### 10.5 Modifier une recette (ingrédient oublié, quantité erronée)
+
+Un ingrédient oublié ne se rattrape pas par une seconde fiche : on **corrige la fiche existante**.
+
+1. Dans la vue **Fiches techniques**, touchez l'icône **crayon** de la fiche (*Modifier cette recette*).
+2. La fenêtre **Modifier la fiche technique** s'ouvre avec la recette complète : nom, icône, prix de vente, TVA et **une ligne par ingrédient déjà enregistré**.
+3. Ajoutez l'ingrédient oublié avec **+ Ajouter un ingrédient**, ou corrigez les lignes existantes :
+   - le champ **lot** rattache l'ingrédient à une marchandise réellement en stock (condition pour pouvoir la déstocker et calculer la marge) ;
+   - la **quantité** s'entend par pièce vendue ;
+   - la croix **✕** retire une ligne ajoutée par erreur.
+4. Validez sur **Enregistrer les modifications** : coût matières et marge sont **recalculés immédiatement**.
+
+![Modifier une recette](captures/modale-modifier-recette.png)
+
+> ⚠️ **Corriger une fiche ne retouche pas les ventes déjà enregistrées** : celles-ci gardent le déstockage effectué au moment de la vente. La fiche corrigée s'applique aux ventes suivantes.
+
+> 💡 **Une fiche déjà vendue reste modifiable** — aucune vente n'est bloquée ni effacée par la correction. C'est ce qui permet de corriger une recette en pleine journée de production.
 
 ## 11. Saisie assistée : scan d'étiquette et ajustement d'inventaire
 
@@ -659,8 +721,13 @@ Trois vérifications, dans l'ordre : (a) Réglages → **Alertes** → *Autorisa
 **4. Un lot est passé en rouge « DLC Urgente ». Que faire ?**
 C'est une information de travail, pas une panne : le lot doit être écoulé aujourd'hui ou retiré du service. Utilisez le filtre **Alertes DLC (≤48h)** pour traiter le sujet en fin de service.
 
-**5. Je me suis trompé dans une quantité (réception ou déstockage).**
-Ne supprimez pas : **corrigez par ajustement**. Carte du lot → **Ajuster Stock** → saisissez le *nouveau stock réel pesé* → **Enregistrer**. L'ajustement est daté et signé. C'est exactement ce qu'un inspecteur attend (une correction tracée vaut mieux qu'un chiffre parfait).
+**5. Je me suis trompé dans une saisie, ou j'ai enregistré deux fois la même vente.**
+Tout se corrige dans l'application, sans effacer le registre — et **sans jamais créer une seconde ligne** :
+- **libellé, fournisseur, DLC ou numéro de lot d'un lot** → icône **crayon** de la ligne dans *Lots en stock* (chapitre 7.6) ;
+- **nom du client, téléphone, adresse d'une vente** → icône **crayon** dans l'historique des ventes (chapitre 9.5) ;
+- **ingrédient oublié ou quantité erronée dans une recette** → icône **crayon** de la fiche (chapitre 10.5) ;
+- **vente saisie en double, ou saisie irrécupérable** → icône **corbeille**, qui retire la ligne et **rend le stock aux lots** (chapitre 9.6) ;
+- **quantité en stock d'un lot** → carte du lot → **Ajuster Stock** → saisissez le *nouveau stock réel pesé* → **Enregistrer** (l'ajustement est daté et signé : c'est la correction qu'un inspecteur préfère, car elle est tracée).
 
 **6. J'ai oublié le code PIN d'un opérateur.**
 Les codes PIN **ne sont jamais affichés ni transmis** : ils ne sont pas récupérables. Ouvrez **Équipe & Utilisateurs** → carte du membre → **Choisir** pour lui attribuer un **nouveau** PIN.
@@ -691,6 +758,8 @@ Pour éviter toute promesse non tenue devant un client, un fournisseur ou un ins
 - **La reconnaissance d'étiquette dépend d'un service d'analyse en ligne** — elle est **active** (chapitre 11.1), mais sans garantie de disponibilité : si le service est injoignable, l'application ouvre le formulaire **vide** au lieu de proposer des valeurs inventées, et la **saisie manuelle (chapitre 7) produit le même registre**. La reconnaissance reste une **aide à la saisie** : le numéro de lot et la DLC sont systématiquement relus par l'opérateur.
 - **Pas d'écran de relevés de température** au quotidien : la température est relevée **à réception** (champ obligatoire du formulaire de lot) ; les équipements et les plages réglementaires servent de référentiel de contrôle.
 - **Pas d'allergènes, de plan de nettoyage ni de traçabilité DLC au niveau du produit fini** : le suivi des allergènes du référentiel (14 allergènes INCO) n'est pas encore exposé dans l'interface.
+
+- **Pas de journal des corrections ni des suppressions** : une correction remplace la valeur enregistrée (chapitres 7.6, 9.5, 10.5) et une suppression retire la ligne du registre (chapitre 9.6). L'application conserve le registre à jour, mais n'archive pas la valeur « avant » ni l'heure de la modification : si vous souhaitez un **journal des corrections** (qui, quand, avant/après) opposable en contrôle, c'est un développement à part — demandez-le, il est possible.
 
 Ces points sont des développements prévus, pas des défauts de conformité du registre : les enregistrements réellement exigés en contrôle (réception, températures de réception, DLC, témoins, ventes nominatives, rappel produit) sont bien couverts.
 
