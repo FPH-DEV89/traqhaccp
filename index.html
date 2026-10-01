@@ -669,8 +669,8 @@
             HACCP
           </div>
           <div>
-            <h3 class="font-bold text-sm text-zinc-900 dark:text-white">Réception Marchandise & Stock Initial</h3>
-            <p class="text-[11px] text-zinc-400">Enregistrement réglementaire et approvisionnement</p>
+            <h3 id="entry-modal-title" class="font-bold text-sm text-zinc-900 dark:text-white">Réception Marchandise & Stock Initial</h3>
+            <p id="entry-modal-subtitle" class="text-[11px] text-zinc-400">Enregistrement réglementaire et approvisionnement</p>
           </div>
         </div>
         <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
@@ -741,7 +741,7 @@
 
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
           <button type="button" onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium">Annuler</button>
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm active:scale-95 transition">Valider et Entrer en Stock</button>
+          <button type="submit" id="entry-submit-btn" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm active:scale-95 transition">Valider et Entrer en Stock</button>
         </div>
 
       </form>
@@ -890,8 +890,8 @@
             FT
           </div>
           <div>
-            <h3 class="font-bold text-sm text-zinc-900 dark:text-white">Créer une Fiche Technique Recette</h3>
-            <p class="text-[11px] text-zinc-400">Définissez vos ingrédients pour calculer la marge automatique</p>
+            <h3 id="recipe-modal-title" class="font-bold text-sm text-zinc-900 dark:text-white">Créer une Fiche Technique Recette</h3>
+            <p id="recipe-modal-subtitle" class="text-[11px] text-zinc-400">Définissez vos ingrédients pour calculer la marge automatique</p>
           </div>
         </div>
         <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
@@ -927,7 +927,62 @@
 
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
           <button type="button" onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium">Annuler</button>
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm active:scale-95 transition">Créer la Fiche</button>
+          <button type="submit" id="recipe-submit-btn" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm active:scale-95 transition">Créer la Fiche</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Correction d'une vente / d'un retrait enregistré -->
+  <div id="modal-sale-edit" class="modal modal--sm" data-open="false">
+    <div class="modal__panel">
+      <div class="modal__head">
+        <span>Modifier la vente</span>
+        <button type="button" class="icon-btn" title="Fermer" aria-label="Fermer la fenêtre" onclick="closeModals()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="sale-edit-form" onsubmit="handleSaleEditSubmit(event)">
+        <div class="modal__body">
+          <p id="sale-edit-recap" class="sale-edit__recap"></p>
+
+          <div class="field">
+            <label class="field__label" for="sale-edit-name">Nom du client / de la structure *</label>
+            <input type="text" id="sale-edit-name" class="input" required>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="sale-edit-phone">Téléphone</label>
+            <input type="tel" id="sale-edit-phone" class="input">
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="sale-edit-type">Mode de remise</label>
+            <select id="sale-edit-type" class="select" onchange="toggleSaleEditAddress()">
+              <option value="emporter">À emporter</option>
+              <option value="livraison">Livraison</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="sale-edit-ref">Référence commande / bon de livraison</label>
+            <input type="text" id="sale-edit-ref" class="input">
+          </div>
+
+          <div class="field" id="sale-edit-address-field">
+            <label class="field__label" for="sale-edit-address">Adresse de livraison</label>
+            <input type="text" id="sale-edit-address" class="input">
+          </div>
+
+          <p class="callout callout--info">
+            <span class="callout__body">La correction met à jour l'historique des ventes, la fiche de traçabilité et les coordonnées utilisées pour les relances.</span>
+          </p>
+        </div>
+
+        <div class="modal__foot">
+          <button type="button" class="btn btn--ghost" onclick="closeModals()">Annuler</button>
+          <button type="submit" class="btn btn--primary">Enregistrer les modifications</button>
         </div>
       </form>
     </div>

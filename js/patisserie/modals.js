@@ -19,11 +19,59 @@ import {
   renderAudit
 } from './views.js';
 
+/* ── Édition d'un enregistrement existant ───────────────────────────────────
+   Ces identifiants signalent qu'une modale a été ouverte pour corriger un
+   enregistrement déjà sauvegardé plutôt que pour en créer un nouveau. */
+let editingLotId = null;
+let editingRecipeId = null;
+let editingSaleId = null;
+
+/** Statut DLC recalculé depuis la date limite (≤ 1 jour : urgent, ≤ 2 : à surveiller). */
+function computeLotStatus(dlcDate) {
+  if (!dlcDate) return 'conforme';
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const limit = new Date(`${dlcDate}T00:00:00`);
+  if (isNaN(limit.getTime())) return 'conforme';
+  const jours = Math.round((limit - today) / 86400000);
+  if (jours <= 1) return 'urgent';
+  if (jours <= 2) return 'warning';
+  return 'conforme';
+}
+
+/** Libellés du mode de remise, partagés par la vente et sa correction. */
+const ORDER_TYPE_LABELS = {
+  livraison: '🛵 Livraison à domicile',
+  emporter: '🛍️ À emporter (Retrait)'
+};
+
+/** Met une modale en mode création (editing = null) ou en mode modification. */
+function setModalMode(prefix, editing) {
+  const title = document.getElementById(`${prefix}-modal-title`);
+  const subtitle = document.getElementById(`${prefix}-modal-subtitle`);
+  const submit = document.getElementById(`${prefix}-submit-btn`);
+  const isLot = prefix === 'entry';
+  if (editing && title) {
+    title.innerText = isLot ? 'Modifier le lot en stock' : 'Modifier la fiche technique';
+    if (subtitle) subtitle.innerText = isLot
+      ? `Correction d'un enregistrement existant : lot ${editing.lot}`
+      : 'Ajoutez ou corrigez les ingrédients : marge et coût matières recalculés';
+    if (submit) submit.innerText = 'Enregistrer les modifications';
+  } else {
+    if (title) title.innerText = isLot ? 'Réception Marchandise & Stock Initial' : 'Créer une Fiche Technique Recette';
+    if (subtitle) subtitle.innerText = isLot
+      ? 'Enregistrement réglementaire et approvisionnement'
+      : 'Définissez vos ingrédients pour calculer la marge automatique';
+    if (submit) submit.innerText = isLot ? 'Valider et Entrer en Stock' : 'Créer la Fiche';
+  }
+}
+
 export function closeModals() {
   playBeep(320, 0.03);
   document.querySelectorAll('[id^="modal-"]').forEach(m => {
     m.classList.add('hidden');
     m.classList.remove('flex');
+    if (m.hasAttribute('data-open')) m.setAttribute('data-open', 'false');
   });
 }
 
@@ -36,20 +84,74 @@ export function openScanModal() {
 
 export function openNewEntryModal() {
   playBeep(520, 0.04);
+  editingLotId = null;
+  document.getElementById('trace-form')?.reset();
+  setModalMode('entry', null);
   const m = document.getElementById('modal-entry');
   m?.classList.remove('hidden');
   m?.classList.add('flex');
 }
 
+/** Ouvre la modale de réception pré-remplie pour corriger un lot déjà enregistré. */
+export function openLotEditModal(id) {
+  const lot = state.lots.find(l => l.id === id);
+  if (!lot) return;
+  editingLotId = lot.id;
+  playBeep(560, 0.04);
+  const set = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val; };
+  set('form-category', lot.category);
+  set('form-name', lot.name);
+  set('form-supplier', lot.supplier);
+  set('form-lot', lot.lot);
+  set('form-dlc-date', lot.dlcDate);
+  set('form-temp', lot.temp);
+  set('form-stock-qty', lot.stockQty);
+  set('form-stock-unit', lot.stockUnit);
+  set('form-unit-price', lot.unitPriceHT);
+  setModalMode('entry', lot);
+  const m = document.getElementById('modal-entry');
+  m?.classList.remove('hidden');
+  m?.classList.add('flex');
+  showToast(`Correction du lot ${lot.lot} : modifiez le libellé puis enregistrez.`);
+}
+
 export function openNewRecipeModal() {
   playBeep(590, 0.04);
+  editingRecipeId = null;
   const m = document.getElementById('modal-recipe');
   document.getElementById('recipe-form')?.reset();
   const rows = document.getElementById('recipe-ingredients-inputs');
   if (rows) rows.innerHTML = '';
   addRecipeIngredientRow();
+  setModalMode('recipe', null);
   m?.classList.remove('hidden');
   m?.classList.add('flex');
+}
+
+/** Ouvre la fiche technique pré-remplie pour corriger une recette existante. */
+export function openRecipeEditModal(id) {
+  const recipe = state.recipes.find(r => r.id === id);
+  if (!recipe) return;
+  editingRecipeId = recipe.id;
+  playBeep(620, 0.04);
+  const set = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val; };
+  set('recipe-form-name', recipe.name);
+  set('recipe-form-icon', recipe.icon);
+  set('recipe-form-price', recipe.sellingPriceTTC);
+
+  const rows = document.getElementById('recipe-ingredients-inputs');
+  if (rows) rows.innerHTML = '';
+  if (recipe.ingredients && recipe.ingredients.length) {
+    recipe.ingredients.forEach(ing => addRecipeIngredientRow(ing));
+  } else {
+    addRecipeIngredientRow();
+  }
+
+  setModalMode('recipe', recipe);
+  const m = document.getElementById('modal-recipe');
+  m?.classList.remove('hidden');
+  m?.classList.add('flex');
+  showToast(`Fiche technique « ${recipe.name} » : ajoutez l'ingrédient oublié puis enregistrez.`);
 }
 
 export function openWitnessSampleModal() {
@@ -262,19 +364,45 @@ export async function processLabelImage(file) {
 
 export function handleTraceFormSubmit(e) {
   e.preventDefault();
-  const newLot = {
-    id: `L-${Date.now().toString().slice(-4)}`,
+  const values = {
     category: document.getElementById('form-category').value,
     name: document.getElementById('form-name').value,
     supplier: document.getElementById('form-supplier').value,
     lot: document.getElementById('form-lot').value.toUpperCase(),
-    receiptDate: new Date().toISOString().split('T')[0],
     dlcDate: document.getElementById('form-dlc-date').value,
     temp: parseFloat(document.getElementById('form-temp').value),
     stockQty: parseFloat(document.getElementById('form-stock-qty').value),
     stockUnit: document.getElementById('form-stock-unit').value,
-    unitPriceHT: parseFloat(document.getElementById('form-unit-price').value),
-    status: 'conforme'
+    unitPriceHT: parseFloat(document.getElementById('form-unit-price').value)
+  };
+
+  /* Correction d'un lot existant : on met à jour la fiche, sans recréer le lot. */
+  if (editingLotId) {
+    const lot = state.lots.find(l => l.id === editingLotId);
+    editingLotId = null;
+    if (lot) {
+      const dlcChanged = lot.dlcDate !== values.dlcDate;
+      Object.assign(lot, values);
+      if (dlcChanged) lot.status = computeLotStatus(values.dlcDate);
+    }
+    saveState();
+    playBeep(750, 0.1);
+    closeModals();
+    setModalMode('entry', null);
+    renderLots();
+    renderRecipes();
+    renderSalesCatalog();
+    updateTopMetrics();
+    showToast(`Lot « ${values.name} » corrigé : libellé, DLC et valorisation mis à jour.`);
+    e.target.reset();
+    return;
+  }
+
+  const newLot = {
+    id: `L-${Date.now().toString().slice(-4)}`,
+    ...values,
+    receiptDate: new Date().toISOString().split('T')[0],
+    status: computeLotStatus(values.dlcDate)
   };
 
   state.lots.unshift(newLot);
@@ -312,6 +440,30 @@ export function handleRecipeFormSubmit(e) {
     }
   });
 
+  /* Correction d'une fiche existante : les ingrédients saisis remplacent les anciens. */
+  if (editingRecipeId) {
+    const recipe = state.recipes.find(r => r.id === editingRecipeId);
+    editingRecipeId = null;
+    if (recipe) {
+      recipe.name = name;
+      recipe.icon = icon;
+      recipe.sellingPriceTTC = price;
+      recipe.ingredients = ingredients;
+    }
+    saveState();
+    playBeep(850, 0.1);
+    closeModals();
+    setModalMode('recipe', null);
+    renderRecipes();
+    renderSalesCatalog();
+    renderSalesHistory();
+    showToast(`Fiche technique « ${name} » mise à jour : ${ingredients.length} ingrédient(s), marge recalculée.`);
+    e.target.reset();
+    const editedRows = document.getElementById('recipe-ingredients-inputs');
+    if (editedRows) editedRows.innerHTML = '';
+    return;
+  }
+
   const newRecipe = {
     id: `REC-${Date.now().toString().slice(-3)}`,
     name: name,
@@ -333,8 +485,8 @@ export function handleRecipeFormSubmit(e) {
   if (rowsContainer) rowsContainer.innerHTML = '';
 }
 
-export function addRecipeIngredientRow() {
-  playBeep(520, 0.02);
+export function addRecipeIngredientRow(initial) {
+  if (!initial) playBeep(520, 0.02);
   const container = document.getElementById('recipe-ingredients-inputs');
   if (!container) return;
 
@@ -369,6 +521,27 @@ export function addRecipeIngredientRow() {
     </div>
   `;
   container.appendChild(row);
+  if (initial) fillRecipeIngredientRow(row, initial);
+  return row;
+}
+
+/** Recharge un ingrédient déjà enregistré dans une ligne de composition. */
+function fillRecipeIngredientRow(row, ing) {
+  const lotSelect = row.querySelector('.ing-lot-select');
+  const nameInput = row.querySelector('.ing-name-input');
+  const qtyInput = row.querySelector('.ing-qty-input');
+  const unitSelect = row.querySelector('.ing-unit-select');
+
+  if (lotSelect) {
+    const lotConnu = Array.from(lotSelect.options).some(o => o.value === ing.lotMatch);
+    if (ing.lotMatch && !lotConnu) {
+      lotSelect.appendChild(new Option(`${ing.name} (lot ${ing.lotMatch} — lot sorti du stock)`, ing.lotMatch));
+    }
+    lotSelect.value = ing.lotMatch || '';
+  }
+  if (nameInput) nameInput.value = ing.name || '';
+  if (qtyInput) qtyInput.value = ing.qtyPerUnit ?? '';
+  if (unitSelect) unitSelect.value = ing.unit || 'kg';
 }
 
 /** Retire une ligne d'ingrédient ajoutée par erreur (bouton ✕ de la ligne). */
@@ -502,7 +675,7 @@ export function confirmStockDepletion() {
   const custRef = document.getElementById('sale-customer-ref')?.value.trim() || 'Commande';
   const custAddress = custChannel === 'livraison' ? (document.getElementById('sale-customer-address')?.value.trim() || '-') : '-';
 
-  const orderTypeLabel = custChannel === 'livraison' ? '🛵 Livraison à domicile' : '🛍️ À emporter (Retrait)';
+  const orderTypeLabel = ORDER_TYPE_LABELS[custChannel] || ORDER_TYPE_LABELS.emporter;
 
   const now = new Date();
   const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -617,4 +790,70 @@ export function handleAddUserSubmit(e) {
   renderTeamGrid();
   showToast(`Utilisateur ${newUser.firstName} ${newUser.lastName} créé avec succès !`);
   e.target.reset();
+}
+
+/* ── Correction d'une vente / d'un retrait déjà enregistré ────────────────── */
+
+/** Ouvre la modale de correction, pré-remplie avec les coordonnées du client. */
+export function openSaleEditModal(id) {
+  const sale = state.salesHistory.find(s => s.id === id);
+  if (!sale) return;
+  editingSaleId = sale.id;
+  playBeep(600, 0.04);
+
+  const set = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val ?? ''; };
+  set('sale-edit-name', sale.customerName);
+  set('sale-edit-phone', sale.customerPhone);
+  set('sale-edit-ref', sale.orderRef);
+  set('sale-edit-address', sale.address === '-' ? '' : sale.address);
+  set('sale-edit-type', sale.channel === 'livraison' ? 'livraison' : 'emporter');
+
+  const recap = document.getElementById('sale-edit-recap');
+  if (recap) {
+    recap.innerText = [
+      `${sale.recipeName} — ${sale.qty} pièce(s)`,
+      `${sale.totalTTC.toFixed(2)} € TTC encaissés à ${sale.time}`,
+      sale.lotsUsed ? `Lots déstockés : ${sale.lotsUsed}` : ''
+    ].filter(Boolean).join(' · ');
+  }
+
+  toggleSaleEditAddress();
+  const m = document.getElementById('modal-sale-edit');
+  if (m) m.setAttribute('data-open', 'true');
+}
+
+/** N'affiche l'adresse de livraison que pour une remise en livraison. */
+export function toggleSaleEditAddress() {
+  const type = document.getElementById('sale-edit-type');
+  const field = document.getElementById('sale-edit-address-field');
+  if (!field) return;
+  const enLivraison = (type ? type.value : 'emporter') === 'livraison';
+  field.classList.toggle('sale-edit__field--off', !enLivraison);
+}
+
+export function handleSaleEditSubmit(e) {
+  e.preventDefault();
+  const sale = state.salesHistory.find(s => s.id === editingSaleId);
+  editingSaleId = null;
+  if (!sale) {
+    closeModals();
+    return;
+  }
+
+  const channel = document.getElementById('sale-edit-type')?.value === 'livraison' ? 'livraison' : 'emporter';
+  sale.customerName = document.getElementById('sale-edit-name').value.trim() || 'Client Pâtisserie';
+  sale.customerPhone = document.getElementById('sale-edit-phone').value.trim() || '06 00 00 00 00';
+  sale.orderRef = document.getElementById('sale-edit-ref').value.trim() || 'Commande';
+  sale.address = channel === 'livraison'
+    ? (document.getElementById('sale-edit-address').value.trim() || '-')
+    : '-';
+  sale.channel = channel;
+  sale.orderType = ORDER_TYPE_LABELS[channel];
+
+  saveState();
+  playBeep(760, 0.08);
+  closeModals();
+  renderSalesHistory();
+  updateTopMetrics();
+  showToast(`Vente ${sale.id} corrigée au nom de « ${sale.customerName} ».`);
 }

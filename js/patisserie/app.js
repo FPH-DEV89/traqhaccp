@@ -58,7 +58,12 @@ import {
   confirmStockDepletion, 
   handleSecondaryDlcSubmit, 
   handleWitnessFormSubmit, 
-  handleAddUserSubmit 
+  handleAddUserSubmit,
+  openLotEditModal,
+  openRecipeEditModal,
+  openSaleEditModal,
+  toggleSaleEditAddress,
+  handleSaleEditSubmit
 } from './modals.js';
 import { 
   testRecallSearch, 
@@ -71,6 +76,12 @@ import {
   deconnecterEtablissement 
 } from './auth.js';
 
+/** Aligne le thème du design system (attribut data-theme) sur la classe dark de Tailwind. */
+export function syncThemeAttribute() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.classList.contains('dark') ? 'nuit' : 'papier');
+}
+
 export function toggleDarkMode() {
   const html = document.documentElement;
   if (html.classList.contains('dark')) {
@@ -80,6 +91,7 @@ export function toggleDarkMode() {
     html.classList.add('dark');
     localStorage.theme = 'dark';
   }
+  syncThemeAttribute();
 }
 
 // Bind all necessary functions to window for DOM event handlers
@@ -123,6 +135,11 @@ window.testRecallSearch = testRecallSearch;
 window.copyCustomerPhonesForAlert = copyCustomerPhonesForAlert;
 window.downloadSanitaryReport = downloadSanitaryReport;
 window.toggleDarkMode = toggleDarkMode;
+window.openLotEditModal = openLotEditModal;
+window.openRecipeEditModal = openRecipeEditModal;
+window.openSaleEditModal = openSaleEditModal;
+window.toggleSaleEditAddress = toggleSaleEditAddress;
+window.handleSaleEditSubmit = handleSaleEditSubmit;
 window.afficherPortailConnexion = afficherPortailConnexion;
 window.deconnecterEtablissement = deconnecterEtablissement;
 
@@ -134,6 +151,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   } else {
     document.documentElement.classList.remove('dark');
   }
+  syncThemeAttribute();
 
   try {
     // Auth Supabase & multi-établissement

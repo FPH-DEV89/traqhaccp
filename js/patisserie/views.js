@@ -81,6 +81,9 @@ export function renderLots() {
           <button onclick="createSecondaryFromLot('${l.lot}')" class="flex-1 py-1.5 px-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-semibold text-xs border border-emerald-200/60 dark:border-emerald-800/60 transition text-center">
             + DLC 2nd
           </button>
+          <button type="button" onclick="openLotEditModal('${l.id}')" class="icon-btn" title="Modifier ce lot" aria-label="Modifier ce lot">
+            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          </button>
         </div>
       </div>
     `;
@@ -112,6 +115,9 @@ export function renderRecipes() {
             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${m.fabricables > 0 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'} shrink-0">
               ${m.fabricables} réalisables
             </span>
+            <button type="button" onclick="openRecipeEditModal('${r.id}')" class="icon-btn" title="Modifier cette recette" aria-label="Modifier cette recette">
+              <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </button>
           </div>
 
           <div class="grid grid-cols-3 gap-2 my-4 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl text-center">
@@ -221,6 +227,9 @@ export function renderSalesHistory() {
             <span class="px-1.5 py-0.2 rounded text-[10px] font-bold ${isDelivery ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}">
               ${isDelivery ? 'Livraison' : 'À emporter'}
             </span>
+            <button type="button" onclick="openSaleEditModal('${s.id}')" class="icon-btn icon-btn--sm" title="Modifier les coordonnées client" aria-label="Modifier les coordonnées client">
+              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </button>
           </div>
           <div class="text-[11px] text-zinc-500 flex items-center gap-1 mt-0.5">
             <span>📞 ${s.customerPhone}</span>
