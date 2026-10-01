@@ -1,7 +1,7 @@
 /**
  * TraqHACCP Pâtisserie — Modal Management & Form Submissions
  */
-import { state, saveState, getCurrentOperator, setCurrentOperator } from './state.js';
+import { state, saveState, getCurrentOperator, setCurrentOperator, genererId } from './state.js';
 import { calculateRecipeMetrics, formatDateFr } from './calculations.js';
 import { playBeep, showToast } from './audio-toast.js';
 import { compressImage, extractLabelData } from './ai-scanner.js';
@@ -25,6 +25,23 @@ import {
 let editingLotId = null;
 let editingRecipeId = null;
 let editingSaleId = null;
+// Position affichée au moment de l'ouverture : sert de repli quand l'identifiant
+// ne correspond plus à rien (liste réaffichée entre l'affichage et le clic).
+let editingLotIndex = null;
+let editingRecipeIndex = null;
+let editingSaleIndex = null;
+
+/**
+ * Retrouve un enregistrement par identifiant, avec repli sur la position affichée.
+ * Un identifiant peut ne plus exister dans l'état (fusion de synchronisation, ligne
+ * reconstruite) : sans ce repli, le clic ne ferait rien du tout, en silence.
+ */
+function retrouverParId(liste, id, index) {
+  const parId = (liste || []).find((x) => String(x && x.id) === String(id));
+  if (parId) return parId;
+  const i = Number(index);
+  return Number.isInteger(i) && i >= 0 && i < (liste || []).length ? liste[i] : null;
+}
 
 /** Statut DLC recalculé depuis la date limite (≤ 1 jour : urgent, ≤ 2 : à surveiller). */
 function computeLotStatus(dlcDate) {
@@ -93,10 +110,14 @@ export function openNewEntryModal() {
 }
 
 /** Ouvre la modale de réception pré-remplie pour corriger un lot déjà enregistré. */
-export function openLotEditModal(id) {
-  const lot = state.lots.find(l => l.id === id);
-  if (!lot) return;
+export function openLotEditModal(id, index) {
+  const lot = retrouverParId(state.lots, id, index);
+  if (!lot) {
+    showToast("Ce lot n'est plus dans la liste affichée : rechargez la page, la liste va se reconstruire.");
+    return;
+  }
   editingLotId = lot.id;
+  editingLotIndex = state.lots.indexOf(lot);
   playBeep(560, 0.04);
   const set = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val; };
   set('form-category', lot.category);
@@ -129,10 +150,14 @@ export function openNewRecipeModal() {
 }
 
 /** Ouvre la fiche technique pré-remplie pour corriger une recette existante. */
-export function openRecipeEditModal(id) {
-  const recipe = state.recipes.find(r => r.id === id);
-  if (!recipe) return;
+export function openRecipeEditModal(id, index) {
+  const recipe = retrouverParId(state.recipes, id, index);
+  if (!recipe) {
+    showToast("Cette fiche n'est plus dans la liste affichée : rechargez la page, la liste va se reconstruire.");
+    return;
+  }
   editingRecipeId = recipe.id;
+  editingRecipeIndex = state.recipes.indexOf(recipe);
   playBeep(620, 0.04);
   const set = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val; };
   set('recipe-form-name', recipe.name);
@@ -378,8 +403,9 @@ export function handleTraceFormSubmit(e) {
 
   /* Correction d'un lot existant : on met à jour la fiche, sans recréer le lot. */
   if (editingLotId) {
-    const lot = state.lots.find(l => l.id === editingLotId);
+    const lot = retrouverParId(state.lots, editingLotId, editingLotIndex);
     editingLotId = null;
+    editingLotIndex = null;
     if (lot) {
       const dlcChanged = lot.dlcDate !== values.dlcDate;
       Object.assign(lot, values);
@@ -399,7 +425,7 @@ export function handleTraceFormSubmit(e) {
   }
 
   const newLot = {
-    id: `L-${Date.now().toString().slice(-4)}`,
+    id: genererId('L', state.lots),
     ...values,
     receiptDate: new Date().toISOString().split('T')[0],
     status: computeLotStatus(values.dlcDate)
@@ -442,8 +468,9 @@ export function handleRecipeFormSubmit(e) {
 
   /* Correction d'une fiche existante : les ingrédients saisis remplacent les anciens. */
   if (editingRecipeId) {
-    const recipe = state.recipes.find(r => r.id === editingRecipeId);
+    const recipe = retrouverParId(state.recipes, editingRecipeId, editingRecipeIndex);
     editingRecipeId = null;
+    editingRecipeIndex = null;
     if (recipe) {
       recipe.name = name;
       recipe.icon = icon;
@@ -465,7 +492,7 @@ export function handleRecipeFormSubmit(e) {
   }
 
   const newRecipe = {
-    id: `REC-${Date.now().toString().slice(-3)}`,
+    id: genererId('REC', state.recipes),
     name: name,
     icon: icon,
     sellingPriceTTC: price,
@@ -683,7 +710,7 @@ export function confirmStockDepletion() {
   const now = new Date();
   const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   state.salesHistory.unshift({
-    id: `V-${Date.now().toString().slice(-3)}`,
+    id: genererId('V', state.salesHistory),
     time: timeStr,
     recipeName: state.pendingSaleRecipe.name,
     channel: custChannel,
@@ -718,7 +745,7 @@ export function handleSecondaryDlcSubmit(e) {
   const type = document.getElementById('sec-type').selectedOptions[0].text;
 
   state.secondaryDlcs.unshift({
-    id: `SEC-${Date.now().toString().slice(-4)}`,
+    id: genererId('SEC', state.secondaryDlcs),
     name: name,
     parentLot: parent,
     type: type,
@@ -745,7 +772,7 @@ export function handleWitnessFormSubmit(e) {
   const exp = new Date(now.getTime() + 5 * 86400000).toISOString().split('T')[0];
 
   state.witnessSamples.unshift({
-    id: `WIT-${Date.now().toString().slice(-4)}`,
+    id: genererId('WIT', state.witnessSamples),
     dishName: name,
     service: service,
     serviceDate: now.toISOString().split('T')[0],
@@ -777,7 +804,7 @@ export function handleAddUserSubmit(e) {
 
   const initials = (first.charAt(0) + last.charAt(0)).toUpperCase();
   const newUser = {
-    id: `u-${Date.now().toString().slice(-4)}`,
+    id: genererId('u', state.teamMembers),
     firstName: first,
     lastName: last,
     initials: initials,
@@ -799,10 +826,14 @@ export function handleAddUserSubmit(e) {
 /* ── Correction d'une vente / d'un retrait déjà enregistré ────────────────── */
 
 /** Ouvre la modale de correction, pré-remplie avec les coordonnées du client. */
-export function openSaleEditModal(id) {
-  const sale = state.salesHistory.find(s => s.id === id);
-  if (!sale) return;
+export function openSaleEditModal(id, index) {
+  const sale = retrouverParId(state.salesHistory, id, index);
+  if (!sale) {
+    showToast("Cette vente n'est plus dans la liste affichée : rechargez la page, la liste va se reconstruire.");
+    return;
+  }
   editingSaleId = sale.id;
+  editingSaleIndex = state.salesHistory.indexOf(sale);
   playBeep(600, 0.04);
 
   const set = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val ?? ''; };
@@ -837,9 +868,11 @@ export function toggleSaleEditAddress() {
 
 export function handleSaleEditSubmit(e) {
   e.preventDefault();
-  const sale = state.salesHistory.find(s => s.id === editingSaleId);
+  const sale = retrouverParId(state.salesHistory, editingSaleId, editingSaleIndex);
   editingSaleId = null;
+  editingSaleIndex = null;
   if (!sale) {
+    showToast("Vente introuvable — rechargez la page pour reconstruire la liste.");
     closeModals();
     return;
   }
@@ -859,12 +892,13 @@ export function handleSaleEditSubmit(e) {
   closeModals();
   renderSalesHistory();
   updateTopMetrics();
-  showToast(`Vente ${sale.id} corrigée au nom de « ${sale.customerName} ».`);
+  showToast(`Vente de ${sale.time} corrigée : client « ${sale.customerName} ».`);
 }
 
 /* ── Suppression d'une vente / d'un retrait (doublon, fausse manipulation) ── */
 
 let deletingSaleId = null;
+let deletingSaleIndex = null;
 
 /**
  * Quantités à rendre au stock lors de la suppression d'une vente.
@@ -890,10 +924,14 @@ function deductionsDeVente(sale) {
 }
 
 /** Ouvre la confirmation de suppression, avec le rappel de ce qui sera rendu au stock. */
-export function openSaleDeleteModal(id) {
-  const sale = state.salesHistory.find(s => s.id === id);
-  if (!sale) return;
+export function openSaleDeleteModal(id, index) {
+  const sale = retrouverParId(state.salesHistory, id, index);
+  if (!sale) {
+    showToast("Cette vente n'est plus dans la liste affichée : rechargez la page, la liste va se reconstruire.");
+    return;
+  }
   deletingSaleId = sale.id;
+  deletingSaleIndex = state.salesHistory.indexOf(sale);
   playBeep(420, 0.05);
 
   const rendus = deductionsDeVente(sale).map(d => `${d.lot} +${d.qty} ${d.unit}`);
@@ -912,9 +950,11 @@ export function openSaleDeleteModal(id) {
 /** Retire la vente du registre et rend les quantités déstockées aux lots. */
 export function handleSaleDeleteSubmit(e) {
   e.preventDefault();
-  const sale = state.salesHistory.find(s => s.id === deletingSaleId);
+  const sale = retrouverParId(state.salesHistory, deletingSaleId, deletingSaleIndex);
   deletingSaleId = null;
+  deletingSaleIndex = null;
   if (!sale) {
+    showToast("Vente introuvable — rechargez la page pour reconstruire la liste.");
     closeModals();
     return;
   }
@@ -939,7 +979,7 @@ export function handleSaleDeleteSubmit(e) {
 
   showToast(
     rendus.length
-      ? `Vente ${sale.id} supprimée · stock rendu : ${rendus.join(', ')}`
-      : `Vente ${sale.id} supprimée du registre.`
+      ? `${sale.recipeName} (${sale.time}, ${sale.customerName}) supprimée · stock rendu : ${rendus.join(', ')}`
+      : `${sale.recipeName} (${sale.time}, ${sale.customerName}) supprimée du registre.`
   );
 }

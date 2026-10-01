@@ -933,6 +933,18 @@ html[data-boot="pending"] #current-op-role {
 }
 
 /* ---- Modales « Corriger / Supprimer une vente » : rappel du mouvement ------- */
+/* ---- Historique des ventes : actions de la ligne (corriger / supprimer) ----
+   Elles vivent dans la PREMIÈRE colonne, sous l'horodatage. Au bout de la ligne,
+   sur téléphone, le tableau fait ~790 px de large pour ~316 px de zone visible :
+   les boutons sortent de l'écran et il faut faire défiler le tableau
+   horizontalement pour les atteindre (mesuré le 01/10/2026, signalement cliente). */
+.sale-row__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-2);
+}
+
 .sale-edit__recap,
 .sale-delete__recap {
   margin-bottom: var(--s-6);

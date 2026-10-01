@@ -335,7 +335,7 @@ C'est cette dernière colonne qui rend l'enquête sanitaire possible : elle reli
 
 Une erreur sur une vente déjà enregistrée se corrige **directement dans l'historique**, sans créer de doublon :
 
-1. Dans **Historique des ventes et déstockages**, touchez l'icône **crayon** de la ligne (*Modifier les coordonnées client*).
+1. Dans **Historique des ventes et déstockages**, touchez l'icône **crayon** en **début de ligne, sous l'heure** (*Modifier les coordonnées client*).
 2. La fenêtre **Modifier la vente** s'ouvre avec les valeurs d'origine : nom du client, téléphone, référence de commande, canal (emporter / livraison / sur place) et adresse de livraison.
 3. Corrigez, puis **Enregistrer les modifications** : la ligne est mise à jour **sur place**.
 
@@ -347,13 +347,15 @@ Une erreur sur une vente déjà enregistrée se corrige **directement dans l'his
 
 Si la même vente a été saisie deux fois, ou si la saisie est irrécupérable, la ligne se **retire du registre** — et le stock consommé est **rendu aux lots** :
 
-1. Touchez l'icône **corbeille** au bout de la ligne (*Supprimer cette ligne*).
+1. Touchez l'icône **corbeille**, juste à côté du crayon, en début de ligne (*Supprimer cette ligne*).
 2. La confirmation rappelle **ce qui va disparaître** : heure, produit, nombre de pièces, montant TTC, client — et **le lot et la quantité rendus au stock** (par exemple `CR-4410-B +0.2 L`).
 3. **Supprimer et rendre le stock** (bouton rouge) — ou **Annuler** pour tout laisser en place.
 
 ![Supprimer une vente](captures/modale-supprimer-vente.png)
 
 Le stock revient immédiatement sur le lot concerné, les indicateurs du jour (chiffre d'affaires, marge) sont recalculés, et la ligne disparaît de l'historique comme du rapport d'audit.
+
+> 💡 **Les deux icônes sont groupées sous l'heure, au début de chaque ligne** : elles restent ainsi atteignables sur téléphone, sans faire défiler le tableau horizontalement.
 
 > ⚠️ **La suppression est définitive.** Contrairement à une correction (chapitre 9.5), la ligne n'est pas conservée : vérifiez le rappel affiché avant de confirmer, c'est la dernière fois que vous voyez la ligne.
 

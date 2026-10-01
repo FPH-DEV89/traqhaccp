@@ -22,7 +22,7 @@
  * pousser les réglages d'un établissement vers un autre.
  */
 import { supabase } from '../../src/infrastructure/supabase_client.js';
-import { state, saveState, brancherSauvegarde } from './state.js';
+import { state, saveState, brancherSauvegarde, signalerChangementExterne } from './state.js';
 import { STORAGE_KEYS } from '../../src/domain/constants.js';
 
 /** Collections du registre : clé de colonne serveur → champ de `state`. */
@@ -350,7 +350,13 @@ export async function recevoirRegistre() {
   }
 
   ecrireMiroir(miroir);
-  if (adoptes) saveState();
+  if (adoptes) {
+    saveState();
+    // Réaffichage obligatoire : la fusion a pu remplacer des enregistrements déjà
+    // affichés. Sans cela, les lignes du tableau gardent les identifiants d'avant la
+    // fusion et leurs boutons « Modifier » ne font plus rien — sans aucun message.
+    signalerChangementExterne();
+  }
   return { ok: true, adoptes, lus };
 }
 

@@ -370,6 +370,101 @@ export function loadState(etabId = 'serveur', etabName = null) {
   }
 
   enregistrerEtablissementCourant();
+  normaliserIds();
+}
+
+/* ───────────── Identifiants : uniques, stables, jamais absents ───────────────
+ *
+ * Un enregistrement sans identifiant, ou avec un identifiant partagé par deux
+ * enregistrements, casse tout : l'édition ouvre la mauvaise ligne, la suppression
+ * en emporte plusieurs, la synchronisation ne pousse rien. Les générateurs
+ * d'origine (`Date.now().toString().slice(-3)`) recyclaient leur identifiant
+ * toutes les 1 000 ms — deux ventes séparées d'une seconde exactement portaient
+ * donc le MÊME identifiant. Cause racine du signalement cliente du 01/10/2026
+ * (« je peux modifier la seconde vente mais pas la première »).
+ */
+
+/** Suffixe lisible et unique à l'échelle d'un appareil : base36 de l'horodatage. */
+function suffixeUnique() {
+  return Date.now().toString(36);
+}
+
+/**
+ * Génère un identifiant unique dans une collection : `PREFIXE-horodatage`, et si
+ * l'horodatage est déjà pris (deux créations dans la même milliseconde), on
+ * suffixe jusqu'à trouver un créneau libre.
+ */
+export function genererId(prefixe, collection) {
+  const pris = new Set((collection || []).map((x) => String(x && x.id)));
+  let candidat = `${prefixe}-${suffixeUnique()}`;
+  let n = 1;
+  while (pris.has(candidat)) {
+    n += 1;
+    candidat = `${prefixe}-${suffixeUnique()}-${n}`;
+  }
+  return candidat;
+}
+
+/**
+ * Répare le registre chargé : tout enregistrement sans identifiant en reçoit un,
+ * et deux enregistrements qui partagent le même identifiant sont séparés.
+ * Idempotente — sans doublon ni identifiant manquant, elle ne touche à rien.
+ * @returns {{repares: number}} nombre d'identifiants attribués ou corrigés
+ */
+export function normaliserIds() {
+  const collections = [
+    ['lots', 'L'],
+    ['recipes', 'REC'],
+    ['secondaryDlcs', 'SEC'],
+    ['witnessSamples', 'WIT'],
+    ['salesHistory', 'V'],
+    ['teamMembers', 'u']
+  ];
+  let repares = 0;
+  collections.forEach(([champ, prefixe]) => {
+    const liste = state[champ];
+    if (!Array.isArray(liste)) return;
+    const vus = new Set();
+    liste.forEach((enregistrement) => {
+      if (!enregistrement || typeof enregistrement !== 'object') return;
+      const id = enregistrement.id;
+      const manquant = id === undefined || id === null || id === '';
+      if (manquant || vus.has(String(id))) {
+        enregistrement.id = genererId(prefixe, liste);
+        repares += 1;
+      }
+      vus.add(String(enregistrement.id));
+    });
+  });
+  if (repares > 0) {
+    console.warn(`Identifiants de registre réparés : ${repares} (doublon ou absence).`);
+    saveState();
+  }
+  return { repares };
+}
+
+/* ─────────── Rafraîchissement de l'interface après un apport externe ─────────
+ *
+ * La synchronisation peut adopter des enregistrements venus du serveur en dehors
+ * de toute action de l'utilisateur (retour de réseau, application remise au
+ * premier plan). Sans réaffichage, le DOM garde les lignes d'avant la fusion :
+ * leurs boutons portent des identifiants qui n'existent plus, et le clic ne fait
+ * plus rien — en silence. On notifie donc les vues après adoption.
+ */
+const abonnesChangementExterne = [];
+
+export function surChangementExterne(fn) {
+  if (typeof fn === 'function') abonnesChangementExterne.push(fn);
+}
+
+export function signalerChangementExterne() {
+  abonnesChangementExterne.forEach((fn) => {
+    try {
+      fn();
+    } catch (e) {
+      console.warn('Réaffichage après synchronisation impossible :', e);
+    }
+  });
 }
 
 export function getCurrentOperator() {

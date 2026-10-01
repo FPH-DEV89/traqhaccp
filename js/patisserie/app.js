@@ -7,7 +7,8 @@ import {
   saveState, 
   loadState, 
   getCurrentOperator, 
-  setCurrentOperator 
+  setCurrentOperator,
+  surChangementExterne
 } from './state.js';
 import { calculateRecipeMetrics, formatDateFr } from './calculations.js';
 import { demarrerAlertes } from './notifications.js';
@@ -180,6 +181,28 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.documentElement.dataset.boot = 'ready';
   }
 });
+
+/**
+ * Réaffichage complet de l'interface.
+ * Déclenché par la synchronisation quand elle adopte des enregistrements venus du
+ * serveur : les listes affichées doivent être reconstruites, sinon elles gardent des
+ * identifiants périmés et leurs boutons « Modifier »/« Supprimer » ne répondent plus.
+ */
+function rafraichirToutesLesVues() {
+  renderLots();
+  renderRecipes();
+  renderSalesCatalog();
+  renderSalesHistory();
+  renderSecondaryDlcs();
+  renderWitnessSamples();
+  renderTeamGrid();
+  renderAudit();
+  renderRecallOptions();
+  updateOperatorUI();
+  updateTopMetrics();
+}
+
+surChangementExterne(rafraichirToutesLesVues);
 
 // PWA Service Worker
 if ('serviceWorker' in navigator) {

@@ -99,7 +99,7 @@ export function renderRecipes() {
     return;
   }
 
-  grid.innerHTML = state.recipes.map(r => {
+  grid.innerHTML = state.recipes.map((r, i) => {
     const m = calculateRecipeMetrics(r);
     return `
       <div class="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm flex flex-col justify-between gap-4">
@@ -115,7 +115,7 @@ export function renderRecipes() {
             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${m.fabricables > 0 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'} shrink-0">
               ${m.fabricables} réalisables
             </span>
-            <button type="button" onclick="openRecipeEditModal('${r.id}')" class="icon-btn" title="Modifier cette recette" aria-label="Modifier cette recette">
+            <button type="button" onclick="openRecipeEditModal('${r.id}', ${i})" class="icon-btn" title="Modifier cette recette" aria-label="Modifier cette recette">
               <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             </button>
           </div>
@@ -215,11 +215,24 @@ export function renderSalesHistory() {
     return;
   }
 
-  hist.innerHTML = state.salesHistory.map(s => {
+  // La position est transmise aux boutons : si l'identifiant disparaît de l'état
+  // (fusion de synchronisation), l'action retombe sur la ligne réellement affichée
+  // au lieu de ne rien faire en silence.
+  hist.innerHTML = state.salesHistory.map((s, i) => {
     const isDelivery = s.channel === 'livraison';
     return `
       <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
-        <td class="p-3 font-mono text-zinc-400">${s.time}</td>
+        <td class="p-3 font-mono text-zinc-400">
+          <div>${s.time}</div>
+          <div class="sale-row__actions">
+            <button type="button" onclick="openSaleEditModal('${s.id}', ${i})" class="icon-btn icon-btn--sm" title="Modifier les coordonnées client" aria-label="Modifier les coordonnées client">
+              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </button>
+            <button type="button" onclick="openSaleDeleteModal('${s.id}', ${i})" class="icon-btn icon-btn--sm icon-btn--danger" title="Supprimer cette ligne (doublon ou fausse manipulation)" aria-label="Supprimer cette ligne">
+              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
+        </td>
         <td class="p-3 font-bold text-zinc-900 dark:text-white">${s.recipeName}</td>
         <td class="p-3">
           <div class="flex items-center gap-1.5">
@@ -227,12 +240,6 @@ export function renderSalesHistory() {
             <span class="px-1.5 py-0.2 rounded text-[10px] font-bold ${isDelivery ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}">
               ${isDelivery ? 'Livraison' : 'À emporter'}
             </span>
-            <button type="button" onclick="openSaleEditModal('${s.id}')" class="icon-btn icon-btn--sm" title="Modifier les coordonnées client" aria-label="Modifier les coordonnées client">
-              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-            </button>
-            <button type="button" onclick="openSaleDeleteModal('${s.id}')" class="icon-btn icon-btn--sm icon-btn--danger" title="Supprimer cette ligne (doublon ou fausse manipulation)" aria-label="Supprimer cette ligne">
-              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
           </div>
           <div class="text-[11px] text-zinc-500 flex items-center gap-1 mt-0.5">
             <span>📞 ${s.customerPhone}</span>
