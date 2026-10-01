@@ -63,7 +63,9 @@ import {
   openRecipeEditModal,
   openSaleEditModal,
   toggleSaleEditAddress,
-  handleSaleEditSubmit
+  handleSaleEditSubmit,
+  openSaleDeleteModal,
+  handleSaleDeleteSubmit
 } from './modals.js';
 import { 
   testRecallSearch, 
@@ -140,6 +142,8 @@ window.openRecipeEditModal = openRecipeEditModal;
 window.openSaleEditModal = openSaleEditModal;
 window.toggleSaleEditAddress = toggleSaleEditAddress;
 window.handleSaleEditSubmit = handleSaleEditSubmit;
+window.openSaleDeleteModal = openSaleDeleteModal;
+window.handleSaleDeleteSubmit = handleSaleDeleteSubmit;
 window.afficherPortailConnexion = afficherPortailConnexion;
 window.deconnecterEtablissement = deconnecterEtablissement;
 

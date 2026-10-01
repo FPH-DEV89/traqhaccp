@@ -988,6 +988,38 @@
     </div>
   </div>
 
+  <!-- MODAL: Supprimer une vente / un retrait (doublon, fausse manipulation) -->
+  <div id="modal-sale-delete" class="modal modal--sm" data-open="false">
+    <div class="modal__panel">
+      <div class="modal__head">
+        <span>Supprimer une vente</span>
+        <button type="button" class="icon-btn" title="Fermer" aria-label="Fermer la fenêtre" onclick="closeModals()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="sale-delete-form" onsubmit="handleSaleDeleteSubmit(event)">
+        <div class="modal__body">
+          <p id="sale-delete-recap" class="sale-delete__recap"></p>
+
+          <p class="callout callout--danger">
+            <span class="callout__label">Suppression définitive</span>
+            <span class="callout__body">La ligne quitte le registre : elle disparaît de l'historique des ventes, du chiffre d'affaires du jour et de l'export PDF. Les quantités déstockées sont rendues aux lots concernés.</span>
+          </p>
+
+          <p class="callout callout--info">
+            <span class="callout__body">Pour corriger seulement une erreur de nom, de téléphone ou d'adresse, utilisez plutôt le crayon « Modifier » : la vente reste au registre.</span>
+          </p>
+        </div>
+
+        <div class="modal__foot">
+          <button type="button" class="btn btn--ghost" onclick="closeModals()">Annuler</button>
+          <button type="submit" id="sale-delete-confirm" class="btn btn--danger">Supprimer et rendre le stock</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL: Enregistrer Échantillon Témoin -->
   <div id="modal-witness" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800">

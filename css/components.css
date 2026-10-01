@@ -39,6 +39,8 @@
 .icon-btn[disabled], .icon-btn.is-disabled { opacity: 0.5; cursor: not-allowed; }
 /* Variante dense : actions d'édition en ligne (lignes de tableau, cartes de stock). */
 .icon-btn--sm { width: 22px; height: 22px; border-radius: var(--r-1); }
+.icon-btn--danger { color: var(--danger); }
+.icon-btn--danger:hover { background: var(--paper-2); border-color: var(--danger); }
 
 .link {
   color: var(--accent); text-decoration: underline; text-underline-offset: 2px;

@@ -655,6 +655,8 @@ export function confirmStockDepletion() {
   playBeep(780, 0.08);
 
   const usedLotsList = [];
+  // Quantités réellement déduites, conservées avec la vente pour pouvoir la supprimer sans perte.
+  const usedDeductions = [];
 
   state.pendingSaleRecipe.ingredients.forEach((ing, idx) => {
     const customQty = parseFloat(document.getElementById(`destock-input-${idx}`)?.value || (ing.qtyPerUnit * state.pendingSaleMultiplier));
@@ -662,6 +664,7 @@ export function confirmStockDepletion() {
     if (lotItem) {
       lotItem.stockQty = Math.max(0, lotItem.stockQty - customQty);
       usedLotsList.push(lotItem.lot);
+      usedDeductions.push({ lot: lotItem.lot, qty: customQty, unit: ing.unit });
     }
   });
 
@@ -692,7 +695,8 @@ export function confirmStockDepletion() {
     qty: state.pendingSaleMultiplier,
     totalTTC: totalTTC,
     marginTotal: marginTotal,
-    lotsUsed: usedLotsList.join(', ')
+    lotsUsed: usedLotsList.join(', '),
+    deductions: usedDeductions
   });
 
   saveState();
@@ -856,4 +860,86 @@ export function handleSaleEditSubmit(e) {
   renderSalesHistory();
   updateTopMetrics();
   showToast(`Vente ${sale.id} corrigée au nom de « ${sale.customerName} ».`);
+}
+
+/* ── Suppression d'une vente / d'un retrait (doublon, fausse manipulation) ── */
+
+let deletingSaleId = null;
+
+/**
+ * Quantités à rendre au stock lors de la suppression d'une vente.
+ * Les ventes enregistrées depuis la mise à jour portent leurs déductions exactes ;
+ * pour une vente plus ancienne, on recalcule le déstockage FIFO depuis la recette.
+ */
+function deductionsDeVente(sale) {
+  if (Array.isArray(sale.deductions) && sale.deductions.length > 0) {
+    return sale.deductions.map(d => ({ ...d, estime: false }));
+  }
+  const recette = state.recipes.find(r => r.name === sale.recipeName)
+    // Repli : la fiche a pu être renommée depuis la vente (nom tronqué ou complété).
+    || state.recipes.find(r => r.name.startsWith(sale.recipeName) || sale.recipeName.startsWith(r.name));
+  if (!recette) return [];
+  return recette.ingredients
+    .filter(ing => ing.lotMatch)
+    .map(ing => ({
+      lot: ing.lotMatch,
+      qty: Number((ing.qtyPerUnit * sale.qty).toFixed(3)),
+      unit: ing.unit,
+      estime: true
+    }));
+}
+
+/** Ouvre la confirmation de suppression, avec le rappel de ce qui sera rendu au stock. */
+export function openSaleDeleteModal(id) {
+  const sale = state.salesHistory.find(s => s.id === id);
+  if (!sale) return;
+  deletingSaleId = sale.id;
+  playBeep(420, 0.05);
+
+  const rendus = deductionsDeVente(sale).map(d => `${d.lot} +${d.qty} ${d.unit}`);
+  const recap = document.getElementById('sale-delete-recap');
+  if (recap) {
+    recap.innerText = [
+      `${sale.time} — ${sale.recipeName} — ${sale.qty} pièce(s) — ${sale.totalTTC.toFixed(2)} € TTC`,
+      `Client : ${sale.customerName}`,
+      rendus.length ? `Rendu au stock : ${rendus.join(' · ')}` : 'Aucun lot lié : rien à rendre au stock'
+    ].join(' · ');
+  }
+  const m = document.getElementById('modal-sale-delete');
+  if (m) m.setAttribute('data-open', 'true');
+}
+
+/** Retire la vente du registre et rend les quantités déstockées aux lots. */
+export function handleSaleDeleteSubmit(e) {
+  e.preventDefault();
+  const sale = state.salesHistory.find(s => s.id === deletingSaleId);
+  deletingSaleId = null;
+  if (!sale) {
+    closeModals();
+    return;
+  }
+
+  const rendus = [];
+  deductionsDeVente(sale).forEach(d => {
+    const lotItem = state.lots.find(l => l.lot === d.lot);
+    if (!lotItem) return;
+    lotItem.stockQty = Math.round((lotItem.stockQty + d.qty) * 1000) / 1000;
+    rendus.push(`${d.lot} +${d.qty} ${d.unit}`);
+  });
+
+  state.salesHistory = state.salesHistory.filter(s => s.id !== sale.id);
+  saveState();
+  playBeep(520, 0.1);
+  closeModals();
+  renderLots();
+  renderRecipes();
+  renderSalesCatalog();
+  renderSalesHistory();
+  updateTopMetrics();
+
+  showToast(
+    rendus.length
+      ? `Vente ${sale.id} supprimée · stock rendu : ${rendus.join(', ')}`
+      : `Vente ${sale.id} supprimée du registre.`
+  );
 }

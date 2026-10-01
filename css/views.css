@@ -932,8 +932,9 @@ html[data-boot="pending"] #current-op-role {
   line-height: 1.4;
 }
 
-/* ---- Modale « Corriger une vente » : rappel du mouvement corrigé ---------- */
-.sale-edit__recap {
+/* ---- Modales « Corriger / Supprimer une vente » : rappel du mouvement ------- */
+.sale-edit__recap,
+.sale-delete__recap {
   margin-bottom: var(--s-6);
   padding: var(--s-4) var(--s-5);
   background: var(--paper-2);
