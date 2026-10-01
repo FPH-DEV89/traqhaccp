@@ -233,8 +233,13 @@ def main() -> int:
         print(f"  contenu   : {d_pages} pages · {d_imgs} images · md5 identique au local : {same}")
         if not same:
             fails.append("PDF : contenu Drive différent du fichier local")
-        if d_imgs != 22:
-            fails.append(f"PDF : {d_imgs} images (22 attendues)")
+        # Nombre d'images attendu : compté sur la source HTML réellement poussée.
+        # (Le guide est bâti depuis ce HTML ; une capture manquante = guide livré
+        # avec un trou. Un nombre figé en dur devenait faux à chaque nouveau chapitre.)
+        src = html.read_text(encoding="utf-8", errors="ignore")
+        attendu = src.count("data:image/")
+        if attendu and d_imgs < attendu:
+            fails.append(f"PDF : {d_imgs} images, {attendu} présentes dans la source HTML")
     finally:
         os.unlink(dl_path)
 
