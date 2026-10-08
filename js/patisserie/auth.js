@@ -4,7 +4,8 @@
 import { supabase } from '../../src/infrastructure/supabase_client.js';
 import { afficherConnexion, masquerConnexion } from '../../src/presentation/connexion.js?v=4.5';
 import { modePersistance, definirModePersistance } from '../../src/infrastructure/config.js';
-import { state, loadState, saveState, lireEtablissementCourant, restaurerRegistreOrphelin } from './state.js';
+import { state, loadState, saveState, lireEtablissementCourant } from './state.js';
+import { restaurerRegistreOrphelin } from './recuperation.js';
 import { synchroniser, demarrerSync } from './sync.js';
 import { showToast, playBeep } from './audio-toast.js';
 import { 
