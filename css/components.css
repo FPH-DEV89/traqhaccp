@@ -267,6 +267,11 @@ tr.is-selected td { background: var(--accent-wash); }
 .mark--danger  { color: var(--danger); }
 .mark--neutral { color: var(--ink-3); }
 .mark__label { font-size: var(--t-label); font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; }
+.mark[hidden] { display: none; }
+
+/* ---- En-tête : ligne secondaire (établissement + état de sauvegarde) ------- */
+.header-sub { display: flex; align-items: center; gap: var(--s-4); min-width: 0; }
+.header-sub .mark { cursor: pointer; }
 
 /* ---- Timeline ------------------------------------------------------------- */
 .timeline { display: flex; flex-direction: column; }

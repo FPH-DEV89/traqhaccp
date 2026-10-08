@@ -7,6 +7,7 @@ import { modePersistance, definirModePersistance } from '../../src/infrastructur
 import { state, loadState, saveState, lireEtablissementCourant } from './state.js';
 import { restaurerRegistreOrphelin } from './recuperation.js';
 import { synchroniser, demarrerSync } from './sync.js';
+import { brancherEtatSauvegarde } from './etat-sauvegarde.js';
 import { showToast, playBeep } from './audio-toast.js';
 import { 
   renderLots, 
@@ -135,6 +136,7 @@ async function synchroniserEtablissementConnecte() {
   // suivante ne doit pas les écraser.
   await synchroniser();
   demarrerSync();
+  brancherEtatSauvegarde();
 
   // Synchroniser l'utilisateur réel connecté pour ne pas afficher un opérateur de démonstration.
   try {
