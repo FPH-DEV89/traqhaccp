@@ -4,7 +4,7 @@
 import { supabase } from '../../src/infrastructure/supabase_client.js';
 import { afficherConnexion, masquerConnexion } from '../../src/presentation/connexion.js?v=4.5';
 import { modePersistance, definirModePersistance } from '../../src/infrastructure/config.js';
-import { state, loadState, saveState, lireEtablissementCourant } from './state.js';
+import { state, loadState, saveState, lireEtablissementCourant, restaurerRegistreOrphelin } from './state.js';
 import { synchroniser, demarrerSync } from './sync.js';
 import { showToast, playBeep } from './audio-toast.js';
 import { 
@@ -43,6 +43,7 @@ export async function initAuth() {
     const dernier = lireEtablissementCourant();
     if (dernier) {
       loadState(dernier.id, dernier.nom);
+      restaurerRegistreOrphelin();
       updateHeaderEstablishment();
       rafraichirToutesLesVues();
     } else {
@@ -105,6 +106,18 @@ async function synchroniserEtablissementConnecte() {
   }
 
   loadState(etabId, etabNom);
+
+  // Filet de sécurité : si l'appareil garde un registre local rempli sous un autre
+  // cloisonnement (« serveur » avant connexion, ou établissement précédent), on le
+  // récupère ici — le registre de cet établissement étant vide. C'est le seul point
+  // où l'on écrit par-dessus : sans cela, une cliente qui se connecte après avoir
+  // travaillé hors ligne (ou après réinitialisation de mot de passe) repart de zéro.
+  const restauration = restaurerRegistreOrphelin();
+  if (restauration) {
+    showToast(
+      `Historique récupéré : ${restauration.lots} lot(s), ${restauration.recipes} recette(s), ${restauration.salesHistory} vente(s).`,
+    );
+  }
 
   // Adopter le registre du serveur AVANT de toucher à la brigade : la fusion
   // peut ramener des membres saisis sur un autre appareil, et l'étape

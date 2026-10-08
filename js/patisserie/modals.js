@@ -346,6 +346,12 @@ export async function processLabelImage(file) {
 
     const extracted = await extractLabelData(dataUrl);
 
+    // IMPORTANT : openNewEntryModal() réinitialise le formulaire (trace-form.reset()).
+    // On ouvre donc la saisie AVANT d'y écrire, sinon les valeurs extraites sont effacées.
+    if (loader) loader.classList.remove('is-active');
+    closeModals();
+    openNewEntryModal();
+
     if (extracted) {
       if (extracted.name) {
         const el = document.getElementById('form-name');
@@ -371,11 +377,6 @@ export async function processLabelImage(file) {
       playBeep(880, 0.15);
       showToast("Étiquette reconnue par IA — vérifiez les champs.");
     }
-
-    if (loader) loader.classList.remove('is-active');
-    closeModals();
-    openNewEntryModal();
-
   } catch (err) {
     console.error("Erreur reconnaissance étiquette :", err);
     if (loader) loader.classList.remove('is-active');

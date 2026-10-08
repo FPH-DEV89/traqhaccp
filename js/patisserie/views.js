@@ -64,7 +64,7 @@ export function renderLots() {
             <div>
               <span class="text-[10px] text-zinc-400 block">Stock actuel</span>
               <span class="font-extrabold text-sm text-zinc-900 dark:text-white">${l.stockQty} ${l.stockUnit}</span>
-              <span class="text-[10px] text-emerald-600 block">${l.unitPriceHT.toFixed(2)} € HT/${l.stockUnit}</span>
+              <span class="text-[10px] text-emerald-600 block">${Number(l.unitPriceHT || 0).toFixed(2)} € HT/${l.stockUnit}</span>
             </div>
             <div class="text-right">
               <span class="text-[10px] text-zinc-400 block">DLC Fabricant</span>
@@ -109,7 +109,7 @@ export function renderRecipes() {
               <span class="text-3xl">${r.icon}</span>
               <div>
                 <h3 class="font-bold text-base text-zinc-900 dark:text-white leading-tight">${r.name}</h3>
-                <span class="text-xs text-zinc-400">${r.ingredients.length} ingrédients suivis</span>
+                <span class="text-xs text-zinc-400">${(r.ingredients || []).length} ingrédients suivis</span>
               </div>
             </div>
             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${m.fabricables > 0 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'} shrink-0">
@@ -123,8 +123,8 @@ export function renderRecipes() {
           <div class="grid grid-cols-3 gap-2 my-4 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl text-center">
             <div>
               <span class="text-[10px] text-zinc-400 block uppercase font-semibold">Prix Vente</span>
-              <span class="font-extrabold text-sm text-zinc-900 dark:text-white">${r.sellingPriceTTC.toFixed(2)} € TTC</span>
-              <span class="text-[9px] text-zinc-400 block">${m.prixVenteHT.toFixed(2)} € HT</span>
+              <span class="font-extrabold text-sm text-zinc-900 dark:text-white">${Number(r.sellingPriceTTC || 0).toFixed(2)} € TTC</span>
+              <span class="text-[9px] text-zinc-400 block">${Number(m.prixVenteHT || 0).toFixed(2)} € HT</span>
             </div>
             <div>
               <span class="text-[10px] text-zinc-400 block uppercase font-semibold">Coût Matière</span>
