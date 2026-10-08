@@ -21,6 +21,21 @@ import {
 } from './views.js';
 import { closeModals } from './modals.js';
 
+/**
+ * Récupère un éventuel registre local orphelin et le signale à l'utilisateur.
+ * Sans ce retour visuel, les données réapparaissent sans explication et la
+ * pâtissière ne sait pas si son historique est bien revenu.
+ * @returns {boolean} vrai si quelque chose a été récupéré
+ */
+function recupererRegistreEtAnnoncer() {
+  const restauration = restaurerRegistreOrphelin();
+  if (!restauration) return false;
+  showToast(
+    `Historique récupéré : ${restauration.lots} lot(s), ${restauration.recipes} recette(s), ${restauration.salesHistory} vente(s).`,
+  );
+  return true;
+}
+
 export function updateHeaderEstablishment() {
   const el = document.getElementById('header-establishment-name');
   if (el) {
@@ -44,7 +59,7 @@ export async function initAuth() {
     const dernier = lireEtablissementCourant();
     if (dernier) {
       loadState(dernier.id, dernier.nom);
-      restaurerRegistreOrphelin();
+      recupererRegistreEtAnnoncer();
       updateHeaderEstablishment();
       rafraichirToutesLesVues();
     } else {
@@ -113,12 +128,7 @@ async function synchroniserEtablissementConnecte() {
   // récupère ici — le registre de cet établissement étant vide. C'est le seul point
   // où l'on écrit par-dessus : sans cela, une cliente qui se connecte après avoir
   // travaillé hors ligne (ou après réinitialisation de mot de passe) repart de zéro.
-  const restauration = restaurerRegistreOrphelin();
-  if (restauration) {
-    showToast(
-      `Historique récupéré : ${restauration.lots} lot(s), ${restauration.recipes} recette(s), ${restauration.salesHistory} vente(s).`,
-    );
-  }
+  recupererRegistreEtAnnoncer();
 
   // Adopter le registre du serveur AVANT de toucher à la brigade : la fusion
   // peut ramener des membres saisis sur un autre appareil, et l'étape
