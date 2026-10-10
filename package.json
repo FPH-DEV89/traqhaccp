@@ -24,6 +24,7 @@
     "gate:selftest": "node tools/test-gates.mjs",
     "recette:provisionner": "python3 tools/recette-sync/provisionner.py",
     "recette:sync": "PLAYWRIGHT_BROWSERS_PATH=/opt/data/.pw-browsers node tools/recette-sync/recette-sync.mjs",
+    "recette:client": "PLAYWRIGHT_BROWSERS_PATH=/opt/data/.pw-browsers node tools/recette-sync/recette-client.mjs",
     "gate": "npm run gate:css && npm run gate:sw && npm run gate:sw-bump && npm run gate:sync && npm run gate:artifact:warn && npm run gate:selftest"
   },
   "gates": {

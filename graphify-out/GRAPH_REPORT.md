@@ -1,16 +1,16 @@
-# Graph Report - traqhaccp  (2026-09-25)
+# Graph Report - traqhaccp  (2026-10-10)
 
 ## Corpus Check
-- 66 files · ~191,505 words
+- 78 files · ~216,091 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 895 nodes · 1620 edges · 67 communities (52 shown, 15 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 68 edges (avg confidence: 0.53)
+- 1044 nodes · 1987 edges · 71 communities (55 shown, 16 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 75 edges (avg confidence: 0.54)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fbe36b52`
+- Built from commit: `5e49c5ec`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -26,7 +26,7 @@
 - Design Debt Validation
 - scripts
 - check-css-coverage.mjs
-- Authentication UI Logic
+- connexion.js
 - check-parity.mjs
 - Automated Gate Testing
 - PWA Web Manifest
@@ -38,11 +38,11 @@
 - Service Worker Caching Strategy
 - vercel.json
 - AI Assistant Instructions
-- check-css-cascade.mjs
+- marked.min.cjs
 - HACCP Data Seeding
 - settings-data.js
 - CI Validation Workflow
-- notifications.js
+- recette-client.mjs
 - Guide de conformité HACCP pour TraqHACCP
 - God File 500-line non-negotiable
 - HACCP regulatory thresholds (CE 852/2004, Arrêté 21/12/2009)
@@ -76,56 +76,60 @@
 - build-guide-doc.mjs
 - build-guide-pdf.mjs
 - ne
-- marked.min.cjs
+- sync.js
 - extract-label.js
 - capture-scan-guide.mjs
 - export-graphviz.py
 - pre-push
+- check-sw-bump.mjs
+- Recette de la synchronisation
+- recuperation.js
+- provisionner.py
 
 ## God Nodes (most connected - your core abstractions)
-1. `playBeep()` - 33 edges
-2. `w` - 26 edges
-3. `SupabaseClient` - 25 edges
-4. `showToast()` - 24 edges
-5. `TraqHACCP — Guide utilisateur` - 23 edges
-6. `se` - 22 edges
-7. `saveState()` - 18 edges
-8. `icon()` - 18 edges
-9. `scripts` - 17 edges
+1. `playBeep()` - 39 edges
+2. `showToast()` - 33 edges
+3. `w` - 26 edges
+4. `saveState()` - 25 edges
+5. `SupabaseClient` - 25 edges
+6. `TraqHACCP — Guide utilisateur` - 23 edges
+7. `scripts` - 22 edges
+8. `se` - 22 edges
+9. `icon()` - 18 edges
 10. `construireRegistreDdpp()` - 17 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `restaurerRegistreOrphelin()` --indirect_call--> `champ()`  [INFERRED]
+  js/patisserie/recuperation.js → src/presentation/connexion.js
 - `tabContext()` --indirect_call--> `icon()`  [INFERRED]
   js/patisserie/settings.js → src/presentation/icons.js
-- `renderTabPreferences()` --calls--> `icon()`  [EXTRACTED]
-  js/patisserie/settings.js → src/presentation/icons.js
-- `renderTabCompte()` --calls--> `icon()`  [EXTRACTED]
-  js/patisserie/settings.js → src/presentation/icons.js
-- `renderSettings()` --calls--> `icon()`  [EXTRACTED]
-  js/patisserie/settings.js → src/presentation/icons.js
-- `tabContext()` --indirect_call--> `showToast()`  [INFERRED]
-  js/patisserie/settings.js → js/patisserie/audio-toast.js
+- `downloadSanitaryReport()` --calls--> `construireFicheAlerteRecherche()`  [EXTRACTED]
+  js/patisserie/recall.js → src/presentation/ddpp_documents.js
+- `downloadSanitaryReport()` --calls--> `construireRegistreDdpp()`  [EXTRACTED]
+  js/patisserie/recall.js → src/presentation/ddpp_documents.js
+- `downloadSanitaryReport()` --calls--> `telechargerPdf()`  [EXTRACTED]
+  js/patisserie/recall.js → src/presentation/ddpp_report.js
 
 ## Import Cycles
-- None detected.
+- 3-file cycle: `js/patisserie/archive.js -> js/patisserie/settings.js -> js/patisserie/settings-data.js -> js/patisserie/archive.js`
 
-## Communities (67 total, 15 thin omitted)
+## Communities (71 total, 16 thin omitted)
 
 ### Community 0 - "app.js"
-Cohesion: 0.09
-Nodes (78): callOpenRouterDirect(), compressImage(), DEMO_LABEL_DATA_URL, demoLabelData(), extractLabelData(), playBeep(), showToast(), afficherPortailConnexion() (+70 more)
+Cohesion: 0.07
+Nodes (104): callOpenRouterDirect(), compressImage(), DEMO_LABEL_DATA_URL, demoLabelData(), extractLabelData(), rafraichirToutesLesVues(), syncThemeAttribute(), toggleDarkMode() (+96 more)
 
 ### Community 1 - "config.js"
 Cohesion: 0.06
-Nodes (26): appliquerSurchargeModeUrl(), CONFIG_SUPABASE, ecrireStockage(), lireStockage(), MODE_PERSISTANCE, modeParametreUrl(), modePersistance(), MODES_PERSISTANCE (+18 more)
+Nodes (25): appliquerSurchargeModeUrl(), CONFIG_SUPABASE, ecrireStockage(), lireStockage(), MODE_PERSISTANCE, modeParametreUrl(), modePersistance(), MODES_PERSISTANCE (+17 more)
 
 ### Community 2 - "BUGS.md — pannes vécues et le gate qui les rend re-livables impossibles"
 Cohesion: 0.20
 Nodes (9): 1. 16/09/2026 — « les titres s'affichent mais rien d'autre », 2. 17/09/2026 — artefact généré périmé + raccourci cassé, 3. 16/09/2026 — écrasement silencieux en cascade, 4. 17/09/2026 — les pièges des gates eux-mêmes (appris en les posant), 5. 18/09/2026 — le gate ne pouvait plus mordre (binaire Playwright absent), 6. 23/09/2026 — le « hors-ligne » qui n'existait pas (service worker jeté en silence), 7. 24/09/2026 — la chaîne de vérification validait du code mort, BUGS.md — pannes vécues et le gate qui les rend re-livables impossibles (+1 more)
 
 ### Community 3 - "settings.js"
-Cohesion: 0.15
-Nodes (31): actionHandlers, armConfirm(), armed, bindSettingsEvents(), clone(), esc(), isDarkTheme(), onSettingsClick() (+23 more)
+Cohesion: 0.14
+Nodes (33): actionHandlers, armConfirm(), armed, bindSettingsEvents(), clone(), TABS_DATA, esc(), isDarkTheme() (+25 more)
 
 ### Community 4 - "DATA.md — Socle de données TraqHACCP"
 Cohesion: 0.18
@@ -136,8 +140,8 @@ Cohesion: 0.12
 Nodes (33): icon(), ICON_ALIAS, iconFor(), ICONS, TRACES, banner(), camera(), closeAllOverlays() (+25 more)
 
 ### Community 6 - "settings-norms.js"
-Cohesion: 0.07
-Nodes (46): clone(), DLC_DEFAULTS, DLC_FAMILIES, dlcOf(), EQUIPMENT_TYPES, equipmentType(), frNumber(), frRange() (+38 more)
+Cohesion: 0.06
+Nodes (62): alerteDate(), alertesDuJour(), dansHeuresCalmes(), dateLisible(), DEFAUTS, demarrerAlertes(), deuxChiffres(), ecrireVues() (+54 more)
 
 ### Community 7 - "Manuel Utilisateur — TraqHACCP Pro"
 Cohesion: 0.07
@@ -148,16 +152,16 @@ Cohesion: 0.08
 Nodes (25): addDebtViolation(), ALLOWED_SYMBOLS, BANS, cssFiles, dvBaselinePath, dvErrors, dvWarnings, EMOJI_RANGES (+17 more)
 
 ### Community 9 - "scripts"
-Cohesion: 0.07
-Nodes (27): description, gates, artifact-fresh, _comment, css-cascade, ui-paint, name, private (+19 more)
+Cohesion: 0.06
+Nodes (34): description, gates, artifact-fresh, _comment, css-cascade, sw-assets, sw-bump, ui-paint (+26 more)
 
 ### Community 10 - "check-css-coverage.mjs"
 Cohesion: 0.09
 Nodes (22): baselinePath, cssFiles, cssText, defined, htmlPath, isKnown(), jsDir, knownStructural (+14 more)
 
-### Community 11 - "Authentication UI Logic"
-Cohesion: 0.33
-Nodes (22): afficherConnexion(), afficherErreur(), afficherEtape(), analyserHashAuth(), champ(), contexte, effacerErreur(), etatOccupe() (+14 more)
+### Community 11 - "connexion.js"
+Cohesion: 0.17
+Nodes (31): afficherConnexion(), afficherErreur(), afficherEtape(), analyserHashAuth(), champ(), contexte, effacerErreur(), etatOccupe() (+23 more)
 
 ### Community 12 - "check-parity.mjs"
 Cohesion: 0.10
@@ -203,25 +207,25 @@ Nodes (4): cleanUrls, headers, redirects, version
 Cohesion: 0.50
 Nodes (3): Automatisation Git (Push après correctif et vérifications), Instructions pour l'assistant, Publication (déploiement)
 
-### Community 23 - "check-css-cascade.mjs"
-Cohesion: 0.22
-Nodes (6): CIBLES, fichiers(), walk(), walk(), d(), n()
+### Community 23 - "marked.min.cjs"
+Cohesion: 0.15
+Nodes (9): CIBLES, fichiers(), walk(), walk(), ce(), d(), ie, n() (+1 more)
 
 ### Community 25 - "settings-data.js"
-Cohesion: 0.13
-Nodes (27): ALERT_FALLBACK, applyArchive(), archiveField(), archiveFileName(), backupState(), buildArchive(), chooseArchiveFile(), demanderAutorisation() (+19 more)
+Cohesion: 0.15
+Nodes (25): ALERT_FALLBACK, applyArchive(), archiveField(), archiveFileName(), backupState(), buildArchive(), chooseArchiveFile(), demanderAutorisation() (+17 more)
 
-### Community 28 - "notifications.js"
-Cohesion: 0.27
-Nodes (16): alerteDate(), alertesDuJour(), dansHeuresCalmes(), dateLisible(), DEFAUTS, demarrerAlertes(), deuxChiffres(), ecrireVues() (+8 more)
+### Community 28 - "recette-client.mjs"
+Cohesion: 0.08
+Nodes (21): /js/patisserie/etat-sauvegarde.js, SUPABASE_CLE_SESSION, /js/patisserie/state.js, /src/infrastructure/supabase_client.js, /js/patisserie/sync.js, CLE_PUBLIQUE, CLE_SERVICE, COLLECTIONS_REGISTRE (+13 more)
 
 ### Community 29 - "Guide de conformité HACCP pour TraqHACCP"
 Cohesion: 0.33
 Nodes (5): 1. Barèmes de Températures Réglementaires (Arrêté du 21/12/2009), 2. Refroidissement Rapide et Cuisson, 3. Huiles de Friture, 4. Inviolabilité et Traçabilité, Guide de conformité HACCP pour TraqHACCP
 
 ### Community 38 - "ddpp_report.js"
-Cohesion: 0.14
-Nodes (39): downloadSanitaryReport(), blocSignature(), construireFicheAlerteRecherche(), construireRegistreDdpp(), enTete(), estDepassee(), jourIso(), nomFichierFicheAlerte() (+31 more)
+Cohesion: 0.13
+Nodes (44): brancherArchivePdf(), dateAujourdhui(), dateDebutDefaut(), exporterArchivePdf(), renderArchivePdf(), chargeCanonique(), construireArchiveRegistre(), nomFichierArchive() (+36 more)
 
 ### Community 39 - "w"
 Cohesion: 0.09
@@ -244,16 +248,16 @@ Cohesion: 0.33
 Nodes (6): 3.1 Créer le compte de l'établissement (recommandé), 3.2 Se connecter, 3.3 Mot de passe oublié, 3.4 Un compte est obligatoire (l'application est en mode connecté), 3.5 Changer d'établissement / se déconnecter, 3. Compte, connexion et mode de démonstration
 
 ### Community 45 - "7. Réception d'une marchandise dans le registre"
-Cohesion: 0.33
-Nodes (6): 7.1 Ouvrir le formulaire, 7.2 Les champs du formulaire, 7.3 Valider, 7.4 Exemple complet (cas réel), 7.5 Filtres et lecture de la liste des lots, 7. Réception d'une marchandise dans le registre
+Cohesion: 0.29
+Nodes (7): 7.1 Ouvrir le formulaire, 7.2 Les champs du formulaire, 7.3 Valider, 7.4 Exemple complet (cas réel), 7.5 Filtres et lecture de la liste des lots, 7.6 Modifier un lot déjà enregistré, 7. Réception d'une marchandise dans le registre
 
 ### Community 46 - "9. Ventes et déstockage FIFO"
-Cohesion: 0.40
-Nodes (5): 9.1 Vendre une pâtisserie de la carte, 9.2 Enregistrer une vente hors carte (plusieurs produits, commande), 9.3 Les champs du déstockage, 9.4 Historique des ventes et déstockages, 9. Ventes et déstockage FIFO
+Cohesion: 0.29
+Nodes (7): 9.1 Vendre une pâtisserie de la carte, 9.2 Enregistrer une vente hors carte (plusieurs produits, commande), 9.3 Les champs du déstockage, 9.4 Historique des ventes et déstockages, 9.5 Corriger une vente (nom de client erroné), 9.6 Supprimer une vente saisie en double (ou une fausse manipulation), 9. Ventes et déstockage FIFO
 
 ### Community 47 - "10. Fiches coût, recettes et marges"
-Cohesion: 0.40
-Nodes (5): 10.1 Comment lire une fiche, 10.2 Utiliser une fiche pour décider, 10.3 Vendre depuis une fiche, 10.4 Créer une nouvelle fiche recette, 10. Fiches coût, recettes et marges
+Cohesion: 0.33
+Nodes (6): 10.1 Comment lire une fiche, 10.2 Utiliser une fiche pour décider, 10.3 Vendre depuis une fiche, 10.4 Créer une nouvelle fiche recette, 10.5 Modifier une recette (ingrédient oublié, quantité erronée), 10. Fiches coût, recettes et marges
 
 ### Community 48 - "13. Équipe, rôles et codes PIN"
 Cohesion: 0.50
@@ -288,7 +292,7 @@ Cohesion: 0.67
 Nodes (3): 8.1 Créer une DLC secondaire, 8.2 Enregistrer un échantillon témoin, 8. DLC secondaires et témoins sanitaires
 
 ### Community 56 - "oe"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (3): le, oe, t()
 
 ### Community 57 - "push-guide-drive.py"
@@ -303,9 +307,9 @@ Nodes (9): DOCS, html, kb, marked, MD, MIME, missing, OUT (+1 more)
 Cohesion: 0.22
 Nodes (8): body, marked, MD, OUT_HTML, OUT_PDF, require, ROOT, st
 
-### Community 62 - "marked.min.cjs"
-Cohesion: 0.38
-Nodes (3): ce(), ie, p()
+### Community 62 - "sync.js"
+Cohesion: 0.19
+Nodes (27): afficherEtatSauvegarde(), brancherEtatSauvegarde(), heure(), MODIFIANT, resumerEtat(), surClic(), signalerChangementExterne(), attribuerReglages() (+19 more)
 
 ### Community 63 - "extract-label.js"
 Cohesion: 0.67
@@ -315,25 +319,37 @@ Nodes (3): CATEGORIES, handler(), parseJsonLoose()
 Cohesion: 0.50
 Nodes (3): { chromium }, R, require
 
+### Community 67 - "check-sw-bump.mjs"
+Cohesion: 0.16
+Nodes (13): bloc, cible, commits, git(), lireCacheName(), modifies, precaches, quiet (+5 more)
+
+### Community 68 - "Recette de la synchronisation"
+Cohesion: 0.20
+Nodes (9): Ce qu'elle prouve, Ce qu'elle prouve, Lancement, Lancement, Pièges (payés une fois), Pièges (propres au compte réel), Prérequis, Recette « compte client réel » (`recette:client`) (+1 more)
+
+### Community 69 - "recuperation.js"
+Cohesion: 0.44
+Nodes (8): CHAMPS_METIER, CHAMPS_RAPPORTES, cleChamp(), identifiant(), lireListe(), registresOrphelins(), restaurerRegistreOrphelin(), scopeCourant()
+
 ## Knowledge Gaps
-- **361 isolated node(s):** `CATEGORIES`, `DEMO_LABEL_DATA_URL`, `DEFAUTS`, `HORIZONS_DLC`, `ALERT_FALLBACK` (+356 more)
+- **418 isolated node(s):** `CATEGORIES`, `DEMO_LABEL_DATA_URL`, `MODIFIANT`, `ORDER_TYPE_LABELS`, `DEFAUTS` (+413 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **16 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `icon()` connect `Icon and Overlay UI` to `Authentication UI Logic`, `settings.js`?**
-  _High betweenness centrality (0.020) - this node is a cross-community bridge._
-- **Why does `n()` connect `check-css-cascade.mjs` to `marked.min.cjs`?**
+- **Why does `showToast()` connect `app.js` to `settings.js`, `sync.js`, `settings-norms.js`?**
   _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **What connects `CATEGORIES`, `DEMO_LABEL_DATA_URL`, `DEFAUTS` to the rest of the system?**
-  _361 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `saveState()` connect `app.js` to `settings-data.js`, `settings.js`, `recuperation.js`, `sync.js`?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **What connects `CATEGORIES`, `DEMO_LABEL_DATA_URL`, `MODIFIANT` to the rest of the system?**
+  _418 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.08855799373040753 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07095448798988623 - nodes in this community are weakly interconnected._
 - **Should `config.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.06328320802005012 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06428571428571428 - nodes in this community are weakly interconnected._
+- **Should `settings.js` be split into smaller, more focused modules?**
+  _Cohesion score 0.13903743315508021 - nodes in this community are weakly interconnected._
 - **Should `Icon and Overlay UI` be split into smaller, more focused modules?**
   _Cohesion score 0.12435897435897436 - nodes in this community are weakly interconnected._
-- **Should `settings-norms.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.07402031930333818 - nodes in this community are weakly interconnected._
