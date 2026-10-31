@@ -1,0 +1,240 @@
+/* ---- Modal ---------------------------------------------------------------- */
+.modal {
+  position: fixed; inset: 0; z-index: var(--z-modal);
+  display: flex; align-items: center; justify-content: center; padding: var(--s-6);
+}
+.modal__panel {
+  background: var(--sheet); border: 1px solid var(--rule);
+  border-radius: var(--r-3); box-shadow: var(--sh-2);
+  width: 100%; max-width: 640px; max-height: 90vh;
+  display: flex; flex-direction: column;
+  opacity: 0; transform: translateY(4px);
+  transition: opacity var(--d-2) var(--e-out), transform var(--d-2) var(--e-out);
+}
+.modal__panel.is-open,
+.modal.is-open .modal__panel { opacity: 1; transform: translateY(0); }
+.modal--sm .modal__panel { max-width: 420px; }
+.modal--lg .modal__panel { max-width: 860px; }
+.modal__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--s-5) var(--s-6); border-bottom: 1px solid var(--rule);
+  font-size: var(--t-h2); font-weight: 600;
+}
+.modal__body { padding: var(--s-6); overflow-y: auto; flex: 1; }
+.modal__foot {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: var(--s-4); padding: var(--s-5) var(--s-6); border-top: 1px solid var(--rule);
+}
+@media (prefers-reduced-motion: reduce) { .modal__panel { transition-duration: 1ms; } }
+
+/* Modale pilotée par l'application : masquée tant que data-open vaut "true".
+   Le voile est posé en ::before afin de rester indépendant du fond d'écran. */
+.modal[data-open] { display: none; }
+.modal[data-open="true"] { display: flex; }
+.modal[data-open]::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--ink); opacity: 0.45;
+}
+[data-theme="nuit"] .modal[data-open]::before { background: var(--paper); opacity: 0.7; }
+.modal[data-open] .modal__panel { position: relative; }
+/* Le panneau reste à opacité 0 tant que la modale n'est pas ouverte (contrat .is-open). */
+.modal[data-open="true"] .modal__panel { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { .panel { transition-duration: 1ms; } }
+
+/* ---- Toast ---------------------------------------------------------------- */
+.toast {
+  position: fixed; bottom: var(--s-6); left: var(--s-6); width: 320px;
+  display: flex; align-items: center; gap: var(--s-4);
+  padding: var(--s-4) var(--s-5); background: var(--sheet);
+  border: 1px solid var(--rule); border-radius: var(--r-2); box-shadow: var(--sh-1);
+  z-index: var(--z-toast); font-size: var(--t-sm); color: var(--ink);
+}
+.toast--ok     { border-color: var(--ok); }
+.toast--warn   { border-color: var(--warn); }
+.toast--danger { border-color: var(--danger); }
+.toast__action {
+  margin-left: auto; flex-shrink: 0; font-weight: 500; color: var(--accent);
+  cursor: pointer; background: none; border: none; font-size: var(--t-sm);
+}
+.toast__action:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---- Palette (⌘K) --------------------------------------------------------- */
+.palette {
+  position: fixed; top: 20vh; left: 50%; transform: translateX(-50%);
+  width: min(640px, calc(100vw - var(--s-8) * 2));
+  background: var(--sheet); border: 1px solid var(--rule);
+  border-radius: var(--r-3); box-shadow: var(--sh-2); z-index: var(--z-modal); overflow: hidden;
+}
+.palette__input {
+  display: flex; align-items: center; gap: var(--s-4);
+  padding: var(--s-4) var(--s-5); border-bottom: 1px solid var(--rule);
+}
+.palette__input input {
+  flex: 1; border: none; background: transparent;
+  font-size: var(--t-body); color: var(--ink); outline: none; font-family: var(--ff-ui);
+}
+.palette__list {
+  list-style: none; margin: 0; padding: var(--s-2) 0; max-height: 340px; overflow-y: auto;
+}
+.palette__item {
+  display: flex; align-items: center; gap: var(--s-5); padding: 0 var(--s-5); height: 44px;
+  font-size: var(--t-sm); color: var(--ink); cursor: pointer;
+  transition: background var(--d-1) var(--e-out);
+}
+.palette__item:hover, .palette__item.is-active { background: var(--accent-wash); color: var(--accent); }
+
+/* ---- Lightbox ------------------------------------------------------------- */
+.lightbox {
+  position: fixed; inset: 0; background: var(--paper); z-index: var(--z-lightbox);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.lightbox img { max-width: 100%; max-height: 85vh; object-fit: contain; }
+.lightbox__foot { padding: var(--s-5) var(--s-6); font-size: var(--t-sm); color: var(--ink-3); text-align: center; }
+
+/* ---- États : empty -------------------------------------------------------- */
+.empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--s-5); padding: var(--s-11) var(--s-8); text-align: center;
+}
+.empty__icon { width: 32px; height: 32px; color: var(--ink-3); }
+.empty__title { font-size: var(--t-h2); font-weight: 600; color: var(--ink); }
+.empty__body { font-size: var(--t-sm); color: var(--ink-2); max-width: 44ch; }
+
+/* ---- Skeleton ------------------------------------------------------------- */
+.skeleton {
+  background: var(--paper-2); border-radius: var(--r-2);
+  animation: skeleton-fade 1.4s ease-in-out infinite alternate;
+}
+@keyframes skeleton-fade {
+  from { opacity: 1; }
+  to   { opacity: 0.45; }
+}
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; opacity: 0.7; } }
+
+/* ---- Badge-count ---------------------------------------------------------- */
+.badge-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding-inline: 4px;
+  border-radius: var(--r-1); background: var(--paper-2);
+  border: 1px solid var(--rule); color: var(--ink-3);
+  font-family: var(--ff-mono); font-size: 10px;
+  font-variant-numeric: tabular-nums; line-height: 1;
+}
+
+/* ---- A11y ----------------------------------------------------------------- */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[disabled], .is-disabled { opacity: 0.5; cursor: not-allowed; }
+[aria-invalid="true"].input,
+[aria-invalid="true"].select,
+[aria-invalid="true"].textarea { border-color: var(--danger); }
+
+/* ---- Pavé tactile cuisine (Keypad) --------------------------------------- */
+.keypad {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+.keypad__display {
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  padding: var(--s-4) var(--s-6);
+  font-family: var(--ff-mono);
+  font-size: var(--t-h2);
+  font-weight: 600;
+  text-align: right;
+  color: var(--ink);
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.keypad__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-3);
+}
+
+.keypad__btn {
+  height: 52px;
+  min-height: var(--touch);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: var(--sheet);
+  color: var(--ink);
+  font-family: var(--ff-mono);
+  font-size: var(--t-h3);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: background var(--d-1) var(--e-out);
+}
+
+.keypad__btn:active, .keypad__btn:hover {
+  background: var(--paper-2);
+}
+
+.keypad__btn--action {
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
+.keypad__btn--action:active, .keypad__btn--action:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.keypad__btn--danger {
+  color: var(--danger);
+}
+
+/* Raccourcis rapides de température */
+.quick-adjust {
+  display: flex;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: var(--s-2);
+}
+
+.quick-adjust__btn {
+  height: 36px;
+  min-height: var(--touch);
+  padding: 0 var(--s-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: var(--paper);
+  color: var(--ink-2);
+  font-family: var(--ff-mono);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  transition: background var(--d-1) var(--e-out), color var(--d-1) var(--e-out);
+}
+
+.quick-adjust__btn:active, .quick-adjust__btn:hover {
+  background: var(--accent-wash);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ---- Cibles tactiles ------------------------------------------------------ */
+@media (pointer: coarse) {
+  .btn, .seg__item, .palette__item { min-height: var(--touch); }
+  .icon-btn { min-width: var(--touch); min-height: var(--touch); }
+  .checklist__check { min-width: var(--touch); min-height: var(--touch); }
+}
+
