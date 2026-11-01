@@ -1,0 +1,4 @@
+#!/bin/bash
+# God File Guard — Git pre-commit hook
+# Bloque un commit contenant un fichier > 500 lignes (600 pour .py)
+python3 /opt/data/scripts/god-file-guard.py --pre-commit
