@@ -1,0 +1,4 @@
+# Équivalent des redirects vercel.json (version 2 → Pages _redirects)
+/index.html    /    301
+/patisserie    /    301
+/patisserie.html  /  301

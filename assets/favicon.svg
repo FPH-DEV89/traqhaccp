@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Fond carré pétrole, arrondi 3 px -->
+  <rect x="0" y="0" width="32" height="32" rx="3" ry="3" fill="#0E4F55"/>
+  <!-- Monogramme « T » — Instrument Serif approché en tracé propre, lisible à 16 px -->
+  <text
+    x="16"
+    y="23"
+    text-anchor="middle"
+    font-family="'Instrument Serif', Georgia, serif"
+    font-size="22"
+    font-weight="400"
+    fill="#F7FBFA"
+  >T</text>
+</svg>

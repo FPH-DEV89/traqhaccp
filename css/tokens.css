@@ -1,0 +1,171 @@
+/*
+ * css/tokens.css — Variables CSS du design system « REGISTRE »
+ * TraqHACCP v4 · docs/DESIGN.md §4 §5 §6
+ *
+ * ⚠ SEUL fichier autorisé à contenir des valeurs littérales #hex / rgba().
+ *   Tout autre fichier CSS doit utiliser var(--…) exclusivement.
+ *
+ * Thème actif : data-theme posé par le JS (pas de bascule automatique).
+ * Le thème « papier » est le défaut.
+ */
+
+/* ── Thème papier / clair (défaut moderne style Traqfood) ───────────────── */
+:root,
+[data-theme="papier"] {
+
+  /* Couleurs */
+  --paper:       #F8FAFC;   /* fond application clair et propre */
+  --paper-2:     #F1F5F9;   /* fond alterné, entêtes de tableau */
+  --sheet:       #FFFFFF;   /* surface des composants blanc pur */
+  --ink:         #0F172A;   /* texte principal ardoise foncée */
+  --ink-2:       #475569;   /* texte secondaire */
+  --ink-3:       #64748B;   /* libellés, unités, métadonnées */
+  --rule:        #E2E8F0;   /* filet discret 1 px */
+  --rule-2:      #CBD5E1;   /* filet accentué, séparateur */
+  --accent:      #0284C7;   /* bleu azur pro — marque Traqfood */
+  --accent-2:    #0369A1;   /* accent survol / appui */
+  --accent-wash: #E0F2FE;   /* fond teinté sélection active */
+  --ok:          #10B981;   /* vert conforme */
+  --warn:        #F59E0B;   /* ambre alerte */
+  --danger:      #EF4444;   /* rouge anomalie */
+  --on-accent:   #FFFFFF;
+
+  /* Couleurs des pôles d'action Traqfood */
+  --tile-temp:        #2563EB;
+  --tile-temp-bg:     #EFF6FF;
+  --tile-clean:       #D97706;
+  --tile-clean-bg:    #FFFBEB;
+  --tile-dlc:         #E11D48;
+  --tile-dlc-bg:      #FFF1F2;
+  --tile-reception:   #7C3AED;
+  --tile-reception-bg: #F5F3FF;
+  --tile-oil:         #EA580C;
+  --tile-oil-bg:      #FFF7ED;
+  --tile-routine:     #059669;
+  --tile-routine-bg:  #ECFDF5;
+
+  /* Ombres douces et modernes */
+  --sh-1: 0 4px 12px -2px rgba(15,23,42,.08), 0 2px 4px -2px rgba(15,23,42,.04);
+  --sh-2: 0 12px 28px -4px rgba(15,23,42,.12), 0 4px 10px -2px rgba(15,23,42,.06);
+  --sh-tile: 0 1px 3px 0 rgba(15,23,42,.06), 0 1px 2px -1px rgba(15,23,42,.06);
+  --sh-tile-hover: 0 10px 20px -3px rgba(15,23,42,.08), 0 4px 6px -4px rgba(15,23,42,.04);
+}
+
+/* ── Thème nuit ─────────────────────────────────────────────────────────── */
+[data-theme="nuit"] {
+
+  /* Couleurs */
+  --paper:       #0F172A;
+  --paper-2:     #1E293B;
+  --sheet:       #1E293B;
+  --ink:         #F8FAFC;
+  --ink-2:       #CBD5E1;
+  --ink-3:       #94A3B8;
+  --rule:        #334155;
+  --rule-2:      #475569;
+  --accent:      #38BDF8;
+  --accent-2:    #0EA5E9;
+  --accent-wash: #082F49;
+  --ok:          #34D399;
+  --warn:        #FBBF24;
+  --danger:      #F87171;
+  --on-accent:   #0F172A;
+
+  --tile-temp:        #60A5FA;
+  --tile-temp-bg:     #172554;
+  --tile-clean:       #FBBF24;
+  --tile-clean-bg:    #451A03;
+  --tile-dlc:         #FB7185;
+  --tile-dlc-bg:      #4C0519;
+  --tile-reception:   #A78BFA;
+  --tile-reception-bg: #2E1065;
+  --tile-oil:         #FB923C;
+  --tile-oil-bg:      #431407;
+  --tile-routine:     #34D399;
+  --tile-routine-bg:  #064E3B;
+
+  /* Ombres thème nuit */
+  --sh-1: 0 4px 12px -2px rgba(0,0,0,.5);
+  --sh-2: 0 12px 28px -4px rgba(0,0,0,.6);
+  --sh-tile: 0 1px 3px 0 rgba(0,0,0,.4);
+  --sh-tile-hover: 0 8px 20px -2px rgba(0,0,0,.6);
+}
+
+/* ── Espacement ─────────────────────────────────────────────────────────── */
+:root {
+  --s-1:  2px;
+  --s-2:  4px;
+  --s-3:  6px;
+  --s-4:  8px;
+  --s-5:  12px;
+  --s-6:  16px;
+  --s-7:  20px;
+  --s-8:  24px;
+  --s-9:  32px;
+  --s-10: 40px;
+  --s-11: 56px;
+
+  /* Rayons */
+  --r-1: 2px;
+  --r-2: 3px;
+  --r-3: 6px;
+
+  /* Grille / shell */
+  --rail:        248px;   /* largeur du rail de navigation */
+  --topbar:      56px;    /* hauteur de la barre supérieure */
+  --content-max: 1240px;  /* largeur max du contenu */
+  --row:         40px;    /* hauteur de ligne de tableau */
+  --ctl:         32px;    /* hauteur de contrôle (bouton, input dense) */
+  --ctl-lg:      36px;    /* input de formulaire */
+  --touch:       44px;    /* cible tactile minimale (tablette) */
+
+  /* Profondeur (z-index) */
+  --z-rail:     20;
+  --z-topbar:   30;
+  --z-panel:    40;
+  --z-modal:    50;
+  --z-toast:    60;
+  --z-lightbox: 70;
+
+  /* Durées */
+  --d-1: 120ms;
+  --d-2: 180ms;
+  --d-3: 240ms;
+
+  /* Easings */
+  --e-out: cubic-bezier(.2,.7,.3,1);
+
+  /* Familles de polices */
+  --ff-serif: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ff-sans:  'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ff-mono:  'JetBrains Mono', 'IBM Plex Mono', 'Courier New', monospace;
+
+  /* Tailles de police (token seul — graisse + hauteur de ligne dans base.css) */
+  --t-display: 30px;
+  --t-h1:      21px;
+  --t-h2:      15px;
+  --t-h3:      13px;
+  --t-body:    13.5px;
+  --t-sm:      12px;
+  --t-label:   11px;
+  --t-num:     13.5px;
+  --t-num-lg:  20px;
+  --t-num-xl:  34px;
+}
+
+/* ── Surcharge impression — couleurs papier blanc ───────────────────────── */
+/* Seule zone autorisée (avec les thèmes) à contenir des valeurs hex/rgba   */
+@media print {
+  :root,
+  [data-theme="papier"],
+  [data-theme="nuit"] {
+    --paper:   #fff;
+    --paper-2: #f0f0f0;
+    --sheet:   #fff;
+    --ink:     #1A1C1E;
+    --ink-2:   #4C5257;
+    --ink-3:   #6F757B;
+    --rule:    #ccc;
+    --rule-2:  #999;
+  }
+}

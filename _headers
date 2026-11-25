@@ -1,0 +1,24 @@
+/*
+  Cache-Control : sw.js ne doit JAMAIS être mis en cache par le navigateur,
+  sinon les clients installés gardent un service worker périmé (panne du 01/10/2026).
+*/
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Service-Worker-Allowed: /
+
+/index.html
+  Cache-Control: no-cache
+
+/css/*
+  Cache-Control: public, max-age=3600
+
+/js/*
+  Cache-Control: public, max-age=3600
+
+/src/*
+  Cache-Control: public, max-age=3600
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin

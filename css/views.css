@@ -1,0 +1,5 @@
+/* views.css — manifeste (découpage God File 2026-10-31) */
+@import url("views/01-releves-haccp.css?v=4.5");
+@import url("views/02-documents-registres.css?v=4.5");
+@import url("views/03-tracabilite-connexion.css?v=4.5");
+@import url("views/04-reglages-modales.css?v=4.5");

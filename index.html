@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full" data-boot="pending">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="TraqHACCP Pro — Pâtisserie, Traçabilité Ingrédients, Fiches Recettes, Coûts et Caisse FIFO">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/favicon.svg">
+  <link rel="manifest" href="manifest.json">
+  <title>TraqHACCP — Pâtisserie, Traçabilité & Coûts</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#16a34a',
+              600: '#15803d',
+              700: '#166534',
+              900: '#14532d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.4);
+      border-radius: 9999px;
+    }
+    .scanner-laser {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #22c55e, transparent);
+      box-shadow: 0 0 12px #22c55e;
+      animation: scanLaser 2s ease-in-out infinite alternate;
+    }
+    @keyframes scanLaser {
+      0% { top: 6%; opacity: 0.3; }
+      50% { opacity: 1; }
+      100% { top: 92%; opacity: 0.4; }
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+  <link rel="stylesheet" href="css/tokens.css?v=4.4">
+  <link rel="stylesheet" href="css/components.css?v=4.5">
+  <link rel="stylesheet" href="css/views.css?v=4.5">
+</head>
+<body class="h-full bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans antialiased transition-colors duration-200 flex flex-col selection:bg-emerald-500 selection:text-white pb-20 lg:pb-8">
+
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-3 min-w-0">
+        
+        <!-- Logo & Brand -->
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 shrink-0 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center font-black tracking-tighter text-sm shadow-sm cursor-pointer" onclick="switchView('traceability')">
+            T<span class="text-emerald-500">Q</span>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="font-bold text-sm tracking-tight text-zinc-900 dark:text-white truncate">TraqHACCP</span>
+              <span class="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 rounded-md border border-emerald-200 dark:border-emerald-800/50">CE 852 · Pâtisserie</span>
+            </div>
+            <div class="header-sub">
+              <p id="header-establishment-name" class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate max-w-[120px] sm:max-w-none"></p>
+              <span id="badge-sauvegarde" class="mark mark--neutral" hidden title="État de la sauvegarde serveur"><span id="badge-sauvegarde-label" class="mark__label"></span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation Tabs (≥1024px : en dessous, la barre tactile inférieure prend le relais) -->
+        <nav class="hidden lg:flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-800/70 rounded-xl text-xs font-semibold border border-zinc-200/60 dark:border-zinc-700/60">
+          <button id="nav-trace" onclick="switchView('traceability')" class="px-3.5 py-1.5 rounded-lg text-white bg-zinc-900 dark:bg-zinc-700 shadow-sm transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            Traçabilité & Stocks
+          </button>
+          <button id="nav-recipes" onclick="switchView('recipes')" class="px-3.5 py-1.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            Fiches Coût & Recettes
+          </button>
+          <button id="nav-sales" onclick="switchView('sales')" class="px-3.5 py-1.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            Caisse & Ventes (FIFO)
+          </button>
+          <button id="nav-dlc" onclick="switchView('dlc')" class="px-3.5 py-1.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+            DLC Sec. & Témoins
+          </button>
+          <button id="nav-team" onclick="switchView('team')" class="px-3.5 py-1.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            Équipe & Utilisateurs
+          </button>
+        </nav>
+
+        <!-- Right Quick Actions: Inspection Mode & Theme Toggle -->
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Opérateur Courant / Switcher Rapide -->
+          <button onclick="openOperatorModal()" class="px-2 py-1 sm:px-2.5 sm:py-1 text-xs font-semibold rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 transition flex items-center gap-1.5 sm:gap-2 shadow-sm active:scale-95" title="Changer d'opérateur ou gérer l'équipe">
+            <span id="current-op-initials" class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px]"></span>
+            <div class="hidden sm:block text-left">
+              <span id="current-op-name" class="block leading-tight text-[11px] font-bold max-w-[80px] sm:max-w-none truncate"></span>
+              <span id="current-op-role" class="hidden sm:block leading-tight text-[9px] text-zinc-500 dark:text-zinc-400"></span>
+            </div>
+          </button>
+
+          <button onclick="deconnecterEtablissement()" class="px-2.5 py-1.5 text-xs font-medium rounded-lg text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition flex items-center gap-1.5 border border-zinc-200/60 dark:border-zinc-700/60 shadow-sm" title="Gérer le compte ou changer d'établissement">
+            <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            <span class="hidden lg:inline">Établissement</span>
+          </button>
+
+          <button onclick="openInspectionModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 transition flex items-center gap-1.5 shadow-sm active:scale-95">
+            <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <span class="hidden sm:inline">DDPP / Alerte</span>
+          </button>
+
+          <button onclick="switchView('reglages')" id="nav-reglages" class="icon-btn" aria-label="Réglages" title="Réglages">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>
+          </button>
+
+          <button onclick="toggleDarkMode()" aria-label="Basculer thème sombre" class="p-2 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+            <svg id="theme-moon" class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            <svg id="theme-sun" class="w-4 h-4 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 space-y-5">
+    
+    <!-- Top Stat KPI Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      
+      <div class="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Lots Ingrédients</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span id="stat-total-lots" class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white">—</span>
+          <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">Actifs</span>
+        </div>
+        <p class="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">Traçabilité matières labo</p>
+      </div>
+
+      <div class="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">DLC Imminentes</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">≤ 48h</span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span id="stat-warning-dlc" class="text-2xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400">—</span>
+          <span class="text-xs text-zinc-400">à déstocker</span>
+        </div>
+        <p class="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">Priorité en production FIFO</p>
+      </div>
+
+      <div class="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Marge Brute Moyenne</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400">Pâtisserie</span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span id="stat-margin" class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white">—</span>
+          <span id="stat-margin-coef" class="text-xs text-emerald-600 font-semibold">—</span>
+        </div>
+        <p id="stat-margin-sub" class="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">En attente de données</p>
+      </div>
+
+      <div class="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">DLC Sec. / Entames</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">Labo</span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span id="stat-sec-dlc" class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white">—</span>
+          <span class="text-xs text-zinc-400">étiquetées</span>
+        </div>
+        <p class="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">Barème J+1 à J+3 actif</p>
+      </div>
+
+    </div>
+
+    <!-- VIEW 1: Traceability & Raw Materials -->
+    <div id="view-traceability" class="space-y-4">
+      
+      <!-- Action Bar -->
+      <section class="space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          
+          <div class="relative flex-1 max-w-md">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+            <input 
+              type="text" 
+              id="searchInput"
+              oninput="renderLots()"
+              placeholder="Rechercher lot, ingrédient (farine, beurre, chocolat)..." 
+              class="w-full pl-10 pr-4 py-2.5 text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition placeholder:text-zinc-400 shadow-sm"
+            >
+          </div>
+
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+            <button 
+              onclick="openScanModal()"
+              class="px-4 py-2.5 text-sm font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20 transition flex items-center gap-2 shrink-0 active:scale-95"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span>Scanner Étiquette</span>
+            </button>
+
+            <button 
+              onclick="openNewEntryModal()" 
+              class="px-3.5 py-2.5 text-sm font-medium rounded-xl bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-800 shadow-sm transition flex items-center gap-1.5 shrink-0 active:scale-95"
+            >
+              <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span>Saisie Manuelle</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Filter Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto py-1 text-xs no-scrollbar">
+          <span class="text-zinc-400 font-medium whitespace-nowrap pl-1">Filtrer :</span>
+          <button onclick="setCategoryFilter('all')" id="pill-all" class="category-pill px-3 py-1.5 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium transition whitespace-nowrap">Tous (<span id="count-all">0</span>)</button>
+          <button onclick="setCategoryFilter('cremerie')" id="pill-cremerie" class="category-pill px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 transition whitespace-nowrap">🧈 Crèmerie & Beurres</button>
+          <button onclick="setCategoryFilter('chocolat')" id="pill-chocolat" class="category-pill px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 transition whitespace-nowrap">🍫 Chocolats & Cacaos</button>
+          <button onclick="setCategoryFilter('fruits')" id="pill-fruits" class="category-pill px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 transition whitespace-nowrap">🍓 Fruits & Purées</button>
+          <button onclick="setCategoryFilter('farine')" id="pill-farine" class="category-pill px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 transition whitespace-nowrap">🌾 Farines & Sucres</button>
+          <button onclick="setCategoryFilter('oeufs')" id="pill-oeufs" class="category-pill px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 transition whitespace-nowrap">🥚 Œufs & Ovoproduits</button>
+          <div class="border-l border-zinc-200 dark:border-zinc-800 h-5 mx-1"></div>
+          <button onclick="toggleAlertsOnly()" id="pill-alerts" class="px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-amber-600 transition whitespace-nowrap flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            Alertes DLC (≤48h)
+          </button>
+        </div>
+      </section>
+
+      <!-- Lots Cards Grid -->
+      <div id="lots-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- VIEW 2: Cost Price Calculator & Recipe Technical Sheets -->
+    <div id="view-recipes" class="hidden space-y-4">
+      <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 shadow-sm">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base font-bold text-zinc-900 dark:text-white">Fiches Techniques & Calcul des Coûts de Revient</h2>
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-md">Food Cost & Marges</span>
+            </div>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Calcul précis du coût matière HT, marge brute, coefficient multiplicateur et fabricables selon les stocks réels du labo.</p>
+          </div>
+
+          <button onclick="openNewRecipeModal()" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center gap-1.5 shrink-0 shadow-sm active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Nouvelle Fiche Recette
+          </button>
+        </div>
+
+        <!-- Metric explanations for pastry chef -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 my-4 p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60 text-xs">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold flex items-center justify-center text-[11px]">HT</div>
+            <div>
+              <p class="font-bold text-zinc-800 dark:text-zinc-200">Coût Matière Première</p>
+              <p class="text-[11px] text-zinc-500">Calculé au gramme exact selon vos réceptions réelles</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center text-[11px]">TTC</div>
+            <div>
+              <p class="font-bold text-zinc-800 dark:text-zinc-200">Prix Vente Conseillé</p>
+              <p class="text-[11px] text-zinc-500">Taux TVA 5.5% pâtisserie emportée/livrée inclus</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-bold flex items-center justify-center text-[11px]">%</div>
+            <div>
+              <p class="font-bold text-zinc-800 dark:text-zinc-200">Marge Brute & Coef.</p>
+              <p class="text-[11px] text-zinc-500">Objectif artisan : 70% à 80% (coef. 3.8x à 5.0x)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recipe cards list -->
+        <div id="recipes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Rendered via JS -->
+        </div>
+
+      </div>
+    </div>
+
+    <!-- VIEW 3: Smart Sale & Direct Stock Decrement (Caisse & Vente) -->
+    <div id="view-sales" class="hidden space-y-4">
+      
+      <!-- Smart Notice banner -->
+      <div class="p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="flex items-start gap-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-zinc-900 dark:text-white">Déstockage intelligent en direct (FIFO)</h3>
+            <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">Chaque ingrédient lié est déduit du lot à la DLC la plus courte. En cas de casse ou coulure, vous pouvez ajuster les grammes avant validation.</p>
+          </div>
+        </div>
+
+        <button onclick="openCustomSaleModal()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow transition shrink-0 hover:opacity-90 active:scale-95">
+          + Enregistrer une Vente
+        </button>
+      </div>
+
+      <!-- Quick sell cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="sales-catalog-grid">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Recent Sales Log -->
+      <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h4 class="font-bold text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Historique des Ventes & Déstockages</h4>
+            <p class="text-[11px] text-zinc-400">Traçabilité nominative pour vente à emporter & livraison</p>
+          </div>
+          <span class="px-2 py-0.5 text-[10px] rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 font-bold">100% Tracé</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-zinc-50 dark:bg-zinc-800/50 text-zinc-500 uppercase tracking-wider">
+              <tr>
+                <th class="p-3">Horodatage</th>
+                <th class="p-3">Pâtisserie</th>
+                <th class="p-3">Client & Mode</th>
+                <th class="p-3">Quantité</th>
+                <th class="p-3">Total TTC</th>
+                <th class="p-3">Marge</th>
+                <th class="p-3">Lots Déstockés (FIFO)</th>
+              </tr>
+            </thead>
+            <tbody id="sales-history-body" class="divide-y divide-zinc-100 dark:divide-zinc-800">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VIEW 4: Secondary DLC & Witness Samples -->
+    <div id="view-dlc" class="hidden space-y-4">
+      <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+          <div>
+            <h2 class="text-base font-bold text-zinc-900 dark:text-white">DLC Secondaires & Produits Entamés du Laboratoire</h2>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Calcul et étiquetage automatique selon le barème PMS Pâtisserie (J+1 décongélation, J+3 crèmes & préparations cuites).</p>
+          </div>
+          <button onclick="openNewSecondaryDlcModal()" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center gap-1.5 shrink-0 active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Nouvelle DLC Secondaire
+          </button>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="secondary-dlc-grid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-base font-bold text-zinc-900 dark:text-white">Plats / Pâtisseries Témoins Sanitaires</h3>
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-md">Réglementaire CE</span>
+            </div>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Prélèvement de 100g sur chaque lot de crèmes pâtissières / ganaches servi. Conservation 5 jours à +3°C.</p>
+          </div>
+          <button onclick="openWitnessSampleModal()" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center gap-1.5 shrink-0 active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Enregistrer Échantillon
+          </button>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="witness-grid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </div>
+
+
+    <!-- VIEW 5: Team & User Accounts Management -->
+    <div id="view-team" class="hidden space-y-4">
+      <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base font-bold text-zinc-900 dark:text-white">Comptes Utilisateurs & Brigade</h2>
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-md">Traçabilité Nominative CE</span>
+            </div>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Gérez les membres de l'équipe, leurs rôles d'accès et leurs codes PIN pour signer les réceptions et étiquettes.</p>
+          </div>
+          <button onclick="openAddUserModal()" class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center justify-center gap-2 shadow-sm active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+            <span>Ajouter un utilisateur</span>
+          </button>
+        </div>
+
+        <!-- Team members list -->
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="team-grid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <div class="bg-zinc-50 dark:bg-zinc-800/40 rounded-2xl border border-zinc-200/60 dark:border-zinc-700/60 p-4 text-xs space-y-2">
+        <div class="flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <span>Sécurité Sanitaire & Signature des Enregistrements</span>
+        </div>
+        <p class="text-zinc-500 dark:text-zinc-400">Chaque action enregistrée (réception de marchandise, déstockage client, étiquette DLC secondaire) est signée au nom de l'opérateur actuellement en service pour répondre aux exigences des inspecteurs DDPP.</p>
+      </div>
+    </div>
+    <!-- VIEW 6 : Réglages (écran V5 — administratif, hors registre quotidien) -->
+    <div id="view-reglages" class="hidden">
+      <div id="settings-root" class="settings"></div>
+    </div>
+  </main>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-lg border-t border-zinc-200 dark:border-zinc-800 px-3 py-2 flex items-center justify-around text-[10px] font-medium">
+    <button onclick="switchView('traceability')" id="mob-trace" class="flex flex-col items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      <span>Traçabilité</span>
+    </button>
+    <button onclick="switchView('recipes')" id="mob-recipes" class="flex flex-col items-center gap-1 text-zinc-500 dark:text-zinc-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+      <span>Recettes & Coûts</span>
+    </button>
+    <button onclick="switchView('sales')" id="mob-sales" class="flex flex-col items-center gap-1 text-zinc-500 dark:text-zinc-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+      <span>Caisse & Vente</span>
+    </button>
+    <button onclick="switchView('dlc')" id="mob-dlc" class="flex flex-col items-center gap-1 text-zinc-500 dark:text-zinc-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+      <span>DLC Sec.</span>
+    </button>
+    <button onclick="switchView('team')" id="mob-team" class="flex flex-col items-center gap-1 text-zinc-500 dark:text-zinc-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      <span>Équipe</span>
+    </button>
+  </div>
+
+  <!-- MODAL: Confirmation Déstockage & Écart de Stock -->
+  <div id="modal-destock-confirm" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col max-h-[90vh]">
+      
+      <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+            FIFO
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-zinc-900 dark:text-white" id="destock-modal-title">Validation du Déstockage Ingrédients</h3>
+            <p class="text-[11px] text-zinc-400">Ajustez les quantités au besoin avant validation</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-4 text-xs">
+        <div class="p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60 flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-zinc-400">Pâtisserie sélectionnée :</span>
+            <h4 class="font-bold text-sm text-zinc-900 dark:text-white" id="destock-recipe-name">Gâteau Moelleux Chocolat</h4>
+          </div>
+          <div class="text-right">
+            <span class="text-[11px] text-zinc-400">Quantité vendue :</span>
+            <div class="flex items-center gap-2 mt-0.5">
+              <button onclick="adjustDestockMultiplier(-1)" class="w-7 h-7 rounded-lg bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-white font-bold hover:opacity-80 active:scale-95 flex items-center justify-center">-</button>
+              <span class="font-extrabold text-sm w-5 text-center" id="destock-units">1</span>
+              <button onclick="adjustDestockMultiplier(1)" class="w-7 h-7 rounded-lg bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-white font-bold hover:opacity-80 active:scale-95 flex items-center justify-center">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Traçabilité Descendante : Identification du Client -->
+        <div class="p-3 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-xl border border-emerald-200/70 dark:border-emerald-800/50 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-emerald-900 dark:text-emerald-300 text-[11px] flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+              Traçabilité Client (Règlement CE 178/2002)
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">À emporter & Livraison</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] text-zinc-500 mb-0.5 font-medium">Canal de vente *</label>
+              <select id="sale-customer-type" onchange="toggleCustomerTypeInputs(this.value)" class="w-full px-2.5 py-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-semibold focus:ring-1 focus:ring-emerald-500">
+                <option value="emporter" selected>🛍️ Vente à emporter / Retrait</option>
+                <option value="livraison">🛵 Livraison à domicile / Entreprise</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] text-zinc-500 mb-0.5 font-medium">Nom du client ou société *</label>
+              <input type="text" id="sale-customer-name" value="" placeholder="ex. Mme Dupont, Société Novas..." class="w-full px-2.5 py-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-semibold">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
+            <div>
+              <label class="block text-[10px] text-zinc-500 mb-0.5 font-medium">Téléphone portable (Rappel sanitaire) *</label>
+              <input type="tel" id="sale-customer-phone" value="" placeholder="06 12 34 56 78" class="w-full px-2.5 py-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-mono font-bold">
+            </div>
+            <div>
+              <label class="block text-[10px] text-zinc-500 mb-0.5 font-medium" id="sale-ref-label">Heure de retrait & Réf. Commande</label>
+              <input type="text" id="sale-customer-ref" value="" placeholder="ex. Retrait 17h00" class="w-full px-2.5 py-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs">
+            </div>
+          </div>
+
+          <!-- Specific delivery address field (auto-toggled) -->
+          <div id="delivery-address-group" class="hidden pt-0.5">
+            <label class="block text-[10px] text-zinc-500 mb-0.5 font-medium">Adresse de livraison & Digicode</label>
+            <input type="text" id="sale-customer-address" value="" placeholder="Adresse, code d'entrée, étage..." class="w-full px-2.5 py-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs">
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold text-zinc-700 dark:text-zinc-300">Ingrédients déstockés au gramme près :</span>
+            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Ordre FIFO (DLC la plus proche)</span>
+          </div>
+          
+          <div id="destock-ingredients-list" class="space-y-2.5">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Discrepancy Note -->
+        <div class="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800/50 text-[11px] text-amber-900 dark:text-amber-200 flex items-start gap-2">
+          <svg class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <span>Une perte en cuisine ou une coulure ? Modifiez la valeur dans le champ ci-dessus pour réaligner immédiatement le stock physique réel.</span>
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-end gap-2 bg-zinc-50/50 dark:bg-zinc-900/50">
+        <button onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium text-xs">Annuler</button>
+        <button onclick="confirmStockDepletion()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-sm flex items-center gap-1.5 transition active:scale-95">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Confirmer Vente & Déstocker
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: Scanner Étiquette Sanitaire -->
+  <div id="modal-scan" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800">
+      <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-zinc-900 dark:text-white">Scanner d'Étiquette Sanitaire</h3>
+            <p class="text-[11px] text-zinc-400">Reconnaissance automatique des lots & DLC</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4">
+        <div class="relative w-full aspect-video bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 flex items-center justify-center text-center p-4">
+          <div class="scanner-laser"></div>
+          
+          <div id="scan-placeholder" class="w-full max-w-[280px] bg-white text-zinc-900 p-3 rounded-lg shadow-inner text-[10px] space-y-1 font-mono select-none">
+            <div class="flex justify-between border-b pb-1 font-bold">
+              <span>LAITERIE MONTAIGU</span>
+              <span class="text-emerald-700 font-sans font-bold">FR 85.146.001 CE</span>
+            </div>
+            <div class="flex justify-between pt-1">
+              <span>Beurre de Tourage AOP 84%</span>
+              <span class="font-bold">Lot: ABC-1234</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Reçu: 18/09/2026</span>
+              <span class="text-rose-600 font-bold">DLC: 28/09/2026</span>
+            </div>
+            <div class="text-[8px] text-zinc-500 text-center pt-1 border-t">||||| |||||| |||||||| ||||| |||||||</div>
+          </div>
+
+          <img id="scan-preview-img" class="scan-preview" alt="Aperçu étiquette scannée">
+
+          <!-- Overlay chargement IA -->
+          <div id="scan-loading" class="scan-loading-box">
+            <span class="scan-loading-title">Analyse IA de l'étiquette...</span>
+            <span class="scan-loading-desc">Extraction du lot, de la DLC et du produit</span>
+          </div>
+
+          <div class="absolute inset-4 border-2 border-dashed border-emerald-500/40 rounded-xl pointer-events-none"></div>
+        </div>
+
+        <div id="scan-status-text" class="text-xs text-center text-emerald-600 dark:text-emerald-400 font-medium animate-pulse">
+          Cadrage détecté · Agrément sanitaire conforme
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <label class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+            Prendre photo
+            <input id="scan-camera-input" type="file" accept="image/*" capture="environment" class="hidden" onchange="handleFileUpload(event)">
+          </label>
+          <label class="w-full py-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-semibold text-xs transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Importer photo
+            <input id="scan-file-input" type="file" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+          </label>
+        </div>
+
+        <div class="scan-demo-box">
+          <button type="button" onclick="executeAutomatedScan()" class="link">
+            Tester avec l'étiquette de démonstration
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Nouvelle Réception Lot & Matière Première -->
+  <div id="modal-entry" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
+      
+      <div class="sticky top-0 z-10 bg-white/95 dark:bg-zinc-900/95 backdrop-blur p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-white flex items-center justify-center font-bold text-xs">
+            HACCP
+          </div>
+          <div>
+            <h3 id="entry-modal-title" class="font-bold text-sm text-zinc-900 dark:text-white">Réception Marchandise & Stock Initial</h3>
+            <p id="entry-modal-subtitle" class="text-[11px] text-zinc-400">Enregistrement réglementaire et approvisionnement</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="trace-form" onsubmit="handleTraceFormSubmit(event)" class="p-5 space-y-4 text-xs">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Catégorie d'ingrédient *</label>
+            <select id="form-category" required class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+              <option value="cremerie">🧈 Crèmerie & Beurres</option>
+              <option value="chocolat">🍫 Chocolats & Cacaos</option>
+              <option value="fruits">🍓 Fruits & Purées</option>
+              <option value="farine">🌾 Farines & Sucres</option>
+              <option value="oeufs">🥚 Œufs & Ovoproduits</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Fournisseur *</label>
+            <input type="text" id="form-supplier" required placeholder="ex. Valrhona, Elle & Vire, Rungis..." class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Désignation du Produit *</label>
+            <input type="text" id="form-name" required placeholder="ex. Beurre de Tourage 84% AOP" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Numéro de Lot Fabricant *</label>
+            <input type="text" id="form-lot" required placeholder="ex. ABC-1234" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none uppercase font-mono">
+          </div>
+        </div>
+
+        <!-- Stock Quantity & Unit Price HT -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-200/70 dark:border-zinc-700/70">
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Quantité reçue *</label>
+            <input type="number" step="0.01" id="form-stock-qty" required value="5" class="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Unité</label>
+            <select id="form-stock-unit" class="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+              <option value="kg">kg (Kilogrammes)</option>
+              <option value="L">L (Litres)</option>
+              <option value="u">u (Unités / Œufs)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Prix Achat HT / unité (€) *</label>
+            <input type="number" step="0.01" id="form-unit-price" required value="8.90" class="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold text-emerald-600">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Température relevée (°C) *</label>
+            <input type="number" step="0.1" id="form-temp" value="3.2" required class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">DLC Fabricant *</label>
+            <input type="date" id="form-dlc-date" required class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-semibold">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+          <button type="button" onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium">Annuler</button>
+          <button type="submit" id="entry-submit-btn" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm active:scale-95 transition">Valider et Entrer en Stock</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Création DLC Secondaire -->
+  <div id="modal-secondary" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800">
+      <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+            DLC 2
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-zinc-900 dark:text-white">Créer une DLC Secondaire</h3>
+            <p class="text-[11px] text-zinc-400">Pour produit entamé, décongelé ou ganache cuisinée</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="sec-dlc-form" onsubmit="handleSecondaryDlcSubmit(event)" class="p-5 space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Rattacher au Lot Matière Première</label>
+          <select id="sec-parent-lot" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+            <!-- Populated via JS -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Désignation de la Préparation *</label>
+          <input type="text" id="sec-name" required placeholder="ex. Crème Pâtissière Vanille Bourbon, Ganache Montée..." class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Type d'opération</label>
+            <select id="sec-type" onchange="adjustSecondaryDelay(this.value)" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+              <option value="entame">Entame emballage (J+3)</option>
+              <option value="decong">Décongélation purée/fond (J+1)</option>
+              <option value="cuisson">Cuisson / Crème cuite (J+3)</option>
+              <option value="sousvide">Sous-vide (J+5)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">DLC Secondaire Calculée *</label>
+            <input type="date" id="sec-computed-dlc" required class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold text-emerald-600">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+          <button type="button" onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium">Annuler</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm transition flex items-center gap-1.5 active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            Imprimer Étiquette Thermique
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Inspection Officielle DDPP & Rappel Client -->
+  <div id="modal-inspection" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
+      
+      <div class="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-emerald-600 text-white rounded-t-3xl">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-bold">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-base">Espace Contrôle Sanitaire & DDPP</h3>
+            <p class="text-xs text-emerald-100">Laboratoire Pâtisserie · Déclaration conforme CE 852/2004</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="p-1.5 text-white/80 hover:text-white rounded-lg hover:bg-white/10">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4 text-xs">
+        <div class="p-4 bg-zinc-50 dark:bg-zinc-800/60 rounded-2xl border border-zinc-200 dark:border-zinc-700 flex items-center justify-between">
+          <div>
+            <p id="audit-establishment-name" class="font-bold text-sm text-zinc-900 dark:text-white"></p>
+            <p id="audit-siret-line" class="text-zinc-500 text-xs"></p>
+          </div>
+          <button onclick="downloadSanitaryReport('registre')" class="px-3.5 py-2 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-semibold hover:opacity-90 transition flex items-center gap-1.5 shrink-0 active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export Audit DDPP
+          </button>
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+            <span class="font-medium text-zinc-700 dark:text-zinc-300">1. Traçabilité ascendante & descendante des ovoproduits et beurres</span>
+            <span id="audit-trace" class="px-2 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400"></span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+            <span class="font-medium text-zinc-700 dark:text-zinc-300">2. Respect chaîne du froid réceptions (&lt; +4°C crèmerie)</span>
+            <span id="audit-froid" class="px-2 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400"></span>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+            <span class="font-medium text-zinc-700 dark:text-zinc-300">3. Conservation des pâtisseries témoins crèmes sensibles (5j)</span>
+            <span id="audit-temoins" class="px-2 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400"></span>
+          </div>
+        </div>
+
+        <!-- Recall simulator -->
+        <div class="p-4 bg-amber-50 dark:bg-amber-950/30 rounded-2xl border border-amber-200 dark:border-amber-800/60">
+          <div class="font-bold text-amber-800 dark:text-amber-300 mb-1 flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              <span>Enquête Sanitaire & Traçabilité Descendante Client (RappelConso)</span>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-amber-200/60 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-semibold">1-Clic</span>
+          </div>
+          <p class="text-[11px] text-amber-900/80 dark:text-amber-200/80 mt-1">Saisissez ou choisissez un numéro de lot d'ingrédient pour identifier instantanément les clients livrés ou ayant retiré une pâtisserie contenant ce lot.</p>
+          
+          <div class="flex flex-col sm:flex-row gap-2 mt-3">
+            <div class="flex-1 flex gap-2">
+              <select id="recall-quick-select" onchange="document.getElementById('recall-input').value = this.value; testRecallSearch();" class="px-2.5 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl text-xs">
+                <option value="">Sélectionner un lot actif...</option>
+              </select>
+              <input type="text" id="recall-input" placeholder="ou saisir ex. ABC-1234..." class="flex-1 px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl uppercase font-mono text-xs">
+            </div>
+            <button onclick="testRecallSearch()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs shadow-sm flex items-center justify-center gap-1.5 transition active:scale-95">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              Lancer l'Enquête
+            </button>
+          </div>
+          <div id="recall-result" class="hidden mt-3 p-3 bg-white dark:bg-zinc-900 rounded-xl text-xs border border-amber-200 dark:border-amber-800 space-y-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Nouvelle Fiche Recette -->
+  <div id="modal-recipe" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-zinc-200 dark:border-zinc-800">
+      <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+            FT
+          </div>
+          <div>
+            <h3 id="recipe-modal-title" class="font-bold text-sm text-zinc-900 dark:text-white">Créer une Fiche Technique Recette</h3>
+            <p id="recipe-modal-subtitle" class="text-[11px] text-zinc-400">Définissez vos ingrédients pour calculer la marge automatique</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="recipe-form" onsubmit="handleRecipeFormSubmit(event)" class="p-5 space-y-4 text-xs">
+        <div class="grid grid-cols-3 gap-3">
+          <div class="col-span-2">
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Nom de la Pâtisserie *</label>
+            <input type="text" id="recipe-form-name" required placeholder="ex. Mille-Feuille Croustillant Vanille" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Icône / Émoji</label>
+            <input type="text" id="recipe-form-icon" value="🍰" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl text-center text-lg">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Prix de vente TTC conseillé (€) *</label>
+          <input type="number" step="0.10" id="recipe-form-price" required value="5.20" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold text-emerald-600">
+        </div>
+
+        <div class="p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700 space-y-2">
+          <div class="recipe-compose__entete">
+            <span class="recipe-compose__titre">Composition par unité</span>
+            <button type="button" onclick="addRecipeIngredientRow()" class="btn btn--primary btn--sm">+ Ingrédient</button>
+          </div>
+          <div id="recipe-ingredients-inputs" class="space-y-2"></div>
+          <p class="recipe-compose__aide">Associez chaque ingrédient à un lot en stock : la marge et la traçabilité FIFO sont calculées automatiquement.</p>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+          <button type="button" onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium">Annuler</button>
+          <button type="submit" id="recipe-submit-btn" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm active:scale-95 transition">Créer la Fiche</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Correction d'une vente / d'un retrait enregistré -->
+  <div id="modal-sale-edit" class="modal modal--sm" data-open="false">
+    <div class="modal__panel">
+      <div class="modal__head">
+        <span>Modifier la vente</span>
+        <button type="button" class="icon-btn" title="Fermer" aria-label="Fermer la fenêtre" onclick="closeModals()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="sale-edit-form" onsubmit="handleSaleEditSubmit(event)">
+        <div class="modal__body">
+          <p id="sale-edit-recap" class="sale-edit__recap"></p>
+
+          <div class="field">
+            <label class="field__label" for="sale-edit-name">Nom du client / de la structure *</label>
+            <input type="text" id="sale-edit-name" class="input" required>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="sale-edit-phone">Téléphone</label>
+            <input type="tel" id="sale-edit-phone" class="input">
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="sale-edit-type">Mode de remise</label>
+            <select id="sale-edit-type" class="select" onchange="toggleSaleEditAddress()">
+              <option value="emporter">À emporter</option>
+              <option value="livraison">Livraison</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="sale-edit-ref">Référence commande / bon de livraison</label>
+            <input type="text" id="sale-edit-ref" class="input">
+          </div>
+
+          <div class="field" id="sale-edit-address-field">
+            <label class="field__label" for="sale-edit-address">Adresse de livraison</label>
+            <input type="text" id="sale-edit-address" class="input">
+          </div>
+
+          <p class="callout callout--info">
+            <span class="callout__body">La correction met à jour l'historique des ventes, la fiche de traçabilité et les coordonnées utilisées pour les relances.</span>
+          </p>
+        </div>
+
+        <div class="modal__foot">
+          <button type="button" class="btn btn--ghost" onclick="closeModals()">Annuler</button>
+          <button type="submit" class="btn btn--primary">Enregistrer les modifications</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Supprimer une vente / un retrait (doublon, fausse manipulation) -->
+  <div id="modal-sale-delete" class="modal modal--sm" data-open="false">
+    <div class="modal__panel">
+      <div class="modal__head">
+        <span>Supprimer une vente</span>
+        <button type="button" class="icon-btn" title="Fermer" aria-label="Fermer la fenêtre" onclick="closeModals()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="sale-delete-form" onsubmit="handleSaleDeleteSubmit(event)">
+        <div class="modal__body">
+          <p id="sale-delete-recap" class="sale-delete__recap"></p>
+
+          <p class="callout callout--danger">
+            <span class="callout__label">Suppression définitive</span>
+            <span class="callout__body">La ligne quitte le registre : elle disparaît de l'historique des ventes, du chiffre d'affaires du jour et de l'export PDF. Les quantités déstockées sont rendues aux lots concernés.</span>
+          </p>
+
+          <p class="callout callout--info">
+            <span class="callout__body">Pour corriger seulement une erreur de nom, de téléphone ou d'adresse, utilisez plutôt le crayon « Modifier » : la vente reste au registre.</span>
+          </p>
+        </div>
+
+        <div class="modal__foot">
+          <button type="button" class="btn btn--ghost" onclick="closeModals()">Annuler</button>
+          <button type="submit" id="sale-delete-confirm" class="btn btn--danger">Supprimer et rendre le stock</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Enregistrer Échantillon Témoin -->
+  <div id="modal-witness" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800">
+      <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+            J+5
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-zinc-900 dark:text-white">Échantillon Témoin Sanitaire</h3>
+            <p class="text-[11px] text-zinc-400">Prélèvement de 100g à conserver 5 jours à +3°C</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="witness-form" onsubmit="handleWitnessFormSubmit(event)" class="p-5 space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Désignation de la Pâtisserie / Crème *</label>
+          <input type="text" id="witness-name" required placeholder="ex. Crème Chibouste Tarte du jour" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Service / Fournée</label>
+            <input type="text" id="witness-service" placeholder="ex. Batch matin 06h" required class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Température enceinte (°C)</label>
+            <input type="text" id="witness-temp" placeholder="ex. +2.4°C" required class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl font-bold text-emerald-600">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+          <button type="button" onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium">Annuler</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm active:scale-95 transition">Enregistrer Témoin</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Ajustement Manuel de Stock (Écart d'inventaire) -->
+  <div id="modal-adjust-stock" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800">
+      <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <h3 class="font-bold text-sm text-zinc-900 dark:text-white">Ajustement d'Inventaire</h3>
+        <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="p-5 space-y-4 text-xs">
+        <div>
+          <span class="text-zinc-400 block mb-0.5">Ingrédient :</span>
+          <p class="font-bold text-sm text-zinc-900 dark:text-white" id="adjust-lot-name"></p>
+          <span class="text-[11px] text-zinc-500 font-mono" id="adjust-lot-id"></span>
+        </div>
+        <div>
+          <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Nouveau stock réel pesé :</label>
+          <div class="flex items-center gap-2">
+            <input type="number" step="0.01" id="adjust-stock-value" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl font-bold text-sm">
+            <span class="font-bold text-zinc-500" id="adjust-stock-unit">kg</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+          <button onclick="closeModals()" class="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300">Annuler</button>
+          <button onclick="saveAdjustedStock()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold">Enregistrer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: Changement Rapide d'Opérateur -->
+  <div id="modal-operator-switch" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800">
+      <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+            OP
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-zinc-900 dark:text-white">Opérateur en service</h3>
+            <p class="text-[11px] text-zinc-400">Sélectionnez la personne active</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="p-4 space-y-2 max-h-[60vh] overflow-y-auto" id="operator-switch-list">
+        <!-- Rendered via JS -->
+      </div>
+      <div class="p-3 bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center text-xs">
+        <button onclick="closeModals(); switchView('team');" class="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline flex items-center gap-1">
+          <span>Gérer l'équipe</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="deconnecterEtablissement()" class="px-2 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium" title="Changer d'établissement ou se déconnecter">Déconnexion</button>
+          <button onclick="closeModals(); openAddUserModal();" class="px-2.5 py-1.5 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-semibold">+ Nouveau</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Ajouter un Utilisateur -->
+  <div id="modal-add-user" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800">
+      <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+            +U
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-zinc-900 dark:text-white">Ajouter un utilisateur</h3>
+            <p class="text-[11px] text-zinc-400">Nouveau membre de la brigade</p>
+          </div>
+        </div>
+        <button onclick="closeModals()" class="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="add-user-form" onsubmit="handleAddUserSubmit(event)" class="p-5 space-y-4 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Prénom *</label>
+            <input type="text" id="user-firstname" required placeholder="ex. Camille" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Nom *</label>
+            <input type="text" id="user-lastname" required placeholder="ex. Martin" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Rôle / Poste *</label>
+          <select id="user-role" required class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
+            <option value="Chef Pâtissier">Chef Pâtissier / Gérant (Supervision & HACCP)</option>
+            <option value="Chef Tourrier">Chef Tourrier (Pâtes, Tourage, Cuissons)</option>
+            <option value="Pâtissier Entremets">Pâtissier Entremets & Finitions</option>
+            <option value="Apprenti / Commis">Apprenti / Commis (Nettoyage & Préparations)</option>
+            <option value="Responsable Vente">Responsable Vente & Caisse</option>
+          </select>
+        </div>
+
+        <div class="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-200/70 dark:border-zinc-700/70 space-y-2">
+          <label class="block font-semibold text-zinc-700 dark:text-zinc-300">Code PIN de signature (facultatif)</label>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="password" id="user-pin" maxlength="4" inputmode="numeric" placeholder="PIN 4 chiffres" class="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl font-mono text-center tracking-widest">
+            <input type="password" id="user-pin-confirm" maxlength="4" inputmode="numeric" placeholder="Confirmer PIN" class="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl font-mono text-center tracking-widest">
+          </div>
+          <p class="text-[10px] text-zinc-400">Permet de valider rapidement les étiquettes et contrôles sur la tablette tactile.</p>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+          <button type="button" onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium">Annuler</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm active:scale-95 transition flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            <span>Créer l'utilisateur</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2.5 px-4 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl shadow-xl border border-zinc-800 dark:border-zinc-200 text-xs font-medium">
+    <span id="toast-icon" class="text-emerald-400 dark:text-emerald-600">✓</span>
+    <span id="toast-msg">Action effectuée.</span>
+  </div>
+  <script type="module" src="js/patisserie/app.js"></script>
+</body>
+</html>

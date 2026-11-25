@@ -1,0 +1,5 @@
+/* components.css — manifeste (découpage God File 2026-10-31) */
+@import url("components/01-boutons-formulaires.css?v=4.5");
+@import url("components/02-conteneurs-donnees.css?v=4.5");
+@import url("components/03-modales-tactile.css?v=4.5");
+@import url("components/04-tuiles-traqfood.css?v=4.5");

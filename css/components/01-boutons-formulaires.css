@@ -1,0 +1,166 @@
+/* ==========================================================================
+   components.css — Design system REGISTRE — composants génériques
+   Dépend de : tokens.css, base.css, layout.css (ne pas modifier)
+   ========================================================================== */
+
+/* ---- Boutons -------------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--s-4); height: var(--ctl); padding-inline: var(--s-5);
+  border: 1px solid var(--rule-2); border-radius: var(--r-2);
+  background: var(--sheet); color: var(--ink);
+  font-family: var(--ff-ui); font-size: var(--t-sm); font-weight: 500;
+  line-height: 1; cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: background var(--d-1) var(--e-out), border-color var(--d-1) var(--e-out),
+              color var(--d-1) var(--e-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:hover { background: var(--paper-2); }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn--primary { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+.btn--primary:hover { background: var(--accent-2); }
+.btn--ghost { border-color: transparent; background: transparent; }
+.btn--ghost:hover { background: var(--paper-2); }
+.btn--danger { color: var(--danger); border-color: var(--danger); }
+.btn--danger:hover { background: var(--paper-2); }
+.btn--sm { height: 26px; font-size: 11px; padding-inline: var(--s-4); }
+.btn--block { display: flex; width: 100%; }
+.btn[disabled], .btn.is-disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border: none; border-radius: var(--r-2);
+  background: transparent; color: var(--ink-2); cursor: pointer;
+  transition: background var(--d-1) var(--e-out);
+}
+.icon-btn:hover { background: var(--paper-2); }
+.icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.icon-btn[disabled], .icon-btn.is-disabled { opacity: 0.5; cursor: not-allowed; }
+/* Variante dense : actions d'édition en ligne (lignes de tableau, cartes de stock). */
+.icon-btn--sm { width: 22px; height: 22px; border-radius: var(--r-1); }
+.icon-btn--danger { color: var(--danger); }
+.icon-btn--danger:hover { background: var(--paper-2); border-color: var(--danger); }
+
+.link {
+  color: var(--accent); text-decoration: underline; text-underline-offset: 2px;
+  cursor: pointer; transition: color var(--d-1) var(--e-out);
+}
+.link:hover { color: var(--accent-2); }
+.link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---- Segmented control ---------------------------------------------------- */
+.seg { display: inline-flex; border: 1px solid var(--rule-2); border-radius: var(--r-2); overflow: hidden; }
+.seg__item {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 var(--s-5); height: var(--ctl);
+  background: var(--sheet); color: var(--ink-2);
+  font-size: var(--t-sm); font-weight: 500; cursor: pointer;
+  border: none; border-left: 1px solid var(--rule-2);
+  transition: background var(--d-1) var(--e-out), color var(--d-1) var(--e-out);
+}
+.seg__item:first-child { border-left: none; }
+.seg__item.is-active { background: var(--accent-wash); color: var(--accent); }
+.seg__item:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* ---- Toolbar -------------------------------------------------------------- */
+.toolbar {
+  display: flex; align-items: center; gap: var(--s-4);
+  min-height: 48px; height: auto; border-bottom: 1px solid var(--rule); padding: var(--s-3) var(--s-4);
+  flex-wrap: wrap;
+}
+
+/* ---- Switch --------------------------------------------------------------- */
+.switch { display: inline-flex; align-items: center; gap: var(--s-4); cursor: pointer; }
+.switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.switch__track {
+  position: relative; width: 36px; height: 20px;
+  border-radius: var(--r-3); background: var(--rule-2);
+  transition: background var(--d-1) var(--e-out); flex-shrink: 0;
+}
+.switch input:checked ~ .switch__track { background: var(--accent); }
+.switch__thumb {
+  position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+  border-radius: 50%; background: var(--sheet);
+  transition: transform var(--d-1) var(--e-out);
+}
+.switch input:checked ~ .switch__track .switch__thumb { transform: translateX(16px); }
+.switch:focus-within .switch__track { outline: 2px solid var(--accent); outline-offset: 2px; }
+.switch[aria-disabled="true"], .switch.is-disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ---- Checkbox & Radio ----------------------------------------------------- */
+.checkbox, .radio {
+  display: inline-flex; align-items: center;
+  gap: var(--s-4); cursor: pointer; font-size: var(--t-sm);
+}
+.checkbox input[type="checkbox"], .radio input[type="radio"] {
+  width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0;
+}
+.checkbox:focus-within, .radio:focus-within {
+  outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-1);
+}
+.checkbox.is-disabled, .radio.is-disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ---- Formulaires ---------------------------------------------------------- */
+.field { display: flex; flex-direction: column; gap: var(--s-2); }
+.field__label {
+  font-size: var(--t-label); font-weight: 600;
+  letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--ink-3); line-height: 1.2;
+}
+.field__hint { font-size: var(--t-sm); color: var(--ink-3); }
+.field__error { font-size: var(--t-sm); color: var(--danger); }
+
+.input, .select, .textarea {
+  height: var(--ctl-lg); padding-inline: var(--s-5);
+  border: 1px solid var(--rule); border-radius: var(--r-2);
+  background: var(--sheet); color: var(--ink);
+  font-family: var(--ff-ui); font-size: var(--t-sm); width: 100%;
+  transition: border-color var(--d-1) var(--e-out);
+}
+.textarea { height: auto; min-height: 88px; padding-block: var(--s-4); resize: vertical; }
+.input:focus, .select:focus, .textarea:focus {
+  outline: 2px solid var(--accent); outline-offset: 0; border-color: var(--accent);
+}
+.input[aria-invalid="true"], .select[aria-invalid="true"], .textarea[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+.input[disabled], .select[disabled], .textarea[disabled],
+.input.is-disabled, .select.is-disabled, .textarea.is-disabled {
+  opacity: 0.5; cursor: not-allowed;
+}
+
+/* Chevron select via data-URI encodée en --ink-3 */
+.select {
+  appearance: none; padding-right: var(--s-9);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236F757B' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--s-4) center;
+  background-size: 16px; cursor: pointer;
+}
+
+/* Input group */
+.input-group { display: flex; align-items: stretch; }
+.input-group .input { border-radius: 0; flex: 1; min-width: 0; }
+.input-group > :first-child { border-radius: var(--r-2) 0 0 var(--r-2); }
+.input-group > :last-child { border-radius: 0 var(--r-2) var(--r-2) 0; }
+.input-group > :only-child { border-radius: var(--r-2); }
+.input-group__prefix, .input-group__suffix {
+  display: inline-flex; align-items: center; padding-inline: var(--s-4);
+  background: var(--paper-2); border: 1px solid var(--rule);
+  color: var(--ink-3); font-size: var(--t-sm); white-space: nowrap;
+}
+.input-group__prefix { border-right: none; border-radius: var(--r-2) 0 0 var(--r-2); }
+.input-group__suffix { border-left: none; border-radius: 0 var(--r-2) var(--r-2) 0; }
+
+/* PIN (4 cases 40×44 px, jamais de ronds) */
+.pin { display: flex; gap: var(--s-4); }
+.pin__cell {
+  width: 40px; height: 44px; text-align: center;
+  border: 1px solid var(--rule); border-radius: var(--r-2);
+  background: var(--sheet); font-family: var(--ff-mono);
+  font-size: 18px; font-variant-numeric: tabular-nums; color: var(--ink);
+  caret-color: var(--accent);
+}
+.pin__cell:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: var(--accent); }
+

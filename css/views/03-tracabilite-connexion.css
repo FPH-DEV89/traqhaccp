@@ -1,0 +1,289 @@
+/* ---- Traçabilité Étiquettes & Produits (Mobile First) ---------------------- */
+.trace-action-card {
+  background: var(--sheet);
+  border: 2px dashed var(--accent);
+  border-radius: var(--r-3);
+  padding: var(--s-6);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-3);
+  cursor: pointer;
+  transition: background var(--d-1) var(--e-out), border-color var(--d-1) var(--e-out);
+}
+.trace-action-card:hover {
+  background: var(--accent-wash);
+}
+.trace-action-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-2);
+  background: var(--accent-wash);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.trace-action-card__title {
+  font-size: var(--t-h3);
+  font-weight: 600;
+  color: var(--ink);
+}
+.trace-action-card__sub {
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+  max-width: 320px;
+}
+
+.trace-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.trace-card {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  padding: var(--s-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  box-shadow: var(--sh-1);
+}
+
+.trace-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.trace-card__title {
+  font-size: var(--t-body);
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.trace-card__date {
+  font-family: var(--ff-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.trace-card__destinations {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  background: var(--paper-2);
+  border-radius: var(--r-1);
+  padding: var(--s-3) var(--s-4);
+  border-left: 3px solid var(--accent);
+}
+
+.trace-dest-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  font-size: var(--t-sm);
+}
+
+.trace-dest-item__label {
+  font-size: var(--t-label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+.trace-dest-item__value {
+  color: var(--ink);
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.trace-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--rule);
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.trace-card__photo-thumb {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--r-1);
+  object-fit: cover;
+  border: 1px solid var(--rule);
+  cursor: pointer;
+  background: var(--paper-2);
+  flex-shrink: 0;
+}
+
+.trace-card__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+
+/* ---- Portail de connexion (mode serveur) ---------------------------------- */
+/* Écran plein cadre affiché AVANT la coquille : il occupe tout l'écran et se
+   retire du DOM (masquerConnexion) dès que la session est établie. */
+.portail {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-8);
+  background: var(--paper);
+  overflow-y: auto;
+}
+
+.portail__carte {
+  width: 100%;
+  max-width: 420px;
+  padding: var(--s-9) var(--s-8);
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-3);
+  box-shadow: var(--sh-2);
+}
+
+.portail__entete {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  margin-bottom: var(--s-7);
+}
+
+.portail__pastille {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-3);
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
+.portail__entete-texte { display: flex; flex-direction: column; gap: var(--s-1); min-width: 0; }
+
+.portail__titre {
+  margin: 0;
+  font-family: var(--ff-serif);
+  font-size: var(--t-h1);
+  color: var(--ink);
+  letter-spacing: -.01em;
+}
+
+.portail__sous-titre { margin: 0; font-size: var(--t-sm); color: var(--ink-3); }
+
+.portail__intro { margin: 0 0 var(--s-7); font-size: var(--t-body); color: var(--ink-2); }
+
+.portail__forme { display: flex; flex-direction: column; gap: var(--s-6); margin-bottom: var(--s-6); }
+.portail__forme[hidden] { display: none; }
+
+.portail__erreur { margin: 0 0 var(--s-5); font-size: var(--t-sm); color: var(--danger); }
+.portail__erreur:empty { margin: 0; }
+
+.portail__pied {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  margin-top: var(--s-7);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--rule);
+}
+
+.portail__lien {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--t-sm);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.portail__lien:hover { color: var(--accent-2); text-decoration: underline; }
+
+.portail__note { margin: 0; font-size: var(--t-label); color: var(--ink-3); }
+
+.portail__actions-secondaires {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-top: calc(-1 * var(--s-2));
+}
+
+.portail__succes {
+  margin: 0 0 var(--s-6);
+  padding: var(--s-4);
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  font-size: var(--t-sm);
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+  .portail { align-items: flex-start; padding: var(--s-5); }
+  .portail__carte { margin-top: var(--s-8); padding: var(--s-8) var(--s-6); }
+}
+
+/* ---- Bloc « session serveur » (vue Compte, mode serveur uniquement) -------- */
+.session-serveur {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-6);
+  flex-wrap: wrap;
+}
+
+.session-serveur__texte { min-width: 0; }
+.session-serveur__nom { margin: 0; font-size: var(--t-body); color: var(--ink); }
+.session-serveur__meta {
+  margin: var(--s-1) 0 0;
+  font-family: var(--ff-mono);
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+  word-break: break-all;
+}
+
+/* ---- @media print --------------------------------------------------------- */
+@media print {
+  .portail,
+  .inspection-banner,
+  .zone-upload,
+  .ged__actions,
+  .chrono__bar { display: none !important; }
+
+  .receipt {
+    border: 1px solid var(--rule);
+    box-shadow: none;
+    break-inside: avoid;
+  }
+  .matrix { overflow: visible; }
+  .matrix thead th { writing-mode: vertical-rl; }
+  .sign { break-inside: avoid; }
+  .roles { break-inside: avoid; }
+}
+
