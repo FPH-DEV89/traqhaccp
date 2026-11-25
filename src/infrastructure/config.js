@@ -26,6 +26,9 @@
 /** URL du projet Supabase (PostgREST + GoTrue). */
 export const SUPABASE_URL = 'https://hxwwihttelptohorakto.supabase.co';
 
+/** URL publique de production (GitHub Pages) utilisée en repli pour les redirections Auth. */
+export const URL_PRODUCTION = 'https://fph-dev89.github.io/traqhaccp/';
+
 /** Clé publique « publishable » / anon — destinée au navigateur, protégée par RLS côté serveur. */
 export const SUPABASE_PUBLISHABLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4d3dpaHR0ZWxwdG9ob3Jha3RvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3MDczODMsImV4cCI6MjEwNTI4MzM4M30.Px-2i-M0F135a0P1ZWzFIaZAidXGquQSo_a2I85C1xg';
 
