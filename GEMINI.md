@@ -13,10 +13,7 @@ Dès qu'un correctif, un bogue résolu ou une tâche demandée par l'utilisateur
 
 ## Publication (déploiement)
 
-- **Une seule URL publique** : `https://traqhaccp.vercel.app/`.
-- **Un seul projet Vercel** (`traqhaccp`) relié au dépôt. Ne jamais créer ni relier un
-  second projet Vercel au même dépôt : chaque push déclencherait un déploiement de plus,
-  donc une seconde URL susceptible de diverger au premier build qui échoue d'un côté.
+- **URL publique principale** : `https://fph-dev89.github.io/traqhaccp/` (GitHub Pages, branche `gh-pages`).
 - **Aucune URL d'origine codée en dur** : chemins relatifs uniquement dans `index.html`,
-  `manifest.json`, `sw.js` et `vercel.json`.
-- Après un push, vérifier qu'**un seul** déploiement de production a été déclenché.
+  `manifest.json` et `sw.js` (l'application est servie sous `/traqhaccp/` sur GitHub Pages).
+- Chaque push sur `main` déclenche la CI (tests + gates) puis le déploiement automatique vers `gh-pages`.

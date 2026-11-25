@@ -16,9 +16,23 @@
  * jeton. Ce module n'envoie jamais de filtre d'établissement obligatoire — c'est voulu.
  */
 import {
-  SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_CLE_SESSION,
+  SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_CLE_SESSION, URL_PRODUCTION,
   lireStockage, ecrireStockage, supprimerStockage,
 } from './config.js';
+
+/**
+ * Calcule l'URL de redirection Auth (confirmation e-mail, réinitialisation mot de passe).
+ * Utilise l'origine courante en production et bascule sur `URL_PRODUCTION` en local.
+ * @returns {string}
+ */
+function resoudreUrlRedirection() {
+  if (typeof window !== 'undefined' && window.location && window.location.origin) {
+    if (!window.location.origin.includes('localhost') && !window.location.origin.includes('127.0.0.1')) {
+      return `${window.location.origin}${window.location.pathname}`;
+    }
+  }
+  return URL_PRODUCTION;
+}
 
 /** Marge (en secondes) avant expiration : on rafraîchit un peu en avance. */
 const MARGE_EXPIRATION_S = 60;
@@ -220,12 +234,7 @@ export class SupabaseClient {
     if (donnees && typeof donnees === 'object' && Object.keys(donnees).length > 0) {
       corps.data = donnees;
     }
-    let redirection = 'https://traqhaccp.vercel.app/';
-    if (typeof window !== 'undefined' && window.location && window.location.origin) {
-      if (!window.location.origin.includes('localhost') && !window.location.origin.includes('127.0.0.1')) {
-        redirection = `${window.location.origin}${window.location.pathname}`;
-      }
-    }
+    const redirection = resoudreUrlRedirection();
     const query = `?redirect_to=${encodeURIComponent(redirection)}`;
     const reponse = await this.requete(`/auth/v1/signup${query}`, {
       methode: 'POST',
@@ -325,7 +334,8 @@ export class SupabaseClient {
     if (!email) {
       throw new ErreurSupabase('Adresse e-mail requise pour réinitialiser le mot de passe.', { statut: 400 });
     }
-    const query = redirectTo ? `?redirect_to=${encodeURIComponent(redirectTo)}` : '';
+    const cible = redirectTo || resoudreUrlRedirection();
+    const query = `?redirect_to=${encodeURIComponent(cible)}`;
     return this.requete(`/auth/v1/recover${query}`, {
       methode: 'POST',
       corps: { email: String(email).trim() },

@@ -1,0 +1,19 @@
+{
+  "1": "config.js",
+  "22": "SupabaseClient",
+  "24": "recette-client.mjs",
+  "26": "Déploiement Cloudflare Pages (option 0 €)",
+  "27": "steps",
+  "28": "recette-sync.mjs",
+  "57": "push-guide-drive.py",
+  "64": "ref_node_fs",
+  "65": "le",
+  "68": "pre-commit",
+  "70": "build-dist.sh",
+  "71": "/js/patisserie/etat-sauvegarde.js",
+  "72": "/js/patisserie/state.js",
+  "73": "/src/infrastructure/supabase_client.js",
+  "74": "/js/patisserie/sync.js",
+  "75": "supabase_client.js",
+  "76": ".requete"
+}

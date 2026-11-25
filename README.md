@@ -100,11 +100,9 @@ npm run gate                  # gates rapides (CSS cascade + SW précache + fra�
 npm run gate:selftest         # toutes les pannes témoins
 ```
 
-## Déploiement — Vercel (unique cible)
+## Déploiement — GitHub Pages (cible active)
 
-Site 100 % statique. **URL de référence :** `https://traqhaccp.vercel.app/`
+Site 100 % statique. **URL de référence :** `https://fph-dev89.github.io/traqhaccp/`
 
-Chaque `git push origin main` redéploie automatiquement. `vercel.json` active :
-- les URLs propres (`cleanUrls: true`)
-- le redirect permanent `/patisserie` et `/patisserie.html` → `/`
-- le `no-store` du service worker.
+Chaque `git push origin main` exécute la CI (`npm test`, `npm run gate:css`) puis déploie automatiquement les fichiers statiques sur la branche `gh-pages`.
+(Un paquet alternatif pour Cloudflare Pages est également documenté dans `pages/README.md`.)
