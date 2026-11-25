@@ -1,11 +1,14 @@
 /**
  * TraqHACCP Pâtisserie — UI Render Functions
  */
-import { state, getCurrentOperator } from './state.js';
+import { state, getCurrentOperator, computeLotStatus, resolveFifoLot } from './state.js';
 import { calculateRecipeMetrics, formatDateFr } from './calculations.js';
 import { playBeep } from './audio-toast.js';
-import { renderSettings, readSettings } from './settings.js';
+import { renderSettings, readSettings, esc } from './settings.js';
 import { NORMS } from '../../src/domain/haccp_norms.js';
+
+const TRASH_SVG = (s) => `<svg width="${s}" height="${s}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`;
+const EDIT_SVG = (s) => `<svg width="${s}" height="${s}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>`;
 
 export function renderLots() {
   const grid = document.getElementById('lots-grid');
@@ -14,11 +17,12 @@ export function renderLots() {
   const search = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
 
   const filtered = state.lots.filter(l => {
+    if (l.dlcDate) l.status = computeLotStatus(l.dlcDate);
     const matchesCat = state.currentCategory === 'all' || l.category === state.currentCategory;
-    const matchesSearch = !search || 
-      l.name.toLowerCase().includes(search) || 
-      l.lot.toLowerCase().includes(search) || 
-      l.supplier.toLowerCase().includes(search);
+    const matchesSearch = !search ||
+      String(l.name || '').toLowerCase().includes(search) ||
+      String(l.lot || '').toLowerCase().includes(search) ||
+      String(l.supplier || '').toLowerCase().includes(search);
     const matchesAlert = !state.alertsOnly || (l.status === 'urgent' || l.status === 'warning');
     return matchesCat && matchesSearch && matchesAlert;
   });
@@ -54,36 +58,35 @@ export function renderLots() {
             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeColor}">
               ${badgeText}
             </span>
-            <span class="font-mono text-xs font-bold text-zinc-500 dark:text-zinc-400">${l.lot}</span>
+            <span class="font-mono text-xs font-bold text-zinc-500 dark:text-zinc-400">${esc(l.lot)}</span>
           </div>
           
-          <h3 class="font-bold text-sm text-zinc-900 dark:text-white mt-2">${l.name}</h3>
-          <p class="text-xs text-zinc-500 dark:text-zinc-400">${l.supplier} · Reçu le ${formatDateFr(l.receiptDate)}</p>
+          <h3 class="font-bold text-sm text-zinc-900 dark:text-white mt-2">${esc(l.name)}</h3>
+          <p class="text-xs text-zinc-500 dark:text-zinc-400">${esc(l.supplier)} · Reçu le ${esc(formatDateFr(l.receiptDate))}</p>
 
           <div class="grid grid-cols-2 gap-2 my-3 p-2.5 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl text-xs">
             <div>
               <span class="text-[10px] text-zinc-400 block">Stock actuel</span>
-              <span class="font-extrabold text-sm text-zinc-900 dark:text-white">${l.stockQty} ${l.stockUnit}</span>
-              <span class="text-[10px] text-emerald-600 block">${Number(l.unitPriceHT || 0).toFixed(2)} € HT/${l.stockUnit}</span>
+              <span class="font-extrabold text-sm text-zinc-900 dark:text-white">${esc(l.stockQty)} ${esc(l.stockUnit)}</span>
+              <span class="text-[10px] text-emerald-600 block">${Number(l.unitPriceHT || 0).toFixed(2)} € HT/${esc(l.stockUnit)}</span>
             </div>
             <div class="text-right">
               <span class="text-[10px] text-zinc-400 block">DLC Fabricant</span>
-              <span class="font-bold text-xs ${l.status === 'urgent' ? 'text-rose-600' : 'text-zinc-800 dark:text-zinc-200'}">${formatDateFr(l.dlcDate)}</span>
-              <span class="text-[10px] text-zinc-400 block">Temp. : ${l.temp}°C</span>
+              <span class="font-bold text-xs ${l.status === 'urgent' ? 'text-rose-600' : 'text-zinc-800 dark:text-zinc-200'}">${esc(formatDateFr(l.dlcDate))}</span>
+              <span class="text-[10px] text-zinc-400 block">Temp. : ${esc(l.temp)}°C</span>
             </div>
           </div>
         </div>
 
         <div class="flex items-center gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-          <button onclick="openAdjustStockModal('${l.id}')" class="flex-1 py-1.5 px-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-semibold text-xs transition text-center">
+          <button onclick="openAdjustStockModal('${esc(l.id)}')" class="flex-1 py-1.5 px-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-semibold text-xs transition text-center">
             Ajuster Stock
           </button>
-          <button onclick="createSecondaryFromLot('${l.lot}')" class="flex-1 py-1.5 px-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-semibold text-xs border border-emerald-200/60 dark:border-emerald-800/60 transition text-center">
+          <button onclick="createSecondaryFromLot('${esc(l.lot)}')" class="flex-1 py-1.5 px-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-semibold text-xs border border-emerald-200/60 dark:border-emerald-800/60 transition text-center">
             + DLC 2nd
           </button>
-          <button type="button" onclick="openLotEditModal('${l.id}')" class="icon-btn" title="Modifier ce lot" aria-label="Modifier ce lot">
-            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-          </button>
+          <button type="button" onclick="openLotEditModal('${esc(l.id)}')" class="icon-btn" title="Modifier ce lot" aria-label="Modifier ce lot">${EDIT_SVG(15)}</button>
+          <button type="button" onclick="deleteLot('${esc(l.id)}')" class="icon-btn icon-btn--danger" title="Supprimer ce lot" aria-label="Supprimer ce lot">${TRASH_SVG(15)}</button>
         </div>
       </div>
     `;
@@ -106,18 +109,17 @@ export function renderRecipes() {
         <div>
           <div class="flex items-start justify-between gap-3">
             <div class="flex items-center gap-2.5">
-              <span class="text-3xl">${r.icon}</span>
+              <span class="text-3xl">${esc(r.icon)}</span>
               <div>
-                <h3 class="font-bold text-base text-zinc-900 dark:text-white leading-tight">${r.name}</h3>
+                <h3 class="font-bold text-base text-zinc-900 dark:text-white leading-tight">${esc(r.name)}</h3>
                 <span class="text-xs text-zinc-400">${(r.ingredients || []).length} ingrédients suivis</span>
               </div>
             </div>
             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${m.fabricables > 0 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'} shrink-0">
               ${m.fabricables} réalisables
             </span>
-            <button type="button" onclick="openRecipeEditModal('${r.id}', ${i})" class="icon-btn" title="Modifier cette recette" aria-label="Modifier cette recette">
-              <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-            </button>
+            <button type="button" onclick="openRecipeEditModal('${esc(r.id)}', ${i})" class="icon-btn" title="Modifier cette recette" aria-label="Modifier cette recette">${EDIT_SVG(15)}</button>
+            <button type="button" onclick="deleteRecipe('${esc(r.id)}')" class="icon-btn icon-btn--danger" title="Supprimer cette recette" aria-label="Supprimer cette recette">${TRASH_SVG(15)}</button>
           </div>
 
           <div class="grid grid-cols-3 gap-2 my-4 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl text-center">
@@ -140,18 +142,18 @@ export function renderRecipes() {
 
           <div class="space-y-1.5">
             <span class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider block">Ingrédients & Déstockage FIFO :</span>
-            ${r.ingredients.map(ing => {
-              const lotItem = state.lots.find(l => l.lot === ing.lotMatch);
+            ${(r.ingredients || []).map(ing => {
+              const lotItem = resolveFifoLot(ing);
               const isShort = !lotItem || lotItem.stockQty < ing.qtyPerUnit;
               return `
                 <div class="flex items-center justify-between text-xs py-1 px-2 rounded-lg bg-zinc-50/60 dark:bg-zinc-800/30">
-                  <span class="text-zinc-700 dark:text-zinc-300 font-medium">${ing.name} (${ing.qtyPerUnit} ${ing.unit})</span>
+                  <span class="text-zinc-700 dark:text-zinc-300 font-medium">${esc(ing.name)} (${esc(ing.qtyPerUnit)} ${esc(ing.unit)})</span>
                   <div class="flex items-center gap-1.5 font-mono text-[11px]">
                     <span class="${isShort ? 'text-rose-500 font-bold' : 'text-zinc-500'}">
-                      ${lotItem ? `Stock: ${lotItem.stockQty} ${ing.unit}` : 'RUPTURE'}
+                      ${lotItem ? `Stock: ${esc(lotItem.stockQty)} ${esc(ing.unit)}` : 'RUPTURE'}
                     </span>
                     <span class="text-zinc-300 dark:text-zinc-700">·</span>
-                    <span class="text-zinc-400">${ing.lotMatch}</span>
+                    <span class="text-zinc-400">${esc(lotItem ? lotItem.lot : ing.lotMatch)}</span>
                   </div>
                 </div>
               `;
@@ -159,7 +161,7 @@ export function renderRecipes() {
           </div>
         </div>
 
-        <button onclick="startSaleWorkflow('${r.id}')" class="w-full py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-900 font-semibold text-xs shadow-sm transition flex items-center justify-center gap-1.5 active:scale-95">
+        <button onclick="startSaleWorkflow('${esc(r.id)}')" class="w-full py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-900 font-semibold text-xs shadow-sm transition flex items-center justify-center gap-1.5 active:scale-95">
           <svg class="w-3.5 h-3.5 text-emerald-400 dark:text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
           <span>Vendre & Déstocker</span>
         </button>
@@ -183,21 +185,21 @@ export function renderSalesCatalog() {
       <div class="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm flex flex-col justify-between gap-3">
         <div>
           <div class="flex items-center justify-between">
-            <span class="text-3xl">${r.icon}</span>
+            <span class="text-3xl">${esc(r.icon)}</span>
             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${m.fabricables > 0 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800'}">
               ${m.fabricables} fabricables
             </span>
           </div>
-          <h3 class="font-bold text-sm text-zinc-900 dark:text-white mt-2">${r.name}</h3>
-          <p class="text-xs text-zinc-400 mt-0.5">${r.ingredients.length} matières débitées en FIFO</p>
+          <h3 class="font-bold text-sm text-zinc-900 dark:text-white mt-2">${esc(r.name)}</h3>
+          <p class="text-xs text-zinc-400 mt-0.5">${(r.ingredients || []).length} matières débitées en FIFO</p>
           
           <div class="flex items-baseline justify-between mt-3">
-            <span class="text-xl font-extrabold text-zinc-900 dark:text-white">${r.sellingPriceTTC.toFixed(2)} €</span>
+            <span class="text-xl font-extrabold text-zinc-900 dark:text-white">${Number(r.sellingPriceTTC || 0).toFixed(2)} €</span>
             <span class="text-xs text-emerald-600 font-bold">+${m.marginBrute.toFixed(2)} € marge</span>
           </div>
         </div>
 
-        <button onclick="startSaleWorkflow('${r.id}')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow transition flex items-center justify-center gap-1.5 active:scale-95">
+        <button onclick="startSaleWorkflow('${esc(r.id)}')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow transition flex items-center justify-center gap-1.5 active:scale-95">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
           <span>Vendre & Déstocker</span>
         </button>
@@ -216,44 +218,38 @@ export function renderSalesHistory() {
   }
 
   // La position est transmise aux boutons : si l'identifiant disparaît de l'état
-  // (fusion de synchronisation), l'action retombe sur la ligne réellement affichée
-  // au lieu de ne rien faire en silence.
+  // (fusion de synchronisation), l'action retombe sur la ligne réellement affichée.
   hist.innerHTML = state.salesHistory.map((s, i) => {
     const isDelivery = s.channel === 'livraison';
+    const horodatage = s.date ? `${esc(formatDateFr(s.date))} · ${esc(s.time)}` : esc(s.time);
     return `
       <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
         <td class="p-3 font-mono text-zinc-400">
-          <div>${s.time}</div>
+          <div>${horodatage}</div>
           <div class="sale-row__actions">
-            <button type="button" onclick="openSaleEditModal('${s.id}', ${i})" class="icon-btn icon-btn--sm" title="Modifier les coordonnées client" aria-label="Modifier les coordonnées client">
-              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-            </button>
-            <button type="button" onclick="openSaleDeleteModal('${s.id}', ${i})" class="icon-btn icon-btn--sm icon-btn--danger" title="Supprimer cette ligne (doublon ou fausse manipulation)" aria-label="Supprimer cette ligne">
-              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
+            <button type="button" onclick="openSaleEditModal('${esc(s.id)}', ${i})" class="icon-btn icon-btn--sm" title="Modifier les coordonnées client" aria-label="Modifier les coordonnées client">${EDIT_SVG(12)}</button>
+            <button type="button" onclick="openSaleDeleteModal('${esc(s.id)}', ${i})" class="icon-btn icon-btn--sm icon-btn--danger" title="Supprimer cette ligne (doublon ou fausse manipulation)" aria-label="Supprimer cette ligne">${TRASH_SVG(12)}</button>
           </div>
         </td>
-        <td class="p-3 font-bold text-zinc-900 dark:text-white">${s.recipeName}</td>
+        <td class="p-3 font-bold text-zinc-900 dark:text-white">${esc(s.recipeName)}</td>
         <td class="p-3">
           <div class="flex items-center gap-1.5">
-            <span class="font-semibold text-zinc-800 dark:text-zinc-200">${s.customerName}</span>
+            <span class="font-semibold text-zinc-800 dark:text-zinc-200">${esc(s.customerName)}</span>
             <span class="px-1.5 py-0.2 rounded text-[10px] font-bold ${isDelivery ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}">
               ${isDelivery ? 'Livraison' : 'À emporter'}
             </span>
           </div>
           <div class="text-[11px] text-zinc-500 flex items-center gap-1 mt-0.5">
-            <span>📞 ${s.customerPhone}</span>
+            <span>📞 ${esc(s.customerPhone)}</span>
             <span class="text-zinc-300 dark:text-zinc-700">·</span>
-            <span>${s.orderRef}</span>
+            <span>${esc(s.orderRef)}</span>
           </div>
-          ${isDelivery && s.address !== '-' ? `
-            <div class="text-[10px] text-zinc-400 truncate max-w-[240px] mt-0.5">📍 ${s.address}</div>
-          ` : ''}
+          ${isDelivery && s.address && s.address !== '-' ? `<div class="text-[10px] text-zinc-400 truncate max-w-[240px] mt-0.5">📍 ${esc(s.address)}</div>` : ''}
         </td>
-        <td class="p-3 font-semibold">${s.qty}</td>
-        <td class="p-3 font-bold text-zinc-900 dark:text-white">${s.totalTTC.toFixed(2)} €</td>
-        <td class="p-3 text-emerald-600 font-semibold">+${s.marginTotal.toFixed(2)} €</td>
-        <td class="p-3 text-zinc-400 font-mono text-[11px]">${s.lotsUsed}</td>
+        <td class="p-3 font-semibold">${esc(s.qty)}</td>
+        <td class="p-3 font-bold text-zinc-900 dark:text-white">${Number(s.totalTTC || 0).toFixed(2)} €</td>
+        <td class="p-3 text-emerald-600 font-semibold">+${Number(s.marginTotal || 0).toFixed(2)} €</td>
+        <td class="p-3 text-zinc-400 font-mono text-[11px]">${esc(s.lotsUsed)}</td>
       </tr>
     `;
   }).join('');
@@ -264,8 +260,8 @@ export function renderSecondaryDlcs() {
   const parentSelect = document.getElementById('sec-parent-lot');
 
   if (parentSelect) {
-    parentSelect.innerHTML = '<option value="">Sélectionner un lot actif en stock...</option>' + 
-      state.lots.map(l => `<option value="${l.lot}">${l.lot} — ${l.name} (${l.supplier})</option>`).join('');
+    parentSelect.innerHTML = '<option value="">Sélectionner un lot actif en stock...</option>' +
+      state.lots.map(l => `<option value="${esc(l.lot)}">${esc(l.lot)} — ${esc(l.name)} (${esc(l.supplier)})</option>`).join('');
   }
 
   if (!container) return;
@@ -279,22 +275,23 @@ export function renderSecondaryDlcs() {
     <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 space-y-3">
       <div class="flex items-center justify-between">
         <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-          ${item.type}
+          ${esc(item.type)}
         </span>
-        <span class="text-[11px] text-zinc-400 font-mono">Lot mère: ${item.parentLot}</span>
+        <span class="text-[11px] text-zinc-400 font-mono">Lot mère: ${esc(item.parentLot)}</span>
+        <button type="button" onclick="deleteSecondaryDlc('${esc(item.id)}')" class="icon-btn icon-btn--sm icon-btn--danger" title="Retirer cette DLC secondaire" aria-label="Retirer cette DLC secondaire">${TRASH_SVG(13)}</button>
       </div>
       <div>
-        <h4 class="font-bold text-sm text-zinc-900 dark:text-white">${item.name}</h4>
-        <p class="text-xs text-zinc-500 mt-0.5">Par : ${item.operator}</p>
+        <h4 class="font-bold text-sm text-zinc-900 dark:text-white">${esc(item.name)}</h4>
+        <p class="text-xs text-zinc-500 mt-0.5">Par : ${esc(item.operator)}</p>
       </div>
       <div class="p-2.5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200/60 dark:border-zinc-800 text-xs flex justify-between items-center">
         <div>
           <span class="text-[10px] text-zinc-400 block">Créé le</span>
-          <span class="font-semibold">${formatDateFr(item.creationDate)}</span>
+          <span class="font-semibold">${esc(formatDateFr(item.creationDate))}</span>
         </div>
         <div class="text-right">
           <span class="text-[10px] text-zinc-400 block font-bold text-rose-500">DLC SECONDAIRE</span>
-          <span class="font-extrabold text-rose-600 dark:text-rose-400 text-sm">${formatDateFr(item.expiryDate)}</span>
+          <span class="font-extrabold text-rose-600 dark:text-rose-400 text-sm">${esc(formatDateFr(item.expiryDate))}</span>
         </div>
       </div>
     </div>
@@ -313,21 +310,22 @@ export function renderWitnessSamples() {
   container.innerHTML = state.witnessSamples.map(sample => `
     <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 space-y-3">
       <div class="flex justify-between items-center">
-        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">${sample.service}</span>
-        <span class="text-[11px] text-zinc-400 font-mono">${sample.id}</span>
+        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">${esc(sample.service)}</span>
+        <span class="text-[11px] text-zinc-400 font-mono">${esc(sample.id)}</span>
+        <button type="button" onclick="deleteWitnessSample('${esc(sample.id)}')" class="icon-btn icon-btn--sm icon-btn--danger" title="Retirer cet échantillon témoin" aria-label="Retirer cet échantillon témoin">${TRASH_SVG(13)}</button>
       </div>
       <div>
-        <h4 class="font-bold text-sm text-zinc-900 dark:text-white">${sample.dishName}</h4>
-        <p class="text-xs text-zinc-500 mt-0.5">Prélevé le ${formatDateFr(sample.serviceDate)}</p>
+        <h4 class="font-bold text-sm text-zinc-900 dark:text-white">${esc(sample.dishName)}</h4>
+        <p class="text-xs text-zinc-500 mt-0.5">Prélevé le ${esc(formatDateFr(sample.serviceDate))}${sample.operator ? ` · ${esc(sample.operator)}` : ''}</p>
       </div>
       <div class="p-2.5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200/60 dark:border-zinc-800 text-xs flex justify-between items-center">
         <div>
           <span class="text-[10px] text-zinc-400 block">Conservation</span>
-          <span class="font-bold text-emerald-600 dark:text-emerald-400">${sample.temp}</span>
+          <span class="font-bold text-emerald-600 dark:text-emerald-400">${esc(sample.temp)}</span>
         </div>
         <div class="text-right">
           <span class="text-[10px] text-zinc-400 block">Garder jusqu'au</span>
-          <span class="font-bold text-zinc-800 dark:text-zinc-200">${formatDateFr(sample.expiryDate)}</span>
+          <span class="font-bold text-zinc-800 dark:text-zinc-200">${esc(formatDateFr(sample.expiryDate))}</span>
         </div>
       </div>
     </div>
@@ -343,7 +341,7 @@ export function updateOperatorUI() {
   const roleEl = document.getElementById('current-op-role');
 
   if (initEl) initEl.innerText = op.initials;
-  if (nameEl) nameEl.innerText = `${op.firstName} ${op.lastName.charAt(0)}.`;
+  if (nameEl) nameEl.innerText = `${op.firstName} ${op.lastName ? op.lastName.charAt(0) + '.' : ''}`.trim();
   if (roleEl) roleEl.innerText = op.role;
 }
 
@@ -358,16 +356,17 @@ export function renderTeamGrid() {
 
   container.innerHTML = state.teamMembers.map(m => {
     const isCurrent = m.id === state.currentOperatorId;
+    const canDelete = state.teamMembers.length > 1;
     return `
       <div class="p-4 rounded-2xl border ${isCurrent ? 'border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20' : 'border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900'} shadow-sm flex flex-col justify-between gap-3">
         <div class="flex items-start justify-between">
           <div class="flex items-center gap-3">
             <span class="w-10 h-10 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center font-extrabold text-sm">
-              ${m.initials}
+              ${esc(m.initials)}
             </span>
             <div>
-              <h4 class="font-bold text-sm text-zinc-900 dark:text-white">${m.firstName} ${m.lastName}</h4>
-              <p class="text-xs text-zinc-500 dark:text-zinc-400">${m.role}</p>
+              <h4 class="font-bold text-sm text-zinc-900 dark:text-white">${esc(m.firstName)} ${esc(m.lastName)}</h4>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400">${esc(m.role)}</p>
             </div>
           </div>
           ${isCurrent ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">En service</span>' : ''}
@@ -375,7 +374,10 @@ export function renderTeamGrid() {
 
         <div class="flex items-center justify-between text-[11px] pt-2 border-t border-zinc-100 dark:border-zinc-800">
           <span class="text-zinc-400">PIN : ${m.pin ? '•••• (Défini)' : 'Non configuré'}</span>
-          ${!isCurrent ? `<button onclick="handleSwitchOperator('${m.id}')" class="px-3 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-semibold transition active:scale-95">Choisir</button>` : '<span class="text-emerald-600 font-semibold">Actif</span>'}
+          <div class="card-actions">
+            ${!isCurrent ? `<button onclick="handleSwitchOperator('${esc(m.id)}')" class="px-3 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-semibold transition active:scale-95">Choisir</button>` : '<span class="text-emerald-600 font-semibold">Actif</span>'}
+            ${canDelete ? `<button type="button" onclick="deleteTeamMember('${esc(m.id)}')" class="icon-btn icon-btn--sm icon-btn--danger" title="Retirer ce membre" aria-label="Retirer ce membre">${TRASH_SVG(13)}</button>` : ''}
+          </div>
         </div>
       </div>
     `;
@@ -389,14 +391,14 @@ export function renderOperatorSwitchList() {
   container.innerHTML = state.teamMembers.map(m => {
     const isCurrent = m.id === state.currentOperatorId;
     return `
-      <button onclick="handleSwitchOperator('${m.id}')" class="w-full p-2.5 rounded-xl flex items-center justify-between ${isCurrent ? 'bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/80 border border-transparent'} transition text-left">
+      <button onclick="handleSwitchOperator('${esc(m.id)}')" class="w-full p-2.5 rounded-xl flex items-center justify-between ${isCurrent ? 'bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/80 border border-transparent'} transition text-left">
         <div class="flex items-center gap-2.5">
           <span class="w-8 h-8 rounded-lg ${isCurrent ? 'bg-emerald-600 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200'} flex items-center justify-center font-bold text-xs">
-            ${m.initials}
+            ${esc(m.initials)}
           </span>
           <div>
-            <p class="font-bold text-xs text-zinc-900 dark:text-white">${m.firstName} ${m.lastName}</p>
-            <p class="text-[10px] text-zinc-400">${m.role}</p>
+            <p class="font-bold text-xs text-zinc-900 dark:text-white">${esc(m.firstName)} ${esc(m.lastName)}</p>
+            <p class="text-[10px] text-zinc-400">${esc(m.role)}${m.pin ? ' · PIN' : ''}</p>
           </div>
         </div>
         ${isCurrent ? '<svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' : ''}
@@ -406,7 +408,10 @@ export function renderOperatorSwitchList() {
 }
 
 export function updateTopMetrics() {
-  const urgentCount = state.lots.filter(l => l.status === 'urgent' || l.status === 'warning').length;
+  const urgentCount = state.lots.filter(l => {
+    const st = l.dlcDate ? computeLotStatus(l.dlcDate) : l.status;
+    return st === 'urgent' || st === 'warning';
+  }).length;
   const statLots = document.getElementById('stat-total-lots');
   const statWarn = document.getElementById('stat-warning-dlc');
   const statSec = document.getElementById('stat-sec-dlc');
@@ -465,38 +470,29 @@ export function switchView(tab) {
   playBeep(520, 0.03);
   ['traceability', 'recipes', 'sales', 'dlc', 'team', 'reglages'].forEach(t => {
     document.getElementById(`view-${t}`)?.classList.add('hidden');
-    
-    // Desktop nav
     const dBtn = document.getElementById(`nav-${t === 'traceability' ? 'trace' : t}`);
     if (dBtn) {
       dBtn.classList.remove('bg-zinc-900', 'dark:bg-zinc-700', 'text-white');
       dBtn.classList.add('text-zinc-600', 'dark:text-zinc-400');
     }
-
-    // Mobile nav
     const mBtn = document.getElementById(`mob-${t === 'traceability' ? 'trace' : t}`);
     if (mBtn) {
-      mBtn.classList.remove('text-emerald-600', 'dark:text-emerald-400', 'font-bold');
+      mBtn.classList.remove('text-emerald-600', 'dark:text-emerald-400', 'font-bold', 'is-active');
       mBtn.classList.add('text-zinc-500', 'dark:text-zinc-400');
     }
   });
 
   document.getElementById(`view-${tab}`)?.classList.remove('hidden');
-
-  // Écran Réglages : rendu à la demande par le module settings.js
   if (tab === 'reglages') renderSettings();
 
-  // Active desktop button
   const activeDesktop = document.getElementById(`nav-${tab === 'traceability' ? 'trace' : tab}`);
   if (activeDesktop) {
     activeDesktop.classList.add('bg-zinc-900', 'dark:bg-zinc-700', 'text-white');
     activeDesktop.classList.remove('text-zinc-600', 'dark:text-zinc-400');
   }
-
-  // Active mobile button
   const activeMobile = document.getElementById(`mob-${tab === 'traceability' ? 'trace' : tab}`);
   if (activeMobile) {
-    activeMobile.classList.add('text-emerald-600', 'dark:text-emerald-400', 'font-bold');
+    activeMobile.classList.add('text-emerald-600', 'dark:text-emerald-400', 'font-bold', 'is-active');
     activeMobile.classList.remove('text-zinc-500', 'dark:text-zinc-400');
   }
 }
@@ -507,18 +503,14 @@ export function renderAudit() {
   const elTemoins = document.getElementById('audit-temoins');
   const elName = document.getElementById('audit-establishment-name');
   const elSiret = document.getElementById('audit-siret-line');
+  const regSettings = readSettings();
 
-  if (elName) {
-    elName.textContent = state.establishmentName;
-  }
-
+  if (elName) elName.textContent = state.establishmentName;
   if (elSiret) {
-    const siret = (readSettings().establishment || {}).siret || '';
-    if (siret) {
-      elSiret.textContent = `SIRET : ${siret} · Registre de traçabilité 100% numérique`;
-    } else {
-      elSiret.textContent = 'Registre de traçabilité 100% numérique';
-    }
+    const siret = (regSettings.establishment || {}).siret || '';
+    elSiret.textContent = siret
+      ? `SIRET : ${siret} · Registre de traçabilité 100% numérique`
+      : 'Registre de traçabilité 100% numérique';
   }
 
   if (elTrace) {
@@ -539,8 +531,9 @@ export function renderAudit() {
       elFroid.textContent = '—';
       elFroid.dataset.audit = 'vide';
     } else {
+      const coldNorm = (regSettings.norms && regSettings.norms.cold) || NORMS.cold;
       const conformCount = coldLots.filter(l => {
-        const limit = l.category === 'fruits' ? NORMS.cold.vegetableMax : NORMS.cold.positiveMax;
+        const limit = l.category === 'fruits' ? coldNorm.vegetableMax : coldNorm.positiveMax;
         return l.temp <= limit;
       }).length;
       const pct = Math.round((conformCount / coldLots.length) * 100);
@@ -556,8 +549,7 @@ export function renderAudit() {
       elTemoins.dataset.audit = 'vide';
     } else {
       const sorted = [...activeWitnesses].sort((a, b) => new Date(b.serviceDate) - new Date(a.serviceDate));
-      const mostRecent = sorted[0];
-      elTemoins.textContent = `${activeWitnesses.length} actifs (${mostRecent.temp})`;
+      elTemoins.textContent = `${activeWitnesses.length} actifs (${sorted[0].temp})`;
       elTemoins.dataset.audit = 'ok';
     }
   }
