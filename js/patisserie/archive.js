@@ -10,7 +10,6 @@
  */
 
 import { state } from './state.js';
-import { readSettings } from './settings.js';
 import { construireArchiveRegistre, chargeCanonique, nomFichierArchive } from '../../src/presentation/archive_registre.js';
 import { telechargerPdf } from '../../src/presentation/ddpp_report.js';
 
@@ -118,7 +117,7 @@ export async function exporterArchivePdf(ctx) {
     const lotsFiltres = (state.lots || []).filter(l => dansPeriode(l.receiptDate));
     const preparationsFiltrees = (state.secondaryDlcs || []).filter(p => dansPeriode(p.creationDate));
     const temoinsFiltres = (state.witnessSamples || []).filter(w => dansPeriode(w.serviceDate));
-    const ventes = state.salesHistory || [];
+    const ventes = (state.salesHistory || []).filter(v => !v.date || dansPeriode(v.date));
     const equipe = state.teamMembers || [];
 
     const opMembre = equipe.find(m => m.id === state.currentOperatorId);
@@ -129,7 +128,7 @@ export async function exporterArchivePdf(ctx) {
         }
       : { nom: 'Opérateur non identifié', role: '' };
 
-    const settings = readSettings();
+    const settings = (ctx && ctx.settings) || {};
     const etablissement = settings.establishment || {};
     const respMembre = equipe.find(m => m.role && /responsable/i.test(m.role));
     const responsable = {

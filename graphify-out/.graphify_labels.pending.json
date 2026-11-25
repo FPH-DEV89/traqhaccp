@@ -6,7 +6,7 @@
   "27": "steps",
   "28": "recette-sync.mjs",
   "57": "push-guide-drive.py",
-  "64": "ref_node_fs",
+  "64": "notifications.js",
   "65": "le",
   "68": "pre-commit",
   "70": "build-dist.sh",
@@ -14,6 +14,8 @@
   "72": "/js/patisserie/state.js",
   "73": "/src/infrastructure/supabase_client.js",
   "74": "/js/patisserie/sync.js",
-  "75": "supabase_client.js",
-  "76": ".requete"
+  "75": "encoderFiltres",
+  "76": ".requete",
+  "77": "ai-scanner.js",
+  "78": "capture-scan-guide.mjs"
 }

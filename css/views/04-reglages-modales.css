@@ -246,3 +246,19 @@ html[data-boot="pending"] #current-op-role {
 }
 
 .sale-edit__field--off { display: none; }
+
+/* Barre de navigation mobile : bouton Réglages sans classe Tailwind */
+.mob-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: var(--ink-3);
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.mob-nav-btn.is-active { color: var(--accent); font-weight: 700; }
+.card-actions { display: flex; align-items: center; gap: var(--s-2); }

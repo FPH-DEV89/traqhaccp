@@ -1,14 +1,14 @@
 ﻿/**
  * TraqHACCP Pâtisserie — Business Rules & Food Cost Calculations
  */
-import { state } from './state.js';
+import { state, resolveFifoLot } from './state.js';
 
 export function calculateRecipeMetrics(recipe) {
   let costMatiereHT = 0;
   let maxPossible = Infinity;
 
   (recipe.ingredients || []).forEach(ing => {
-    const lotItem = state.lots.find(l => l.lot === ing.lotMatch);
+    const lotItem = resolveFifoLot(ing);
     const unitPrice = lotItem ? lotItem.unitPriceHT : 10.0;
     costMatiereHT += (ing.qtyPerUnit * unitPrice);
 

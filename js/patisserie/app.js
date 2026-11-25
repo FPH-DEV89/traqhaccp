@@ -66,7 +66,13 @@ import {
   toggleSaleEditAddress,
   handleSaleEditSubmit,
   openSaleDeleteModal,
-  handleSaleDeleteSubmit
+  handleSaleDeleteSubmit,
+  handleOperatorPinInput,
+  deleteLot,
+  deleteRecipe,
+  deleteSecondaryDlc,
+  deleteWitnessSample,
+  deleteTeamMember
 } from './modals.js';
 import { 
   testRecallSearch, 
@@ -145,6 +151,12 @@ window.toggleSaleEditAddress = toggleSaleEditAddress;
 window.handleSaleEditSubmit = handleSaleEditSubmit;
 window.openSaleDeleteModal = openSaleDeleteModal;
 window.handleSaleDeleteSubmit = handleSaleDeleteSubmit;
+window.handleOperatorPinInput = handleOperatorPinInput;
+window.deleteLot = deleteLot;
+window.deleteRecipe = deleteRecipe;
+window.deleteSecondaryDlc = deleteSecondaryDlc;
+window.deleteWitnessSample = deleteWitnessSample;
+window.deleteTeamMember = deleteTeamMember;
 window.afficherPortailConnexion = afficherPortailConnexion;
 window.deconnecterEtablissement = deconnecterEtablissement;
 

@@ -190,6 +190,7 @@ function renderTabPreferences(ctx) {
   const s = ctx.settings;
   const night = isDarkTheme();
   const standalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+  const aiKey = s.aiApiKey || localStorage.getItem('traqhaccp_openrouter_api_key') || '';
   return `<div class="section">
       <div class="section__head">
         <span class="section__title">Apparence et confort</span>
@@ -204,38 +205,25 @@ function renderTabPreferences(ctx) {
       </div>
       <form class="settings__form" data-settings-form="preferences">
         <div class="settings__rows">
-          ${settingRow('Sons de validation', 'Bip court à chaque relevé enregistré. Coupez-le en salle de vente.',
-              switchControl('sounds', s.sounds !== false))}
+          ${settingRow('Sons de validation', 'Bip court à chaque relevé enregistré. Coupez-le en salle de vente.', switchControl('sounds', s.sounds !== false))}
           ${settingRow('Unité de température', 'Utilisée pour saisir et afficher tous les relevés.',
-            `<select class="select" name="tempUnit">
-              <option value="C"${s.tempUnit === 'C' ? ' selected' : ''}>Celsius (°C)</option>
-              <option value="F"${s.tempUnit === 'F' ? ' selected' : ''}>Fahrenheit (°F)</option>
-            </select>`)}
+            `<select class="select" name="tempUnit"><option value="C"${s.tempUnit === 'C' ? ' selected' : ''}>Celsius (°C)</option><option value="F"${s.tempUnit === 'F' ? ' selected' : ''}>Fahrenheit (°F)</option></select>`)}
           ${settingRow('Rappel de sauvegarde', 'Délai avant l\'alerte de sauvegarde du registre.',
-            `<select class="select" name="backupReminderDays">
-              <option value="1"${Number(s.backupReminderDays) === 1 ? ' selected' : ''}>Chaque jour</option>
-              <option value="7"${Number(s.backupReminderDays) === 7 ? ' selected' : ''}>Chaque semaine</option>
-              <option value="30"${Number(s.backupReminderDays) === 30 ? ' selected' : ''}>Chaque mois</option>
-            </select>`)}
+            `<select class="select" name="backupReminderDays"><option value="1"${Number(s.backupReminderDays) === 1 ? ' selected' : ''}>Chaque jour</option><option value="7"${Number(s.backupReminderDays) === 7 ? ' selected' : ''}>Chaque semaine</option><option value="30"${Number(s.backupReminderDays) === 30 ? ' selected' : ''}>Chaque mois</option></select>`)}
+          ${textField('aiApiKey', 'Clé API Vision IA (Scan étiquettes)', aiKey, 'Clé Google Gemini (AIza…), OpenRouter (sk-or…) ou Groq (gsk_…) pour le scan photo hors serveur.', { type: 'password' })}
         </div>
-        <div class="settings__foot">
-          <button type="submit" class="btn btn--primary">Enregistrer les préférences</button>
-        </div>
+        <div class="settings__foot"><button type="submit" class="btn btn--primary">Enregistrer les préférences</button></div>
       </form>
       <div class="rule"></div>
       <div class="section__head"><span class="section__title">Application</span></div>
       <div class="settings__rows">
         ${settingRow('Installer sur l\'appareil', 'Un raccourci plein écran sur l\'écran d\'accueil, disponible hors connexion.',
-          standalone
-            ? `<span class="mark mark--ok"><span class="mark__label">Installée</span></span>`
-            : `<button type="button" class="btn btn--ghost" data-settings-action="install">${icon('download', 16)} Installer</button>`)}
-        ${settingRow('Notifications de service', 'Ruptures, DLC dépassées, contrôles du jour : reçus sur cet appareil.',
-          `<button type="button" class="btn btn--ghost" data-settings-go="alertes">Configurer</button>`)}
+          standalone ? `<span class="mark mark--ok"><span class="mark__label">Installée</span></span>` : `<button type="button" class="btn btn--ghost" data-settings-action="install">${icon('download', 16)} Installer</button>`)}
+        ${settingRow('Notifications de service', 'Ruptures, DLC dépassées, contrôles du jour : reçus sur cet appareil.', `<button type="button" class="btn btn--ghost" data-settings-go="alertes">Configurer</button>`)}
       </div>
       <div class="rule"></div>
       <div class="settings__rows">
-        ${settingRow('Remettre les réglages à zéro', 'Thème, préférences et fiches reviennent aux valeurs livrées. Le registre sanitaire n\'est jamais effacé.',
-          `<button type="button" class="btn btn--danger" data-settings-action="reset">Réinitialiser</button>`)}
+        ${settingRow('Remettre les réglages à zéro', 'Thème, préférences et fiches reviennent aux valeurs livrées. Le registre sanitaire n\'est jamais effacé.', `<button type="button" class="btn btn--danger" data-settings-action="reset">Réinitialiser</button>`)}
       </div>
     </div>`;
 }
@@ -431,10 +419,14 @@ function saveForm(formName, form) {
     return;
   }
   if (formName === 'preferences') {
+    const aiApiKey = String(data.get('aiApiKey') || '').trim();
+    if (aiApiKey) localStorage.setItem('traqhaccp_openrouter_api_key', aiApiKey);
+    else localStorage.removeItem('traqhaccp_openrouter_api_key');
     writeSettings({
       sounds: data.has('sounds'),
       tempUnit: String(data.get('tempUnit') || 'C') === 'F' ? 'F' : 'C',
       backupReminderDays: Number(data.get('backupReminderDays')) || 7,
+      aiApiKey,
     });
     showToast('Préférences enregistrées');
     renderSettings();

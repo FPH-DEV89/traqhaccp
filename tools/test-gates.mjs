@@ -269,7 +269,7 @@ console.log('── Gate 8/8 · check-sync-contract.mjs');
   // « vider la file » rend la main sur une file encore vide et la modification
   // reste sur l'appareil. Trouvée par la recette navigateur du 25/09/2026.
   writeFileSync(join(dSync, 'js', 'patisserie', 'sync.js'),
-    syncSain.replace('  detecterChangements();\n\n  const file = lireFile();', '  const file = lireFile();'));
+    syncSain.replace(/  detecterChangements\(\);\r?\n\r?\n  const file = lireFile\(\);/, '  const file = lireFile();'));
   const rSyncVidage = node('check-sync-contract.mjs', ['--root', dSync]);
   attendu('vidage laissant la donnée sur l\u2019appareil détecté', rSyncVidage.status, 1);
   mentionne('le message nomme le vidage incomplet', rSyncVidage.stdout, 'VIDAGE');

@@ -479,6 +479,10 @@
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
       <span>Équipe</span>
     </button>
+    <button onclick="switchView('reglages')" id="mob-reglages" class="mob-nav-btn" aria-label="Réglages">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>
+      <span>Réglages</span>
+    </button>
   </div>
 
   <!-- MODAL: Confirmation Déstockage & Écart de Stock -->
@@ -505,6 +509,7 @@
           <div>
             <span class="text-[11px] text-zinc-400">Pâtisserie sélectionnée :</span>
             <h4 class="font-bold text-sm text-zinc-900 dark:text-white" id="destock-recipe-name">Gâteau Moelleux Chocolat</h4>
+            <select id="destock-recipe-select" class="select" aria-label="Choisir la pâtisserie" onchange="startSaleWorkflow(this.value)"></select>
           </div>
           <div class="text-right">
             <span class="text-[11px] text-zinc-400">Quantité vendue :</span>
@@ -1115,6 +1120,12 @@
       </div>
       <div class="p-4 space-y-2 max-h-[60vh] overflow-y-auto" id="operator-switch-list">
         <!-- Rendered via JS -->
+      </div>
+      <div id="operator-pin-box" class="modal__body" hidden>
+        <div class="field">
+          <label class="field__label" for="operator-pin-input">Code PIN requis</label>
+          <input type="password" id="operator-pin-input" class="input" maxlength="4" inputmode="numeric" placeholder="Saisir le code PIN à 4 chiffres" oninput="handleOperatorPinInput(this.value)">
+        </div>
       </div>
       <div class="p-3 bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center text-xs">
         <button onclick="closeModals(); switchView('team');" class="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline flex items-center gap-1">

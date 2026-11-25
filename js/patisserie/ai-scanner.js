@@ -120,15 +120,19 @@ export async function extractLabelData(dataUrl) {
     console.warn("Analyse d'étiquette indisponible via l'endpoint serveur.", err);
   }
 
-  // 2. Mode secours : clé OpenRouter propre à l'utilisateur, stockée localement
-  //    (utile pour tester sans serveur serverless). Aucune clé par défaut.
-  const localApiKey = localStorage.getItem('traqhaccp_openrouter_api_key');
+  // 2. Mode secours : clé IA configurée dans Réglages > Préférences ou localStorage
+  let settingsKey = '';
+  try {
+    const rawSettings = localStorage.getItem('traq_settings');
+    settingsKey = rawSettings ? (JSON.parse(rawSettings).aiApiKey || '') : '';
+  } catch { /* ignore */ }
+  const localApiKey = String(settingsKey || localStorage.getItem('traqhaccp_openrouter_api_key') || '').trim();
   if (localApiKey) {
     try {
-      const directData = await callOpenRouterDirect(localApiKey, base64Data);
+      const directData = await callVisionProviderDirect(localApiKey, base64Data);
       if (directData) return directData;
     } catch (errDirect) {
-      console.error("Échec de l'appel direct OpenRouter avec clé locale :", errDirect);
+      console.error("Échec de l'analyse IA directe :", errDirect);
       throw new Error(`Erreur du service d'analyse d'images : ${errDirect.message}`);
     }
   }
@@ -136,32 +140,91 @@ export async function extractLabelData(dataUrl) {
   // 3. Aucun moyen d'analyse disponible : on le dit explicitement à l'appelant.
   //    On n'invente JAMAIS de lot, de DLC ni de fournisseur : le formulaire de
   //    saisie manuelle reste vide et l'opérateur saisit les valeurs de l'étiquette.
-  throw endpointError || new Error("Analyse d'images non configurée sur le serveur.");
+  throw endpointError || new Error("Configurez votre clé API IA (Gemini, OpenRouter ou Groq) dans Réglages > Préférences pour activer le scan photo.");
+}
+
+const VALID_CATEGORIES = ['cremerie', 'chocolat', 'fruits', 'farine', 'oeufs'];
+
+function parseJsonLoose(text) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    const match = String(text || '').match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Réponse IA invalide (JSON absent)');
+    return JSON.parse(match[0]);
+  }
+}
+
+function normaliserExtraction(parsed) {
+  return {
+    name: String(parsed?.name || '').trim(),
+    supplier: String(parsed?.supplier || '').trim(),
+    lot: String(parsed?.lot || '').toUpperCase().trim(),
+    dlcDate: String(parsed?.dlcDate || '').trim(),
+    category: VALID_CATEGORIES.includes(parsed?.category) ? parsed.category : 'cremerie',
+    confidence: parsed?.confidence || 'medium'
+  };
 }
 
 /**
- * Appel direct client OpenRouter (utilisé uniquement si l'utilisateur a configuré
- * sa propre clé en local). Même modèle et même contrat que la fonction serverless.
+ * Appel direct au fournisseur Vision IA selon le préfixe de la clé API :
+ * Gemini (`AIza…`), Groq (`gsk_…`), xAI (`xai-…`), NVIDIA NIM (`nvapi-…`) ou OpenRouter.
  */
-async function callOpenRouterDirect(apiKey, base64Data) {
-  const prompt = `Extrais fidèlement sous forme d'un objet JSON strict :
-- "name" (nom du produit)
+async function callVisionProviderDirect(apiKey, base64Data) {
+  const prompt = `Extrais fidèlement sous forme d'un objet JSON strict sans balises markdown :
+- "name" (nom complet du produit)
 - "supplier" (marque ou fournisseur)
 - "lot" (numéro de lot en majuscules sans le mot LOT)
 - "dlcDate" (format strict YYYY-MM-DD)
 - "category" ("cremerie", "chocolat", "fruits", "farine", ou "oeufs")
 - "confidence" ("high", "medium", ou "low")`;
 
-  const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  if (apiKey.startsWith('AIza')) {
+    const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { text: prompt },
+            { inline_data: { mime_type: 'image/jpeg', data: base64Data } }
+          ]
+        }],
+        generationConfig: { responseMimeType: 'application/json', temperature: 0.1 }
+      })
+    });
+    if (!resp.ok) {
+      const errText = await resp.text();
+      throw new Error(`Gemini status ${resp.status}: ${errText.slice(0, 180)}`);
+    }
+    const result = await resp.json();
+    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+    return text ? normaliserExtraction(parseJsonLoose(text)) : null;
+  }
+
+  let endpoint = 'https://openrouter.ai/api/v1/chat/completions';
+  let model = 'google/gemini-2.5-flash';
+  const headers = { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
+  if (apiKey.startsWith('gsk_')) {
+    endpoint = 'https://api.groq.com/openai/v1/chat/completions';
+    model = 'meta-llama/llama-4-scout-17b-16e-instruct';
+  } else if (apiKey.startsWith('xai-')) {
+    endpoint = 'https://api.x.ai/v1/chat/completions';
+    model = 'grok-2-vision-1212';
+  } else if (apiKey.startsWith('nvapi-')) {
+    endpoint = 'https://integrate.api.nvidia.com/v1/chat/completions';
+    model = 'meta/llama-3.2-90b-vision-instruct';
+  } else {
+    headers['HTTP-Referer'] = window.location.origin;
+    headers['X-Title'] = 'TraqHACCP';
+  }
+
+  const resp = await fetch(endpoint, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': window.location.origin,
-      'X-Title': 'TraqHACCP'
-    },
+    headers,
     body: JSON.stringify({
-      model: 'google/gemini-2.5-flash',
+      model,
       temperature: 0.1,
       max_tokens: 500,
       messages: [{
@@ -176,11 +239,10 @@ async function callOpenRouterDirect(apiKey, base64Data) {
 
   if (!resp.ok) {
     const errText = await resp.text();
-    throw new Error(`OpenRouter status ${resp.status}: ${errText}`);
+    throw new Error(`Vision API status ${resp.status}: ${errText.slice(0, 180)}`);
   }
 
   const result = await resp.json();
   const text = result.choices?.[0]?.message?.content;
-  if (!text) return null;
-  return JSON.parse(text);
+  return text ? normaliserExtraction(parseJsonLoose(text)) : null;
 }

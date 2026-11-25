@@ -47,7 +47,9 @@ function loadPlaywright(cheminBinaires = null) {
     }
   }
   const candidats = [process.env.PLAYWRIGHT_MODULE, 'playwright', 'playwright-core',
-    '/opt/data/node_modules/playwright'];
+    '/opt/data/node_modules/playwright',
+    'C:/Users/Admin/work/cartable-qa3/node_modules/playwright-core',
+    'C:/Users/Admin/work/cartable-qa2/node_modules/playwright-core'];
   for (const c of candidats) { if (!c) continue; try { return require(c); } catch {} }
   throw new Error('playwright introuvable — npm i -D playwright (ou PLAYWRIGHT_MODULE=/chemin)');
 }
@@ -56,21 +58,38 @@ function loadPlaywright(cheminBinaires = null) {
     On décide sur le LANCEMENT réel et non sur executablePath() : Playwright exécute le headless
     shell (chromium_headless_shell-<rev>) alors qu'executablePath() désigne le chrome complet —
     une sonde sur le fichier conclut donc à tort que le chemin est inutilisable. */
+function trouverChromeLocal() {
+  const base = process.env.LOCALAPPDATA ? join(process.env.LOCALAPPDATA, 'ms-playwright') : null;
+  if (!base || !existsSync(base)) return null;
+  for (const dir of readdirSync(base)) {
+    const p1 = join(base, dir, 'chrome-headless-shell-win64', 'chrome-headless-shell.exe');
+    if (dir.startsWith('chromium_headless_shell-') && existsSync(p1)) return p1;
+    const p2 = join(base, dir, 'chrome-win64', 'chrome.exe');
+    if (dir.startsWith('chromium-') && existsSync(p2)) return p2;
+  }
+  return null;
+}
+
 async function lancerNavigateur() {
   const chromium = loadPlaywright().chromium;
   try {
     return await chromium.launch();
   } catch (erreur) {
-    if (!/Executable doesn't exist/i.test(erreur.message) || !existsSync(CHEMIN_SECOURS)) throw erreur;
-    try {
-      return await loadPlaywright(CHEMIN_SECOURS).chromium.launch();
-    } catch (erreurSecours) {
-      throw new Error(
-        `binaire Chromium introuvable sur les deux chemins.\n` +
-        `  ${erreur.message.split('\n')[0]}\n` +
-        `  ${erreurSecours.message.split('\n')[0]}\n` +
-        `  installer : npm run setup:playwright`);
+    if (!/Executable doesn't exist/i.test(erreur.message)) throw erreur;
+    if (existsSync(CHEMIN_SECOURS)) {
+      try {
+        return await loadPlaywright(CHEMIN_SECOURS).chromium.launch();
+      } catch (erreurSecours) {
+        throw new Error(
+          `binaire Chromium introuvable sur les deux chemins.\n` +
+          `  ${erreur.message.split('\n')[0]}\n` +
+          `  ${erreurSecours.message.split('\n')[0]}\n` +
+          `  installer : npm run setup:playwright`);
+      }
     }
+    const exeLocal = trouverChromeLocal();
+    if (exeLocal) return await chromium.launch({ executablePath: exeLocal });
+    throw erreur;
   }
 }
 

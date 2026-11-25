@@ -1,23 +1,22 @@
 /**
  * TraqHACCP Pâtisserie — Modal Management & Form Submissions
  */
-import { state, saveState, getCurrentOperator, setCurrentOperator, genererId } from './state.js';
+import { state, saveState, getCurrentOperator, setCurrentOperator, genererId, computeLotStatus, resolveFifoLot } from './state.js';
 import { calculateRecipeMetrics, formatDateFr } from './calculations.js';
 import { playBeep, showToast } from './audio-toast.js';
 import { compressImage, extractLabelData } from './ai-scanner.js';
-import { 
-  renderLots, 
-  renderRecipes, 
-  renderSalesCatalog, 
-  renderSalesHistory, 
-  renderSecondaryDlcs, 
-  renderWitnessSamples, 
-  renderTeamGrid, 
-  renderOperatorSwitchList, 
-  updateOperatorUI, 
-  updateTopMetrics,
-  renderAudit
+import { readSettings, esc } from './settings.js';
+import {
+  renderLots, renderRecipes, renderSalesCatalog, renderSalesHistory,
+  renderSecondaryDlcs, renderWitnessSamples, renderTeamGrid,
+  renderOperatorSwitchList, updateOperatorUI, updateTopMetrics,
+  renderAudit, renderRecallOptions
 } from './views.js';
+
+function nomOperateurCourant() {
+  const op = getCurrentOperator();
+  return op ? `${op.firstName} ${op.lastName || ''} (${op.role})`.replace(/\s+/g, ' ').trim() : 'Opérateur';
+}
 
 /* ── Édition d'un enregistrement existant ───────────────────────────────────
    Ces identifiants signalent qu'une modale a été ouverte pour corriger un
@@ -41,19 +40,6 @@ function retrouverParId(liste, id, index) {
   if (parId) return parId;
   const i = Number(index);
   return Number.isInteger(i) && i >= 0 && i < (liste || []).length ? liste[i] : null;
-}
-
-/** Statut DLC recalculé depuis la date limite (≤ 1 jour : urgent, ≤ 2 : à surveiller). */
-function computeLotStatus(dlcDate) {
-  if (!dlcDate) return 'conforme';
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const limit = new Date(`${dlcDate}T00:00:00`);
-  if (isNaN(limit.getTime())) return 'conforme';
-  const jours = Math.round((limit - today) / 86400000);
-  if (jours <= 1) return 'urgent';
-  if (jours <= 2) return 'warning';
-  return 'conforme';
 }
 
 /** Libellés du mode de remise, partagés par la vente et sa correction. */
@@ -203,8 +189,15 @@ export function openNewSecondaryDlcModal() {
   adjustSecondaryDelay('entame');
 }
 
+let pendingOperatorId = null;
+
 export function openOperatorModal() {
   playBeep(550, 0.04);
+  pendingOperatorId = null;
+  const pinBox = document.getElementById('operator-pin-box');
+  const pinInput = document.getElementById('operator-pin-input');
+  if (pinBox) pinBox.hidden = true;
+  if (pinInput) pinInput.value = '';
   renderOperatorSwitchList();
   const m = document.getElementById('modal-operator-switch');
   m?.classList.remove('hidden');
@@ -219,7 +212,7 @@ export function openAddUserModal() {
 }
 
 export function openCustomSaleModal() {
-  startSaleWorkflow('REC-01');
+  startSaleWorkflow(state.recipes[0]?.id || 'REC-01');
 }
 
 export function createSecondaryFromLot(lotNum) {
@@ -229,10 +222,11 @@ export function createSecondaryFromLot(lotNum) {
 }
 
 export function adjustSecondaryDelay(type) {
-  let days = 3;
-  if (type === 'decong') days = 1;
-  if (type === 'cuisson') days = 3;
-  if (type === 'sousvide') days = 5;
+  const dlcCfg = (readSettings() && readSettings().dlc) || {};
+  let days = Number(dlcCfg.standard) || 3;
+  if (type === 'decong') days = Number(dlcCfg.decongele) || 1;
+  if (type === 'cuisson' || type === 'entame') days = Number(dlcCfg.standard) || 3;
+  if (type === 'sousvide') days = Number(dlcCfg.sousVide) || 5;
 
   const expiry = new Date(Date.now() + days * 86400000).toISOString().split('T')[0];
   const secExp = document.getElementById('sec-computed-dlc');
@@ -268,17 +262,57 @@ export function toggleAlertsOnly() {
   renderLots();
 }
 
-export function handleSwitchOperator(userId) {
+function appliquerChangementOperateur(userId) {
+  pendingOperatorId = null;
+  const pinBox = document.getElementById('operator-pin-box');
+  const pinInput = document.getElementById('operator-pin-input');
+  if (pinBox) pinBox.hidden = true;
+  if (pinInput) pinInput.value = '';
   setCurrentOperator(userId);
   updateOperatorUI();
+  renderTeamGrid();
   closeModals();
   const op = getCurrentOperator();
-  if (op) {
-    showToast(`${op.firstName} ${op.lastName} est maintenant en service.`);
-  } else {
-    showToast(`L'opérateur est maintenant en service.`);
-  }
+  showToast(op ? `${op.firstName} ${op.lastName} est maintenant en service.` : "L'opérateur est maintenant en service.");
   playBeep(680, 0.05);
+}
+
+export function handleOperatorPinInput(val) {
+  if (!pendingOperatorId) return;
+  const target = state.teamMembers.find(m => m.id === pendingOperatorId);
+  if (!target) return;
+  const saisie = String(val || '').trim();
+  if (saisie === String(target.pin)) {
+    appliquerChangementOperateur(target.id);
+  } else if (saisie.length >= String(target.pin).length) {
+    playBeep(250, 0.1);
+    showToast(`Code PIN incorrect pour ${target.firstName}.`);
+    const pinInput = document.getElementById('operator-pin-input');
+    if (pinInput) { pinInput.value = ''; pinInput.focus(); }
+  }
+}
+
+export function handleSwitchOperator(userId) {
+  const target = state.teamMembers.find(m => m.id === userId);
+  if (target && target.pin && target.id !== state.currentOperatorId) {
+    const modal = document.getElementById('modal-operator-switch');
+    if (modal && modal.classList.contains('hidden')) openOperatorModal();
+    const pinBox = document.getElementById('operator-pin-box');
+    const pinInput = document.getElementById('operator-pin-input');
+    if (pinBox && pinInput) {
+      if (pendingOperatorId === userId && pinInput.value.trim() === String(target.pin)) {
+        appliquerChangementOperateur(userId);
+        return;
+      }
+      pendingOperatorId = userId;
+      pinBox.hidden = false;
+      pinInput.value = '';
+      pinInput.focus();
+      showToast(`Saisissez le code PIN de ${target.firstName}.`);
+      return;
+    }
+  }
+  appliquerChangementOperateur(userId);
 }
 
 export function openAdjustStockModal(id) {
@@ -410,6 +444,7 @@ export function handleTraceFormSubmit(e) {
     if (lot) {
       const dlcChanged = lot.dlcDate !== values.dlcDate;
       Object.assign(lot, values);
+      if (!lot.operator) lot.operator = nomOperateurCourant();
       if (dlcChanged) lot.status = computeLotStatus(values.dlcDate);
     }
     saveState();
@@ -419,6 +454,7 @@ export function handleTraceFormSubmit(e) {
     renderLots();
     renderRecipes();
     renderSalesCatalog();
+    renderRecallOptions();
     updateTopMetrics();
     showToast(`Lot « ${values.name} » corrigé : libellé, DLC et valorisation mis à jour.`);
     e.target.reset();
@@ -429,7 +465,8 @@ export function handleTraceFormSubmit(e) {
     id: genererId('L', state.lots),
     ...values,
     receiptDate: new Date().toISOString().split('T')[0],
-    status: computeLotStatus(values.dlcDate)
+    status: computeLotStatus(values.dlcDate),
+    operator: nomOperateurCourant()
   };
 
   state.lots.unshift(newLot);
@@ -437,6 +474,7 @@ export function handleTraceFormSubmit(e) {
   playBeep(750, 0.1);
   closeModals();
   renderLots();
+  renderRecallOptions();
   updateTopMetrics();
   showToast(`Lot "${newLot.name}" enregistré et entré en stock.`);
   e.target.reset();
@@ -518,7 +556,7 @@ export function addRecipeIngredientRow(initial) {
   const container = document.getElementById('recipe-ingredients-inputs');
   if (!container) return;
 
-  const lotOptions = state.lots.map(l => `<option value="${l.lot}">${l.name} (Lot ${l.lot})</option>`).join('');
+  const lotOptions = state.lots.map(l => `<option value="${esc(l.lot)}">${esc(l.name)} (Lot ${esc(l.lot)})</option>`).join('');
 
   const row = document.createElement('div');
   row.className = 'recipe-ing-row grid grid-cols-12 gap-2 items-center';
@@ -596,12 +634,22 @@ export function autoFillIngName(selectEl) {
 }
 
 export function startSaleWorkflow(recipeId) {
+  if (!state.recipes || state.recipes.length === 0) {
+    showToast("Créez d'abord une fiche recette dans l'onglet Fiches Coût & Recettes.");
+    return;
+  }
   playBeep(640, 0.04);
   state.pendingSaleRecipe = state.recipes.find(r => r.id === recipeId) || state.recipes[0];
   state.pendingSaleMultiplier = 1;
 
   document.getElementById('destock-recipe-name').innerText = state.pendingSaleRecipe.name;
   document.getElementById('destock-units').innerText = state.pendingSaleMultiplier;
+  const select = document.getElementById('destock-recipe-select');
+  if (select) {
+    select.innerHTML = state.recipes
+      .map(r => `<option value="${esc(r.id)}"${r.id === state.pendingSaleRecipe.id ? ' selected' : ''}>${esc(r.name)} (${Number(r.sellingPriceTTC || 0).toFixed(2)} €)</option>`)
+      .join('');
+  }
 
   renderDestockIngredientsList();
 
@@ -624,8 +672,8 @@ export function renderDestockIngredientsList() {
   const listContainer = document.getElementById('destock-ingredients-list');
   if (!listContainer) return;
 
-  listContainer.innerHTML = state.pendingSaleRecipe.ingredients.map((ing, idx) => {
-    const lotItem = state.lots.find(l => l.lot === ing.lotMatch);
+  listContainer.innerHTML = (state.pendingSaleRecipe.ingredients || []).map((ing, idx) => {
+    const lotItem = resolveFifoLot(ing);
     const totalNeeded = (ing.qtyPerUnit * state.pendingSaleMultiplier).toFixed(3);
     const stockAfter = lotItem ? (lotItem.stockQty - parseFloat(totalNeeded)).toFixed(2) : 0;
     const isShort = stockAfter < 0;
@@ -633,10 +681,10 @@ export function renderDestockIngredientsList() {
     return `
       <div class="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-between gap-2">
         <div>
-          <div class="font-bold text-zinc-900 dark:text-white text-xs">${ing.name}</div>
-          <div class="text-[10px] text-zinc-400 font-mono">Lot FIFO : ${lotItem ? lotItem.lot : 'N/A'} (DLC: ${lotItem ? formatDateFr(lotItem.dlcDate) : '-'})</div>
+          <div class="font-bold text-zinc-900 dark:text-white text-xs">${esc(ing.name)}</div>
+          <div class="text-[10px] text-zinc-400 font-mono">Lot FIFO : ${lotItem ? esc(lotItem.lot) : 'N/A'} (DLC: ${lotItem ? esc(formatDateFr(lotItem.dlcDate)) : '-'})</div>
           <div class="text-[10px] ${isShort ? 'text-rose-500 font-bold' : 'text-zinc-500'}">
-            Stock actuel : ${lotItem ? lotItem.stockQty : 0} ${ing.unit} → Reste : ${stockAfter} ${ing.unit}
+            Stock actuel : ${lotItem ? esc(lotItem.stockQty) : 0} ${esc(ing.unit)} → Reste : ${stockAfter} ${esc(ing.unit)}
           </div>
         </div>
 
@@ -649,7 +697,7 @@ export function renderDestockIngredientsList() {
             value="${totalNeeded}" 
             class="w-20 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-right font-bold text-xs focus:ring-1 focus:ring-emerald-500"
           >
-          <span class="text-[10px] text-zinc-500 font-mono">${ing.unit}</span>
+          <span class="text-[10px] text-zinc-500 font-mono">${esc(ing.unit)}</span>
         </div>
       </div>
     `;
@@ -686,9 +734,9 @@ export function confirmStockDepletion() {
   // Quantités réellement déduites, conservées avec la vente pour pouvoir la supprimer sans perte.
   const usedDeductions = [];
 
-  state.pendingSaleRecipe.ingredients.forEach((ing, idx) => {
+  (state.pendingSaleRecipe.ingredients || []).forEach((ing, idx) => {
     const customQty = parseFloat(document.getElementById(`destock-input-${idx}`)?.value || (ing.qtyPerUnit * state.pendingSaleMultiplier));
-    const lotItem = state.lots.find(l => l.lot === ing.lotMatch);
+    const lotItem = resolveFifoLot(ing);
     if (lotItem) {
       lotItem.stockQty = Math.max(0, lotItem.stockQty - customQty);
       usedLotsList.push(lotItem.lot);
@@ -712,6 +760,7 @@ export function confirmStockDepletion() {
   const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   state.salesHistory.unshift({
     id: genererId('V', state.salesHistory),
+    date: now.toISOString().split('T')[0],
     time: timeStr,
     recipeName: state.pendingSaleRecipe.name,
     channel: custChannel,
@@ -724,7 +773,8 @@ export function confirmStockDepletion() {
     totalTTC: totalTTC,
     marginTotal: marginTotal,
     lotsUsed: usedLotsList.join(', '),
-    deductions: usedDeductions
+    deductions: usedDeductions,
+    operator: nomOperateurCourant()
   });
 
   saveState();
@@ -752,7 +802,7 @@ export function handleSecondaryDlcSubmit(e) {
     type: type,
     creationDate: new Date().toISOString().split('T')[0],
     expiryDate: exp,
-    operator: (() => { const op = getCurrentOperator(); return op ? op.firstName + ' (' + op.role + ')' : ''; })()
+    operator: nomOperateurCourant()
   });
 
   saveState();
@@ -778,7 +828,8 @@ export function handleWitnessFormSubmit(e) {
     service: service,
     serviceDate: now.toISOString().split('T')[0],
     expiryDate: exp,
-    temp: temp
+    temp: temp,
+    operator: nomOperateurCourant()
   });
 
   saveState();
@@ -983,4 +1034,74 @@ export function handleSaleDeleteSubmit(e) {
       ? `${sale.recipeName} (${sale.time}, ${sale.customerName}) supprimée · stock rendu : ${rendus.join(', ')}`
       : `${sale.recipeName} (${sale.time}, ${sale.customerName}) supprimée du registre.`
   );
+}
+
+/* ── Suppression d'enregistrements (lots, recettes, DLC 2nd, témoins, équipe) ─ */
+
+export function deleteLot(id) {
+  const cible = state.lots.find(l => l.id === id);
+  if (!cible) return;
+  state.lots = state.lots.filter(l => l.id !== id);
+  saveState();
+  playBeep(520, 0.06);
+  renderLots();
+  renderRecipes();
+  renderSalesCatalog();
+  renderSecondaryDlcs();
+  renderRecallOptions();
+  updateTopMetrics();
+  showToast(`Lot « ${cible.name} » retiré du stock.`);
+}
+
+export function deleteRecipe(id) {
+  const cible = state.recipes.find(r => r.id === id);
+  if (!cible) return;
+  state.recipes = state.recipes.filter(r => r.id !== id);
+  saveState();
+  playBeep(520, 0.06);
+  renderRecipes();
+  renderSalesCatalog();
+  updateTopMetrics();
+  showToast(`Fiche recette « ${cible.name} » supprimée.`);
+}
+
+export function deleteSecondaryDlc(id) {
+  const cible = state.secondaryDlcs.find(s => s.id === id);
+  if (!cible) return;
+  state.secondaryDlcs = state.secondaryDlcs.filter(s => s.id !== id);
+  saveState();
+  playBeep(520, 0.06);
+  renderSecondaryDlcs();
+  updateTopMetrics();
+  showToast(`DLC secondaire « ${cible.name} » retirée.`);
+}
+
+export function deleteWitnessSample(id) {
+  const cible = state.witnessSamples.find(w => w.id === id);
+  if (!cible) return;
+  state.witnessSamples = state.witnessSamples.filter(w => w.id !== id);
+  saveState();
+  playBeep(520, 0.06);
+  renderWitnessSamples();
+  renderAudit();
+  showToast(`Échantillon témoin « ${cible.dishName} » retiré.`);
+}
+
+export function deleteTeamMember(id) {
+  if (state.teamMembers.length <= 1) {
+    showToast("Impossible de retirer le dernier membre de l'équipe.");
+    return;
+  }
+  const cible = state.teamMembers.find(m => m.id === id);
+  if (!cible) return;
+  state.teamMembers = state.teamMembers.filter(m => m.id !== id);
+  if (state.currentOperatorId === id && state.teamMembers[0]) {
+    state.currentOperatorId = state.teamMembers[0].id;
+  }
+  saveState();
+  playBeep(520, 0.06);
+  renderTeamGrid();
+  renderOperatorSwitchList();
+  updateOperatorUI();
+  showToast(`Membre « ${cible.firstName} ${cible.lastName} » retiré de l'équipe.`);
 }

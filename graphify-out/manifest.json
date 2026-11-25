@@ -12,9 +12,9 @@
     "semantic_hash": ""
   },
   "sw.js": {
-    "mtime": 1795615050.8636537,
-    "seen": 1795615091.8580334,
-    "ast_hash": "77f78c7ab228d673cc47cf4752e8098d",
+    "mtime": 1795616964.4899113,
+    "seen": 1795617133.7840574,
+    "ast_hash": "2286c65e6a5054895d7f31d204be1824",
     "semantic_hash": ""
   },
   "vercel.json": {
@@ -144,9 +144,9 @@
     "semantic_hash": ""
   },
   "tools/audit-ui-paint.mjs": {
-    "mtime": 1795614800.8634803,
-    "seen": 1795614979.6324053,
-    "ast_hash": "267c31eea57ff394d1ac44d52c6ed4c8",
+    "mtime": 1795617043.0417833,
+    "seen": 1795617133.7840574,
+    "ast_hash": "3a2ee2efa3a293a0e9438f220cd54846",
     "semantic_hash": ""
   },
   "tools/check-artifact-fresh.mjs": {
@@ -168,9 +168,9 @@
     "semantic_hash": ""
   },
   "tools/test-gates.mjs": {
-    "mtime": 1795614800.8757544,
-    "seen": 1795614979.6324053,
-    "ast_hash": "b510734bb22250d0b20d6381e8aae717",
+    "mtime": 1795616962.1174076,
+    "seen": 1795617133.7840574,
+    "ast_hash": "388a19cd1ca30d9f8cf905390a098834",
     "semantic_hash": ""
   },
   ".agents/skills/haccp-compliance-checker/SKILL.md": {
@@ -186,9 +186,9 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1795615059.551658,
-    "seen": 1795615091.8404212,
-    "ast_hash": "4b67962e7a3cabf84906e02e383f51bf",
+    "mtime": 1795615116.2281804,
+    "seen": 1795617133.7682717,
+    "ast_hash": "105dba4ef4f7d41848378d9d6c5852ac",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -243,9 +243,9 @@
     "semantic_hash": ""
   },
   "js/patisserie/app.js": {
-    "mtime": 1795614800.8284974,
-    "seen": 1795614979.6324053,
-    "ast_hash": "ae5379a46d846bbf970c0c150fe7da34",
+    "mtime": 1795616950.6718707,
+    "seen": 1795617133.7682717,
+    "ast_hash": "d32525fcbc5c077a8a124519e25a8921",
     "semantic_hash": ""
   },
   "js/patisserie/audio-toast.js": {
@@ -261,33 +261,33 @@
     "semantic_hash": ""
   },
   "js/patisserie/calculations.js": {
-    "mtime": 1795614800.8284974,
-    "seen": 1795614979.6324053,
-    "ast_hash": "8b87b374e03f8606c3dc0f1cea373b5b",
+    "mtime": 1795616737.6881733,
+    "seen": 1795617133.7682717,
+    "ast_hash": "1d37120411ce5d767d7e2ebec1003927",
     "semantic_hash": ""
   },
   "js/patisserie/modals.js": {
-    "mtime": 1795614800.8284974,
-    "seen": 1795614979.6324053,
-    "ast_hash": "6d44fa806e0573d617bd8f4ba099555a",
+    "mtime": 1795616948.2744794,
+    "seen": 1795617133.7682717,
+    "ast_hash": "76ad9bf7dcd4981fe95033f0f5f244a5",
     "semantic_hash": ""
   },
   "js/patisserie/recall.js": {
-    "mtime": 1795614800.8284974,
-    "seen": 1795614979.6324053,
-    "ast_hash": "6f861131e9200e880cde701d406f9039",
+    "mtime": 1795616951.9681644,
+    "seen": 1795617133.7682717,
+    "ast_hash": "ae9d10fc3320263bd3b8ae5f760fe8b7",
     "semantic_hash": ""
   },
   "js/patisserie/state.js": {
-    "mtime": 1795614800.8284974,
-    "seen": 1795614979.6324053,
-    "ast_hash": "3dfddd58703762a731b393412047af59",
+    "mtime": 1795616736.2077112,
+    "seen": 1795617133.7682717,
+    "ast_hash": "7d205e0654eb8df355ea2a6e9d056faf",
     "semantic_hash": ""
   },
   "js/patisserie/views.js": {
-    "mtime": 1795614800.8284974,
-    "seen": 1795614979.6324053,
-    "ast_hash": "6a66f858beda9fa112a52475196474c6",
+    "mtime": 1795617030.193693,
+    "seen": 1795617133.7682717,
+    "ast_hash": "b9d4bbd772d6d754092cd90c5404e7c5",
     "semantic_hash": ""
   },
   "tools/check-sw-assets.mjs": {
@@ -315,9 +315,9 @@
     "semantic_hash": ""
   },
   "js/patisserie/settings.js": {
-    "mtime": 1795614800.8284974,
-    "seen": 1795614979.6324053,
-    "ast_hash": "37fb4166948e2facb20071528de7120a",
+    "mtime": 1795616708.6902616,
+    "seen": 1795617133.7682717,
+    "ast_hash": "2353a457dabea54d3d0d8ef8b0c16ce8",
     "semantic_hash": ""
   },
   "tools/css-coverage-baseline.json": {
@@ -345,9 +345,9 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1795614800.8284974,
-    "seen": 1795614979.6324053,
-    "ast_hash": "2ba368db7360054b219aaa5b3ec5d6c1",
+    "mtime": 1795616865.6834526,
+    "seen": 1795617133.7840574,
+    "ast_hash": "8f37282cda30da628d79553502ca3b15",
     "semantic_hash": ""
   },
   "api/extract-label.js": {
@@ -357,9 +357,9 @@
     "semantic_hash": ""
   },
   "js/patisserie/ai-scanner.js": {
-    "mtime": 1795614800.8284974,
-    "seen": 1795614979.6324053,
-    "ast_hash": "0bd5aba698d481e016110c878b6499af",
+    "mtime": 1795616705.4533894,
+    "seen": 1795617133.7682717,
+    "ast_hash": "08dfaca39645d9198c470e3b9d75a31d",
     "semantic_hash": ""
   },
   "docs/GUIDE_UTILISATEUR.md": {
@@ -591,9 +591,9 @@
     "semantic_hash": ""
   },
   "js/patisserie/archive.js": {
-    "mtime": 1795614800.8284974,
-    "seen": 1795614979.6324053,
-    "ast_hash": "95bdaaca3cc61011937753a79d1d628e",
+    "mtime": 1795616733.943779,
+    "seen": 1795617133.7682717,
+    "ast_hash": "6efb791e1adf3e89eb09deac39216cab",
     "semantic_hash": ""
   },
   "js/patisserie/etat-sauvegarde.js": {
