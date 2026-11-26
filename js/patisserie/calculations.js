@@ -22,11 +22,13 @@ export function calculateRecipeMetrics(recipe) {
     }
   });
 
-  const prixVenteHT = recipe.sellingPriceTTC / (1 + recipe.tvaRate);
+  const tvaRate = Number.isFinite(Number(recipe?.tvaRate)) ? Number(recipe.tvaRate) : 0.055;
+  const sellingTTC = Number(recipe?.sellingPriceTTC) || 0;
+  const prixVenteHT = sellingTTC / (1 + tvaRate);
   const marginBrute = Math.max(0, prixVenteHT - costMatiereHT);
   const foodCostRatio = prixVenteHT > 0 ? (costMatiereHT / prixVenteHT) * 100 : 0;
   const margeRatio = prixVenteHT > 0 ? (marginBrute / prixVenteHT) * 100 : 0;
-  const coefMarge = costMatiereHT > 0 ? (recipe.sellingPriceTTC / costMatiereHT) : 0;
+  const coefMarge = costMatiereHT > 0 ? (sellingTTC / costMatiereHT) : 0;
 
   return {
     costMatiereHT,

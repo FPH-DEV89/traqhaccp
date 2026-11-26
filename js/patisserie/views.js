@@ -543,7 +543,9 @@ export function renderAudit() {
   }
 
   if (elTemoins) {
-    const activeWitnesses = state.witnessSamples.filter(w => new Date(w.expiryDate) >= new Date());
+    const now = new Date();
+    const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const activeWitnesses = state.witnessSamples.filter(w => String(w.expiryDate || '').slice(0, 10) >= todayIso);
     if (activeWitnesses.length === 0) {
       elTemoins.textContent = 'Aucun témoin';
       elTemoins.dataset.audit = 'vide';
