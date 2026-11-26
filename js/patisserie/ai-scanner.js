@@ -1,7 +1,9 @@
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '../../src/infrastructure/config.js';
+
 /**
  * js/patisserie/ai-scanner.js
  * Module client pour la compression et l'analyse intelligente d'étiquettes alimentaires (Option B).
- * Détection automatique : DLC, Numéro de lot, Nom de produit, Marque et Catégorie HACCP.
+ * Détection automatique : DLC / DDM / DLUO, Numéro de lot, Nom de produit, Marque et Catégorie HACCP.
  */
 
 /**
@@ -76,8 +78,8 @@ export function demoLabelData() {
 
 /**
  * Envoie l'image d'étiquette pour extraction par Vision IA.
- * Tente le endpoint Vercel Serverless `/api/extract-label` (OpenRouter côté serveur),
- * puis une clé OpenRouter configurée localement. En l'absence des deux, LÈVE une erreur
+ * Tente l'Edge Function Supabase `extract-label`, puis `./api/extract-label`,
+ * puis une clé IA configurée localement. En l'absence des trois, LÈVE une erreur
  * explicite : aucune donnée d'étiquette n'est inventée (voir DEMO_LABEL_DATA_URL).
  * 
  * @param {string} dataUrl - Image encodée en data URL
@@ -87,13 +89,44 @@ export async function extractLabelData(dataUrl) {
   // Jeu de démonstration explicite : jamais de données inventées pour une vraie photo.
   if (dataUrl === DEMO_LABEL_DATA_URL) return demoLabelData();
 
-  const base64Data = dataUrl.replace(/^data:image\/[a-z]+;base64,/, '');
+  const base64Data = dataUrl.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, '');
 
-  // 1. Endpoint serverless. Toute défaillance est MÉMORISÉE puis remontée à l'appelant :
-  //    une panne ne doit jamais se transformer en étiquette inventée (registre HACCP).
+  // 1. Edge Function Supabase (fonctionne sur GitHub Pages, Cloudflare Pages, Vercel et en PWA).
   let endpointError = null;
+  if (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY) {
+    try {
+      const fnResp = await fetch(`${SUPABASE_URL}/functions/v1/extract-label`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ image: base64Data, mimeType: 'image/jpeg' })
+      });
+      if (fnResp.ok) {
+        const res = await fnResp.json();
+        if (res.success && res.data) {
+          return normaliserExtraction(res.data);
+        }
+        endpointError = new Error(res.error || "Réponse inexploitable du service d'analyse.");
+      } else if (fnResp.status !== 404) {
+        const errJson = await fnResp.json().catch(() => null);
+        endpointError = new Error(
+          (errJson && errJson.error) || `Service d'analyse d'images indisponible (HTTP ${fnResp.status}).`
+        );
+      }
+    } catch (err) {
+      endpointError = /Failed to fetch|NetworkError|load failed/i.test(err.message || '')
+        ? new Error("Service d'analyse d'images injoignable (réseau).")
+        : err;
+      console.warn("Analyse d'étiquette indisponible via l'Edge Function Supabase.", err);
+    }
+  }
+
+  // 2. Repli endpoint serverless relatif (Vercel / serveur local avec /api).
   try {
-    const response = await fetch('/api/extract-label', {
+    const response = await fetch('./api/extract-label', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image: base64Data, mimeType: 'image/jpeg' })
@@ -102,25 +135,24 @@ export async function extractLabelData(dataUrl) {
     if (response.ok) {
       const res = await response.json();
       if (res.success && res.data) {
-        return res.data;
+        return normaliserExtraction(res.data);
       }
       endpointError = new Error(res.error || "Réponse inexploitable du service d'analyse.");
-    } else if (response.status !== 404) {
-      // 404 = serveur statique sans fonction /api (poste de dev) : on poursuit.
+    } else if (response.status !== 404 && !endpointError) {
       const errJson = await response.json().catch(() => null);
       endpointError = new Error(
         (errJson && errJson.error) || `Service d'analyse d'images indisponible (HTTP ${response.status}).`
       );
     }
   } catch (err) {
-    // Panne réseau ou exception : mémorisée, plus jamais avalée en silence.
-    endpointError = /Failed to fetch|NetworkError|load failed/i.test(err.message || '')
-      ? new Error("Service d'analyse d'images injoignable (réseau).")
-      : err;
-    console.warn("Analyse d'étiquette indisponible via l'endpoint serveur.", err);
+    if (!endpointError) {
+      endpointError = /Failed to fetch|NetworkError|load failed/i.test(err.message || '')
+        ? new Error("Service d'analyse d'images injoignable (réseau).")
+        : err;
+    }
   }
 
-  // 2. Mode secours : clé IA configurée dans Réglages > Préférences ou localStorage
+  // 3. Mode secours : clé IA configurée dans Réglages > Préférences ou localStorage
   let settingsKey = '';
   try {
     const rawSettings = localStorage.getItem('traq_settings');
@@ -137,13 +169,96 @@ export async function extractLabelData(dataUrl) {
     }
   }
 
-  // 3. Aucun moyen d'analyse disponible : on le dit explicitement à l'appelant.
+  // 4. Aucun moyen d'analyse disponible : on le dit explicitement à l'appelant.
   //    On n'invente JAMAIS de lot, de DLC ni de fournisseur : le formulaire de
   //    saisie manuelle reste vide et l'opérateur saisit les valeurs de l'étiquette.
   throw endpointError || new Error("Configurez votre clé API IA (Gemini, OpenRouter ou Groq) dans Réglages > Préférences pour activer le scan photo.");
 }
 
 const VALID_CATEGORIES = ['cremerie', 'chocolat', 'fruits', 'farine', 'oeufs'];
+
+const MOIS_FR = {
+  jan: 1, janv: 1, janvier: 1,
+  fev: 2, fevr: 2, fevrier: 2,
+  mar: 3, mars: 3,
+  avr: 4, avril: 4,
+  mai: 5,
+  jun: 6, juin: 6,
+  jul: 7, juil: 7, juillet: 7,
+  aou: 8, aout: 8,
+  sep: 9, sept: 9, septembre: 9,
+  oct: 10, octobre: 10,
+  nov: 11, novembre: 11,
+  dec: 12, decembre: 12,
+};
+
+function lastDayOfMonth(year, month) {
+  return new Date(Date.UTC(year, month, 0)).getUTCDate();
+}
+
+function formatIsoDate(year, month, day) {
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) return '';
+  if (year < 2000 || year > 2100 || month < 1 || month > 12) return '';
+  const maxDay = lastDayOfMonth(year, month);
+  if (day < 1 || day > maxDay) return '';
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+function normalizeYear(y) {
+  const n = Number(y);
+  return String(y).length === 2 ? 2000 + n : n;
+}
+
+/**
+ * Convertit toute représentation courante de DLC / DDM / DLUO vers ISO YYYY-MM-DD
+ * exigé par `<input type="date">`. Retourne '' si aucune date valide n'est trouvée.
+ */
+export function normaliserDateIso(raw) {
+  const s = String(raw || '').trim();
+  if (!s) return '';
+
+  const isoPrefix = s.match(/\b(20\d{2})[-/.](\d{1,2})[-/.](\d{1,2})\b/);
+  if (isoPrefix) {
+    return formatIsoDate(Number(isoPrefix[1]), Number(isoPrefix[2]), Number(isoPrefix[3]));
+  }
+
+  const dmy = s.match(/(?:^|[^\d])([0-3]?\d)[/.\-\s]+([01]?\d)[/.\-\s]+(\d{4}|\d{2})(?:[^\d]|$)/);
+  if (dmy) {
+    return formatIsoDate(normalizeYear(dmy[3]), Number(dmy[2]), Number(dmy[1]));
+  }
+
+  const ym = s.match(/^\s*(20\d{2})[-/.](\d{1,2})\s*$/);
+  if (ym) {
+    const y = Number(ym[1]);
+    const m = Number(ym[2]);
+    return m >= 1 && m <= 12 ? formatIsoDate(y, m, lastDayOfMonth(y, m)) : '';
+  }
+
+  const my = s.match(/(?:^|[^\d])([01]?\d)[/.\-\s]+(\d{4}|\d{2})\s*$/);
+  if (my) {
+    const m = Number(my[1]);
+    const y = normalizeYear(my[2]);
+    return m >= 1 && m <= 12 ? formatIsoDate(y, m, lastDayOfMonth(y, m)) : '';
+  }
+
+  const sansAccent = s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const frDayMonthYear = sansAccent.match(/(?:^|\b)([0-3]?\d)\s+([a-z]{3,10})\.?\s+(\d{4}|\d{2})\b/);
+  if (frDayMonthYear) {
+    const m = MOIS_FR[frDayMonthYear[2]];
+    if (m) return formatIsoDate(normalizeYear(frDayMonthYear[3]), m, Number(frDayMonthYear[1]));
+  }
+
+  const frMonthYear = sansAccent.match(/\b([a-z]{3,10})\.?\s+(\d{4}|\d{2})\b/);
+  if (frMonthYear) {
+    const m = MOIS_FR[frMonthYear[1]];
+    if (m) {
+      const y = normalizeYear(frMonthYear[2]);
+      return formatIsoDate(y, m, lastDayOfMonth(y, m));
+    }
+  }
+
+  return '';
+}
 
 function parseJsonLoose(text) {
   try {
@@ -155,14 +270,37 @@ function parseJsonLoose(text) {
   }
 }
 
-function normaliserExtraction(parsed) {
+function nettoyerLot(raw) {
+  return String(raw || '')
+    .trim()
+    .replace(/^(?:N°?\s*DE\s*LOT|NUM[EÉ]RO\s*DE\s*LOT|LOT|BATCH|L)\s*[:.#-]?\s*/i, '')
+    .toUpperCase()
+    .trim();
+}
+
+export function normaliserExtraction(parsed) {
+  const rawDate = parsed?.dlcDate ?? parsed?.dlc ?? parsed?.ddm ?? parsed?.dluo
+    ?? parsed?.expirationDate ?? parsed?.expiryDate ?? parsed?.bestBefore ?? '';
+  let dlcDate = normaliserDateIso(rawDate);
+  let lot = nettoyerLot(parsed?.lot ?? parsed?.lotNumber ?? parsed?.numeroLot ?? parsed?.batch ?? '');
+
+  if (!dlcDate && lot) {
+    dlcDate = normaliserDateIso(lot);
+  }
+  if (!lot && dlcDate) {
+    lot = `LOT-${dlcDate.replace(/-/g, '')}`;
+  }
+
+  const cat = String(parsed?.category || '').toLowerCase().trim();
+  const conf = String(parsed?.confidence || 'medium').toLowerCase().trim();
+
   return {
     name: String(parsed?.name || '').trim(),
     supplier: String(parsed?.supplier || '').trim(),
-    lot: String(parsed?.lot || '').toUpperCase().trim(),
-    dlcDate: String(parsed?.dlcDate || '').trim(),
-    category: VALID_CATEGORIES.includes(parsed?.category) ? parsed.category : 'cremerie',
-    confidence: parsed?.confidence || 'medium'
+    lot,
+    dlcDate,
+    category: VALID_CATEGORIES.includes(cat) ? cat : 'cremerie',
+    confidence: ['high', 'medium', 'low'].includes(conf) ? conf : 'medium'
   };
 }
 
@@ -174,8 +312,8 @@ async function callVisionProviderDirect(apiKey, base64Data) {
   const prompt = `Extrais fidèlement sous forme d'un objet JSON strict sans balises markdown :
 - "name" (nom complet du produit)
 - "supplier" (marque ou fournisseur)
-- "lot" (numéro de lot en majuscules sans le mot LOT)
-- "dlcDate" (format strict YYYY-MM-DD)
+- "lot" (numéro de lot en majuscules sans le mot LOT ; si "voir date / DLC / DDM / DLUO", utiliser le code date ex: 28092026)
+- "dlcDate" (DLC "À consommer jusqu'au", DDM / DLUO "À consommer de préférence avant le / fin", EXP, format strict YYYY-MM-DD ; si MM/YYYY, dernier jour du mois)
 - "category" ("cremerie", "chocolat", "fruits", "farine", ou "oeufs")
 - "confidence" ("high", "medium", ou "low")`;
 
@@ -206,6 +344,7 @@ async function callVisionProviderDirect(apiKey, base64Data) {
   let endpoint = 'https://openrouter.ai/api/v1/chat/completions';
   let model = 'google/gemini-2.5-flash';
   const headers = { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
+  let isNvidia = false;
   if (apiKey.startsWith('gsk_')) {
     endpoint = 'https://api.groq.com/openai/v1/chat/completions';
     model = 'meta-llama/llama-4-scout-17b-16e-instruct';
@@ -214,27 +353,31 @@ async function callVisionProviderDirect(apiKey, base64Data) {
     model = 'grok-2-vision-1212';
   } else if (apiKey.startsWith('nvapi-')) {
     endpoint = 'https://integrate.api.nvidia.com/v1/chat/completions';
-    model = 'meta/llama-3.2-90b-vision-instruct';
+    model = 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning';
+    isNvidia = true;
   } else {
     headers['HTTP-Referer'] = window.location.origin;
     headers['X-Title'] = 'TraqHACCP';
   }
 
+  const payload = {
+    model,
+    temperature: 0.1,
+    max_tokens: 500,
+    messages: [{
+      role: 'user',
+      content: [
+        { type: 'text', text: prompt },
+        { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Data}` } }
+      ]
+    }]
+  };
+  if (isNvidia) payload.chat_template_kwargs = { enable_thinking: false };
+
   const resp = await fetch(endpoint, {
     method: 'POST',
     headers,
-    body: JSON.stringify({
-      model,
-      temperature: 0.1,
-      max_tokens: 500,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'text', text: prompt },
-          { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Data}` } }
-        ]
-      }]
-    })
+    body: JSON.stringify(payload)
   });
 
   if (!resp.ok) {
