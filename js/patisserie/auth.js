@@ -17,6 +17,8 @@ import {
   renderSecondaryDlcs, 
   renderWitnessSamples, 
   renderTeamGrid, 
+  renderAudit,
+  renderRecallOptions,
   updateOperatorUI, 
   updateTopMetrics 
 } from './views.js';
@@ -204,6 +206,8 @@ function rafraichirToutesLesVues() {
   renderSecondaryDlcs();
   renderWitnessSamples();
   renderTeamGrid();
+  renderAudit();
+  renderRecallOptions();
   updateOperatorUI();
   updateTopMetrics();
 }

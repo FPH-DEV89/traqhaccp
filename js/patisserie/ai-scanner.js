@@ -37,8 +37,8 @@ export async function compressImage(file, maxDimension = 1280, quality = 0.8) {
         }
 
         const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = Math.max(1, width);
+        canvas.height = Math.max(1, height);
 
         const ctx = canvas.getContext('2d');
         if (!ctx) {
@@ -94,9 +94,12 @@ export async function extractLabelData(dataUrl) {
   // 1. Edge Function Supabase (fonctionne sur GitHub Pages, Cloudflare Pages, Vercel et en PWA).
   let endpointError = null;
   if (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 25000);
     try {
       const fnResp = await fetch(`${SUPABASE_URL}/functions/v1/extract-label`, {
         method: 'POST',
+        signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
           apikey: SUPABASE_PUBLISHABLE_KEY,
@@ -117,10 +120,16 @@ export async function extractLabelData(dataUrl) {
         );
       }
     } catch (err) {
-      endpointError = /Failed to fetch|NetworkError|load failed/i.test(err.message || '')
-        ? new Error("Service d'analyse d'images injoignable (réseau).")
-        : err;
+      if (err && err.name === 'AbortError') {
+        endpointError = new Error("Délai dépassé lors de l'analyse de l'étiquette (25 s).");
+      } else {
+        endpointError = /Failed to fetch|NetworkError|load failed/i.test(err.message || '')
+          ? new Error("Service d'analyse d'images injoignable (réseau).")
+          : err;
+      }
       console.warn("Analyse d'étiquette indisponible via l'Edge Function Supabase.", err);
+    } finally {
+      clearTimeout(timer);
     }
   }
 
@@ -217,7 +226,7 @@ export function normaliserDateIso(raw) {
   const s = String(raw || '').trim();
   if (!s) return '';
 
-  const isoPrefix = s.match(/\b(20\d{2})[-/.](\d{1,2})[-/.](\d{1,2})\b/);
+  const isoPrefix = s.match(/\b(20\d{2})[-/.](\d{1,2})[-/.](\d{1,2})(?=\D|$)/);
   if (isoPrefix) {
     return formatIsoDate(Number(isoPrefix[1]), Number(isoPrefix[2]), Number(isoPrefix[3]));
   }

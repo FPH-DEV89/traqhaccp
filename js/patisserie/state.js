@@ -137,10 +137,11 @@ export function loadState(etabId = 'serveur', etabName = null) {
 /** Statut DLC recalculé depuis la date limite et l'horizon configuré (≤ 1j urgent, ≤ horizon warning). */
 export function computeLotStatus(dlcDate, horizonDays = null) {
   if (!dlcDate) return 'conforme';
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const limit = new Date(`${String(dlcDate).slice(0, 10)}T00:00:00`);
-  if (Number.isNaN(limit.getTime())) return 'conforme';
+  const m = String(dlcDate).slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return 'conforme';
+  const now = new Date();
+  const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const limitUtc = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
   let horizon = Number(horizonDays);
   if (!Number.isFinite(horizon) || horizon <= 0) {
     try {
@@ -149,7 +150,7 @@ export function computeLotStatus(dlcDate, horizonDays = null) {
     } catch { horizon = 2; }
   }
   const seuilWarn = Math.max(2, Number.isFinite(horizon) && horizon > 0 ? horizon : 2);
-  const jours = Math.round((limit - today) / 86400000);
+  const jours = Math.round((limitUtc - todayUtc) / 86400000);
   if (jours <= 1) return 'urgent';
   if (jours <= seuilWarn) return 'warning';
   return 'conforme';

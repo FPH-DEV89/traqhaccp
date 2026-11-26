@@ -80,6 +80,14 @@ export function closeModals() {
 
 export function openScanModal() {
   playBeep(520, 0.04);
+  const previewImg = document.getElementById('scan-preview-img');
+  const placeholder = document.getElementById('scan-placeholder');
+  const loader = document.getElementById('scan-loading');
+  const statusText = document.getElementById('scan-status-text');
+  if (previewImg) { previewImg.src = ''; previewImg.style.display = 'none'; }
+  if (placeholder) placeholder.style.display = '';
+  if (loader) loader.classList.remove('is-active');
+  if (statusText) statusText.textContent = 'Cadrage détecté · Agrément sanitaire conforme';
   const m = document.getElementById('modal-scan');
   m?.classList.remove('hidden');
   m?.classList.add('flex');
@@ -349,9 +357,14 @@ export async function executeAutomatedScan() {
 }
 
 export async function handleFileUpload(e) {
-  const file = e.target.files && e.target.files[0];
+  const input = e.target;
+  const file = input?.files && input.files[0];
   if (!file) return;
-  await processLabelImage(file);
+  try {
+    await processLabelImage(file);
+  } finally {
+    if (input) input.value = '';
+  }
 }
 
 export async function processLabelImage(file) {
@@ -424,16 +437,20 @@ export async function processLabelImage(file) {
 
 export function handleTraceFormSubmit(e) {
   e.preventDefault();
+  const numOrZero = (id) => {
+    const v = parseFloat(document.getElementById(id)?.value);
+    return Number.isFinite(v) ? v : 0;
+  };
   const values = {
     category: document.getElementById('form-category').value,
     name: document.getElementById('form-name').value,
     supplier: document.getElementById('form-supplier').value,
     lot: document.getElementById('form-lot').value.toUpperCase(),
     dlcDate: document.getElementById('form-dlc-date').value,
-    temp: parseFloat(document.getElementById('form-temp').value),
-    stockQty: parseFloat(document.getElementById('form-stock-qty').value),
+    temp: numOrZero('form-temp'),
+    stockQty: Math.max(0, numOrZero('form-stock-qty')),
     stockUnit: document.getElementById('form-stock-unit').value,
-    unitPriceHT: parseFloat(document.getElementById('form-unit-price').value)
+    unitPriceHT: Math.max(0, numOrZero('form-unit-price'))
   };
 
   /* Correction d'un lot existant : on met à jour la fiche, sans recréer le lot. */
@@ -735,10 +752,13 @@ export function confirmStockDepletion() {
   const usedDeductions = [];
 
   (state.pendingSaleRecipe.ingredients || []).forEach((ing, idx) => {
-    const customQty = parseFloat(document.getElementById(`destock-input-${idx}`)?.value || (ing.qtyPerUnit * state.pendingSaleMultiplier));
+    const rawVal = parseFloat(document.getElementById(`destock-input-${idx}`)?.value);
+    const customQty = Number.isFinite(rawVal) && rawVal >= 0
+      ? rawVal
+      : (ing.qtyPerUnit * state.pendingSaleMultiplier);
     const lotItem = resolveFifoLot(ing);
     if (lotItem) {
-      lotItem.stockQty = Math.max(0, lotItem.stockQty - customQty);
+      lotItem.stockQty = Math.max(0, Math.round((lotItem.stockQty - customQty) * 1000) / 1000);
       usedLotsList.push(lotItem.lot);
       usedDeductions.push({ lot: lotItem.lot, qty: customQty, unit: ing.unit });
     }

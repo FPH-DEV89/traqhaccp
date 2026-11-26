@@ -8,7 +8,6 @@
  * Variable d'environnement requise : OPENROUTER_API_KEY
  * Optionnelle : OPENROUTER_VISION_MODEL (défaut : google/gemini-2.5-flash)
  */
-const CATEGORIES = ['cremerie', 'chocolat', 'fruits', 'farine', 'oeufs'];
 const DEFAULT_MODEL = 'google/gemini-2.5-flash';
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 

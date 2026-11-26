@@ -56,6 +56,5 @@
   "61": "ne",
   "62": "sync.js",
   "66": "pre-push",
-  "67": "check-sw-bump.mjs",
-  "69": "recuperation.js"
+  "67": "check-sw-bump.mjs"
 }
