@@ -34,6 +34,7 @@ import {
   HACCP_NORMS, ALL_14_ALLERGENS, SHELF_LIFE_PRESETS, NC_CATEGORIES,
   DEFAULT_CHECKLIST_ROUTINES, DEFAULT_BRIGADE, DEFAULT_EQUIPMENTS, NAV,
 } from '../src/domain/constants.js';
+import { normaliserDateIso, normaliserExtraction } from '../js/patisserie/ai-scanner.js';
 
 /* ── mode selftest ─────────────────────────────────────────────────────────── */
 const SELFTEST = process.argv.includes('--selftest');
@@ -245,6 +246,50 @@ for (const id of ['dashboard', 'temperatures', 'checklists', 'reception',
 }
 
 console.log('  → Données de référence (brigade, équipements, DLC, 5M, checklists, navigation) vérifiées.');
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* 7. Scan IA étiquettes — normalisation DLC / DDM / DLUO et N° de lot        */
+/* ─────────────────────────────────────────────────────────────────────────── */
+section('7. Scan IA étiquettes — normalisation DLC / DDM / DLUO et N° de lot');
+
+assert(normaliserDateIso('2026-10-18') === '2026-10-18', 'Date ISO déjà valide conservée');
+assert(normaliserDateIso('18/10/2026') === '2026-10-18', 'Date française DD/MM/YYYY convertie en ISO');
+assert(normaliserDateIso('18/10/26') === '2026-10-18',   'Date française DD/MM/YY convertie en ISO');
+assert(normaliserDateIso('18.10.2026') === '2026-10-18', 'Date à points DD.MM.YYYY convertie en ISO');
+assert(normaliserDateIso('06/2028') === '2028-06-30',    'DDM/DLUO MM/YYYY normalisée au dernier jour du mois');
+assert(normaliserDateIso('2028-09') === '2028-09-30',    'DDM/DLUO YYYY-MM normalisée au dernier jour du mois');
+assert(normaliserDateIso('15 juin 2028') === '2028-06-15', 'Date texte français normalisée en ISO');
+
+const extAlias = normaliserExtraction({
+  name: 'Poudre cacao non sucrée',
+  supplier: 'Auchan',
+  dluo: '28/09/2028',
+  lotNumber: 'Lot: J6272068',
+  category: 'chocolat',
+  confidence: 'high',
+});
+assert(extAlias.dlcDate === '2028-09-28', 'Alias dluo normalisé vers dlcDate ISO');
+assert(extAlias.lot === 'J6272068', 'Alias lotNumber nettoyé du préfixe "Lot:"');
+
+const extLotDate = normaliserExtraction({
+  name: 'Confiture de Framboises',
+  supplier: "P'tites Tartines",
+  lot: 'L15 06 2028 10:40',
+  dlcDate: '',
+  category: 'fruits',
+});
+assert(extLotDate.dlcDate === '2028-06-15', 'Date extraite depuis le lot quand dlcDate est vide');
+
+const extSansLot = normaliserExtraction({
+  name: 'Beurre doux',
+  supplier: 'En Cuisine',
+  ddm: '01/01/2027',
+  lot: '',
+});
+assert(extSansLot.dlcDate === '2027-01-01', 'Alias ddm normalisé vers dlcDate ISO');
+assert(extSansLot.lot === 'LOT-20270101', 'Lot généré depuis la date si absent');
+
+console.log('  → Normalisation DLC / DDM / DLUO et N° de lot vérifiée.');
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* Rapport final                                                               */

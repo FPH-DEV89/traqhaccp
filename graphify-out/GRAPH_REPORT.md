@@ -1,17 +1,17 @@
-# Graph Report - traqhaccp  (2026-11-25)
+# Graph Report - traqhaccp  (2026-11-26)
 
 ## Corpus Check
-- 86 files · ~103,708 words
+- 86 files · ~104,540 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 14 file(s) not represented in the graph (top: .css 10, (none) 4)
 
 ## Summary
-- 1123 nodes · 2215 edges · 79 communities (57 shown, 22 thin omitted)
+- 1132 nodes · 2240 edges · 76 communities (56 shown, 20 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 77 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9f3d519b`
+- Built from commit: `fc0d78f1`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -79,7 +79,6 @@
 - build-guide-pdf.mjs
 - ne
 - sync.js
-- extract-label.js
 - notifications.js
 - le
 - check-sw-bump.mjs
@@ -89,8 +88,6 @@
 - /js/patisserie/state.js
 - /src/infrastructure/supabase_client.js
 - /js/patisserie/sync.js
-- encoderFiltres
-- .requete
 - ai-scanner.js
 - capture-scan-guide.mjs
 
@@ -121,23 +118,23 @@
 ## Import Cycles
 - None detected.
 
-## Communities (79 total, 22 thin omitted)
+## Communities (76 total, 20 thin omitted)
 
 ### Community 0 - "app.js"
-Cohesion: 0.09
-Nodes (102): compressImage(), rafraichirToutesLesVues(), syncThemeAttribute(), toggleDarkMode(), playBeep(), showToast(), afficherPortailConnexion(), deconnecterEtablissement() (+94 more)
+Cohesion: 0.08
+Nodes (104): compressImage(), rafraichirToutesLesVues(), syncThemeAttribute(), toggleDarkMode(), playBeep(), showToast(), afficherPortailConnexion(), deconnecterEtablissement() (+96 more)
 
 ### Community 1 - "config.js"
-Cohesion: 0.10
-Nodes (22): appliquerSurchargeModeUrl(), CONFIG_SUPABASE, definirModePersistance(), ecrireStockage(), lireStockage(), MODE_PERSISTANCE, modeParametreUrl(), modePersistance() (+14 more)
+Cohesion: 0.11
+Nodes (20): appliquerSurchargeModeUrl(), CONFIG_SUPABASE, ecrireStockage(), lireStockage(), MODE_PERSISTANCE, modeParametreUrl(), modePersistance(), MODES_PERSISTANCE (+12 more)
 
 ### Community 2 - "BUGS.md — pannes vécues et le gate qui les rend re-livables impossibles"
 Cohesion: 0.20
 Nodes (9): 1. 16/09/2026 — « les titres s'affichent mais rien d'autre », 2. 17/09/2026 — artefact généré périmé + raccourci cassé, 3. 16/09/2026 — écrasement silencieux en cascade, 4. 17/09/2026 — les pièges des gates eux-mêmes (appris en les posant), 5. 18/09/2026 — le gate ne pouvait plus mordre (binaire Playwright absent), 6. 23/09/2026 — le « hors-ligne » qui n'existait pas (service worker jeté en silence), 7. 24/09/2026 — la chaîne de vérification validait du code mort, BUGS.md — pannes vécues et le gate qui les rend re-livables impossibles (+1 more)
 
 ### Community 3 - "settings.js"
-Cohesion: 0.15
-Nodes (30): actionHandlers, armConfirm(), armed, bindSettingsEvents(), clone(), isDarkTheme(), onSettingsClick(), onSettingsSubmit() (+22 more)
+Cohesion: 0.14
+Nodes (30): actionHandlers, armConfirm(), armed, bindSettingsEvents(), clone(), TABS_DATA, isDarkTheme(), onSettingsClick() (+22 more)
 
 ### Community 4 - "DATA.md — Socle de données TraqHACCP"
 Cohesion: 0.18
@@ -149,7 +146,7 @@ Nodes (33): icon(), ICON_ALIAS, iconFor(), ICONS, TRACES, banner(), camera(), cl
 
 ### Community 6 - "settings-norms.js"
 Cohesion: 0.07
-Nodes (47): clone(), DLC_DEFAULTS, DLC_FAMILIES, dlcOf(), EQUIPMENT_TYPES, equipmentType(), frNumber(), frRange() (+39 more)
+Nodes (50): clone(), DLC_DEFAULTS, DLC_FAMILIES, dlcOf(), EQUIPMENT_TYPES, equipmentType(), frNumber(), frRange() (+42 more)
 
 ### Community 7 - "Manuel Utilisateur — TraqHACCP Pro"
 Cohesion: 0.07
@@ -211,6 +208,10 @@ Nodes (3): ASSETS_TO_CACHE, CDN_CRITIQUE, TIERS_SECONDAIRES
 Cohesion: 0.40
 Nodes (4): cleanUrls, headers, redirects, version
 
+### Community 22 - "SupabaseClient"
+Cohesion: 0.14
+Nodes (6): citerValeur(), encoderFiltres(), ErreurSupabase, messageFr(), resoudreUrlRedirection(), SupabaseClient
+
 ### Community 23 - "marked.min.cjs"
 Cohesion: 0.22
 Nodes (3): d(), ie, p()
@@ -220,8 +221,8 @@ Cohesion: 0.15
 Nodes (8): SUPABASE_CLE_SESSION, CLE_PUBLIQUE, CLE_SERVICE, COLLECTIONS_REGISTRE, contenuEnv, { email: EMAIL_CLIENT, url: URL_APP }, journal, URL_SUPA
 
 ### Community 25 - "settings-data.js"
-Cohesion: 0.14
-Nodes (26): ALERT_FALLBACK, applyArchive(), archiveField(), archiveFileName(), backupState(), buildArchive(), chooseArchiveFile(), demanderAutorisation() (+18 more)
+Cohesion: 0.15
+Nodes (25): ALERT_FALLBACK, applyArchive(), archiveField(), archiveFileName(), backupState(), buildArchive(), chooseArchiveFile(), demanderAutorisation() (+17 more)
 
 ### Community 26 - "Déploiement Cloudflare Pages (option 0 €)"
 Cohesion: 0.33
@@ -241,7 +242,7 @@ Nodes (5): 1. Barèmes de Températures Réglementaires (Arrêté du 21/12/2009)
 
 ### Community 38 - "ddpp_report.js"
 Cohesion: 0.12
-Nodes (49): brancherArchivePdf(), dateAujourdhui(), dateDebutDefaut(), exporterArchivePdf(), renderArchivePdf(), correspondLot(), downloadSanitaryReport(), chargeCanonique() (+41 more)
+Nodes (48): brancherArchivePdf(), dateAujourdhui(), dateDebutDefaut(), exporterArchivePdf(), renderArchivePdf(), downloadSanitaryReport(), chargeCanonique(), normaliser() (+40 more)
 
 ### Community 39 - "w"
 Cohesion: 0.09
@@ -320,12 +321,8 @@ Cohesion: 0.15
 Nodes (9): body, MD, OUT_HTML, OUT_PDF, require, ROOT, st, CIBLES (+1 more)
 
 ### Community 62 - "sync.js"
-Cohesion: 0.12
-Nodes (36): afficherEtatSauvegarde(), brancherEtatSauvegarde(), heure(), MODIFIANT, resumerEtat(), surClic(), signalerChangementExterne(), attribuerReglages() (+28 more)
-
-### Community 63 - "extract-label.js"
-Cohesion: 0.67
-Nodes (3): CATEGORIES, handler(), parseJsonLoose()
+Cohesion: 0.11
+Nodes (37): afficherEtatSauvegarde(), brancherEtatSauvegarde(), heure(), MODIFIANT, resumerEtat(), surClic(), brancherSauvegarde(), signalerChangementExterne() (+29 more)
 
 ### Community 64 - "notifications.js"
 Cohesion: 0.27
@@ -339,13 +336,9 @@ Nodes (13): bloc, cible, commits, git(), lireCacheName(), modifies, precaches, q
 Cohesion: 0.44
 Nodes (8): CHAMPS_METIER, CHAMPS_RAPPORTES, cleChamp(), identifiant(), lireListe(), registresOrphelins(), restaurerRegistreOrphelin(), scopeCourant()
 
-### Community 76 - ".requete"
-Cohesion: 0.23
-Nodes (3): ErreurSupabase, messageFr(), resoudreUrlRedirection()
-
 ### Community 77 - "ai-scanner.js"
-Cohesion: 0.39
-Nodes (7): callVisionProviderDirect(), DEMO_LABEL_DATA_URL, demoLabelData(), extractLabelData(), normaliserExtraction(), parseJsonLoose(), VALID_CATEGORIES
+Cohesion: 0.19
+Nodes (17): CATEGORIES, handler(), parseJsonLoose(), callVisionProviderDirect(), DEMO_LABEL_DATA_URL, demoLabelData(), extractLabelData(), formatIsoDate() (+9 more)
 
 ### Community 78 - "capture-scan-guide.mjs"
 Cohesion: 0.40
@@ -353,23 +346,23 @@ Nodes (3): { chromium }, R, require
 
 ## Knowledge Gaps
 - **14 isolated node(s):** `/js/patisserie/etat-sauvegarde.js`, `/js/patisserie/state.js`, `/src/infrastructure/supabase_client.js`, `/js/patisserie/sync.js`, `Design system styleguide` (+9 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 556 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **22 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 560 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `confirm()` connect `Icon and Overlay UI` to `TraqHACCP — Contrat de design « REGISTRE »`?**
-  _High betweenness centrality (0.036) - this node is a cross-community bridge._
+  _High betweenness centrality (0.050) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `saveState()` (e.g. with `Pièges (propres au compte réel)` and `Recette de la synchronisation`) actually correct?**
   _`saveState()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `/js/patisserie/etat-sauvegarde.js`, `/js/patisserie/state.js`, `/src/infrastructure/supabase_client.js` to the rest of the system?**
   _14 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.08540450375312761 - nodes in this community are weakly interconnected._
-- **Why does `w` connect `w` to `oe`, `ne`, `marked.min.cjs`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
+  _Cohesion score 0.084070796460177 - nodes in this community are weakly interconnected._
 - **Should `config.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.10052910052910052 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1076923076923077 - nodes in this community are weakly interconnected._
+- **Should `settings.js` be split into smaller, more focused modules?**
+  _Cohesion score 0.13978494623655913 - nodes in this community are weakly interconnected._
 - **Should `Icon and Overlay UI` be split into smaller, more focused modules?**
   _Cohesion score 0.12435897435897436 - nodes in this community are weakly interconnected._

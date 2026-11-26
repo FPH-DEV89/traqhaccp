@@ -55,7 +55,6 @@
   "60": "build-guide-pdf.mjs",
   "61": "ne",
   "62": "sync.js",
-  "63": "extract-label.js",
   "66": "pre-push",
   "67": "check-sw-bump.mjs",
   "69": "recuperation.js"

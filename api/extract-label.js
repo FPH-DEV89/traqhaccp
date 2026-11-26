@@ -18,8 +18,8 @@ Extrait fidèlement les informations nécessaires à la réception de marchandis
 
 1. "name" : Nom complet et désignation précise du produit (ex: "Beurre de tourage AOP 84%", "Crème Fleurette 35% MG", "Purée de Framboise").
 2. "supplier" : Marque du fabricant ou fournisseur identifié sur l'emballage (ex: "Elle & Vire", "Président", "Valrhona", "Laiterie Montaigu", "Carrefour").
-3. "lot" : Numéro de lot fabricant exact, en lettres majuscules et chiffres, sans le mot "LOT" ou "L:" (ex: "24250B", "ABC-1234").
-4. "dlcDate" : Date Limite de Consommation (DLC) ou Date de Durabilité Minimale (DDM/DLUO/EXP). Convertis impérativement au format strict ISO YYYY-MM-DD (ex: "2026-10-18"). Si l'année est écrite sur 2 chiffres (ex: 18/10/26), convertis-la en 2026.
+3. "lot" : Numéro de lot fabricant exact, en lettres majuscules et chiffres, sans le mot "LOT" ou "L:" (ex: "24250B", "ABC-1234"). Si l'étiquette indique "N° de lot : voir date / DLC / DDM / DLUO", utilise le code date (ex: "28092026").
+4. "dlcDate" : Date Limite de Consommation (DLC : "À consommer jusqu'au") ou Date de Durabilité Minimale (DDM / DLUO / EXP / BBE : "À consommer de préférence avant le / avant fin"). Convertis impérativement au format strict ISO YYYY-MM-DD (ex: "2026-10-18"). Si l'année est écrite sur 2 chiffres (ex: 18/10/26), convertis-la en 2026. Si seuls le mois et l'année sont indiqués (ex: 06/2028), utilise le dernier jour du mois ("2028-06-30").
 5. "category" : Choisis impérativement l'une des 5 catégories suivantes :
    - "cremerie" : laits, beurres, crèmes, fromages, matières grasses laitières
    - "chocolat" : chocolats, cacaos, pralines, ganaches
@@ -30,6 +30,8 @@ Extrait fidèlement les informations nécessaires à la réception de marchandis
 6. "confidence" : Indice de confiance ("high", "medium", "low").
 
 Renvoie UNIQUEMENT un objet JSON valide correspondant à ces champs, sans balises de code ni texte explicatif.`;
+
+import { normaliserExtraction } from '../js/patisserie/ai-scanner.js';
 
 /** Extrait un objet JSON d'une réponse texte (tolère les balises Markdown résiduelles). */
 function parseJsonLoose(text) {
@@ -115,14 +117,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      data: {
-        name: parsed.name || '',
-        supplier: parsed.supplier || '',
-        lot: (parsed.lot || '').toUpperCase().trim(),
-        dlcDate: parsed.dlcDate || '',
-        category: CATEGORIES.includes(parsed.category) ? parsed.category : 'cremerie',
-        confidence: parsed.confidence || 'medium'
-      }
+      data: normaliserExtraction(parsed)
     });
   } catch (err) {
     console.error('Erreur traitement extraction étiquette:', err);

@@ -12,9 +12,9 @@
     "semantic_hash": ""
   },
   "sw.js": {
-    "mtime": 1795616964.4899113,
-    "seen": 1795617133.7840574,
-    "ast_hash": "2286c65e6a5054895d7f31d204be1824",
+    "mtime": 1795703152.9226372,
+    "seen": 1795703222.9400432,
+    "ast_hash": "39cecbd8790ee1614ec52002974b88ce",
     "semantic_hash": ""
   },
   "vercel.json": {
@@ -84,9 +84,9 @@
     "semantic_hash": ""
   },
   "tools/test-domain.mjs": {
-    "mtime": 1795614800.8757544,
-    "seen": 1795614979.6324053,
-    "ast_hash": "ebea798c619e436c5e8e8a5c3efad6af",
+    "mtime": 1795703168.3702161,
+    "seen": 1795703222.9400432,
+    "ast_hash": "094e8a792138f8f80e75000c0794c366",
     "semantic_hash": ""
   },
   "design/styleguide.html": {
@@ -186,8 +186,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1795615116.2281804,
-    "seen": 1795617133.7682717,
+    "mtime": 1795620992.195593,
+    "seen": 1795703222.9285288,
     "ast_hash": "105dba4ef4f7d41848378d9d6c5852ac",
     "semantic_hash": ""
   },
@@ -345,21 +345,21 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1795616865.6834526,
-    "seen": 1795617133.7840574,
-    "ast_hash": "8f37282cda30da628d79553502ca3b15",
+    "mtime": 1795703152.0719805,
+    "seen": 1795703222.9400432,
+    "ast_hash": "9696de20e39b6090d250c1cf949489b9",
     "semantic_hash": ""
   },
   "api/extract-label.js": {
-    "mtime": 1795614800.6867032,
-    "seen": 1795614979.6324053,
-    "ast_hash": "55b11a31f0c2887d21bc45de4a6602be",
+    "mtime": 1795703149.7313082,
+    "seen": 1795703222.9285288,
+    "ast_hash": "8572bdca991b645ab60f87ba6db2b8ac",
     "semantic_hash": ""
   },
   "js/patisserie/ai-scanner.js": {
-    "mtime": 1795616705.4533894,
-    "seen": 1795617133.7682717,
-    "ast_hash": "08dfaca39645d9198c470e3b9d75a31d",
+    "mtime": 1795703138.750498,
+    "seen": 1795703222.9285288,
+    "ast_hash": "2b2f3147dac0f8034fa529285446a3e9",
     "semantic_hash": ""
   },
   "docs/GUIDE_UTILISATEUR.md": {
