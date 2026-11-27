@@ -79,55 +79,6 @@ export function normaliserMode() {
 }
 
 /**
- * Mode demandé par l'URL de la page.
- * @returns {'serveur' | null}
- */
-export function modeParametreUrl() {
-  return 'serveur';
-}
-
-/**
- * Recopie dans `localStorage` le mode demandé par `?mode=…`, pour qu'il survive à un
- * rechargement de PWA (la chaîne de requête n'est pas conservée par le raccourci installé).
- *
- * Fonction à effet de bord, volontairement séparée : `modePersistance()` doit rester pure.
- * Appelée une fois au démarrage (voir `boot()` dans src/presentation/context.js).
- *
- * @returns {'local' | 'serveur' | null} mode appliqué, ou null si aucun paramètre d'URL.
- */
-export function appliquerSurchargeModeUrl() {
-  const depuisUrl = modeParametreUrl();
-  if (depuisUrl === null) return null;
-  ecrireStockage(SUPABASE_CLE_MODE, depuisUrl);
-  return depuisUrl;
-}
-
-/**
- * Retire le paramètre `?mode=…` de l'URL courante (entrée d'historique remplacée).
- *
- * Nécessaire dès qu'un choix EXPLICITE contredit l'URL : sur `index.html?mode=serveur`,
- * « Continuer sans compte » persiste le mode local puis recharge — sans ce nettoyage,
- * la surcharge d'URL reprendrait la main et l'utilisateur reviendrait sur le portail
- * de connexion en boucle.
- *
- * @returns {boolean} Vrai si un paramètre `mode` a effectivement été retiré.
- */
-export function retirerModeUrl() {
-  try {
-    if (typeof window === 'undefined' || !window.location || !window.history
-      || typeof window.history.replaceState !== 'function') return false;
-    const url = new URL(window.location.href);
-    if (!url.searchParams.has('mode')) return false;
-    url.searchParams.delete('mode');
-    const reste = url.searchParams.toString();
-    window.history.replaceState(null, '', `${url.pathname}${reste ? `?${reste}` : ''}${url.hash}`);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
  * Mode de persistance effectif, par ordre de priorité décroissant :
  *   1. paramètre d'URL `?mode=…` (voir modeParametreUrl) ;
  *   2. surcharge persistante `localStorage['traqhaccp_v2_mode']` ;

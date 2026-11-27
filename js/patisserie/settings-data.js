@@ -15,7 +15,7 @@
  * du design system (.section, .sheet, .kpi, .mark, .callout, .settings__*, .btn, .switch, .select).
  */
 
-import { state, saveState } from './state.js';
+import { state, saveState, normaliserIds } from './state.js';
 import { STORAGE_KEYS, APP_VERSION } from '../../src/domain/constants.js';
 import { renderArchivePdf, brancherArchivePdf } from './archive.js';
 
@@ -309,10 +309,15 @@ function parseArchive(texte) {
 
 function applyArchive(donnees) {
   const reg = donnees.registre;
+  const pinsLocaux = new Map((state.teamMembers || []).filter((m) => m && m.id && m.pin).map((m) => [m.id, m.pin]));
   ['lots', 'recipes', 'secondaryDlcs', 'witnessSamples', 'salesHistory', 'teamMembers']
     .forEach((cle) => {
       if (Array.isArray(reg[cle])) state[cle] = reg[cle];
     });
+  (state.teamMembers || []).forEach((m) => {
+    if (m && m.id && !m.pin && pinsLocaux.has(m.id)) m.pin = pinsLocaux.get(m.id);
+  });
+  normaliserIds();
   const operateur = reg.currentOperatorId;
   if (operateur && (state.teamMembers || []).some((m) => m.id === operateur)) {
     state.currentOperatorId = operateur;

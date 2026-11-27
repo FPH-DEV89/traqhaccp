@@ -31,6 +31,9 @@ Extrait fidèlement les informations nécessaires à la réception de marchandis
 Renvoie UNIQUEMENT un objet JSON valide correspondant à ces champs, sans balises de code ni texte explicatif.`;
 
 import { normaliserExtraction } from '../js/patisserie/ai-scanner.js';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '../src/infrastructure/config.js';
+
+const MAX_IMAGE_CHARS = 3_000_000;
 
 /** Extrait un objet JSON d'une réponse texte (tolère les balises Markdown résiduelles). */
 function parseJsonLoose(text) {
@@ -43,16 +46,34 @@ function parseJsonLoose(text) {
   }
 }
 
+async function verifierJetonSupabase(authHeader) {
+  const token = String(authHeader || '').replace(/^Bearer\s+/i, '').trim();
+  if (!token) return false;
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: `Bearer ${token}` }
+    });
+    return resp.ok;
+  } catch {
+    return false;
+  }
+}
+
 export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     return res.status(200).end();
   }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Méthode non autorisée. Utilisez POST.' });
+  }
+
+  if (!(await verifierJetonSupabase(req.headers?.authorization))) {
+    return res.status(401).json({ error: 'Authentification requise pour analyser une étiquette.' });
   }
 
   const apiKey = process.env.OPENROUTER_API_KEY;
@@ -64,12 +85,15 @@ export default async function handler(req, res) {
 
   try {
     const { image, mimeType = 'image/jpeg' } = req.body || {};
-    if (!image) {
+    if (!image || typeof image !== 'string') {
       return res.status(400).json({ error: 'Image manquante dans le corps de la requête.' });
+    }
+    if (image.length > MAX_IMAGE_CHARS) {
+      return res.status(413).json({ error: 'Image trop volumineuse (maximum ~2 Mo).' });
     }
 
     // Nettoyage du préfixe data:image/...;base64, si présent
-    const base64Data = image.replace(/^data:image\/[a-z]+;base64,/, '');
+    const base64Data = image.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, '');
 
     const response = await fetch(OPENROUTER_URL, {
       method: 'POST',

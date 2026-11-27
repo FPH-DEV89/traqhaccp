@@ -2,7 +2,7 @@
  * TraqHACCP Pâtisserie — Modal Management & Form Submissions
  */
 import { state, saveState, getCurrentOperator, setCurrentOperator, genererId, computeLotStatus, resolveFifoLot } from './state.js';
-import { calculateRecipeMetrics, formatDateFr } from './calculations.js';
+import { calculateRecipeMetrics, formatDateFr, todayLocalIso } from './calculations.js';
 import { playBeep, showToast } from './audio-toast.js';
 import { compressImage, extractLabelData } from './ai-scanner.js';
 import { readSettings, esc } from './settings.js';
@@ -236,7 +236,7 @@ export function adjustSecondaryDelay(type) {
   if (type === 'cuisson' || type === 'entame') days = Number(dlcCfg.standard) || 3;
   if (type === 'sousvide') days = Number(dlcCfg.sousVide) || 5;
 
-  const expiry = new Date(Date.now() + days * 86400000).toISOString().split('T')[0];
+  const expiry = todayLocalIso(new Date(Date.now() + days * 86400000));
   const secExp = document.getElementById('sec-computed-dlc');
   if (secExp) secExp.value = expiry;
 }
@@ -285,14 +285,41 @@ function appliquerChangementOperateur(userId) {
   playBeep(680, 0.05);
 }
 
-export function handleOperatorPinInput(val) {
+async function hashPin(pin) {
+  const clean = String(pin || '').trim();
+  if (!clean) return '';
+  if (typeof crypto === 'undefined' || !crypto.subtle) return clean;
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(clean));
+  const hex = Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, '0')).join('');
+  return `sha256:${clean.length}:${hex}`;
+}
+
+async function verifyPin(input, stored) {
+  const s = String(stored || '');
+  const candidate = String(input || '').trim();
+  if (!s) return true;
+  if (s.startsWith('sha256:')) {
+    const [, lenStr, expectedHex] = s.split(':');
+    const hashed = await hashPin(candidate);
+    const actualHex = hashed.startsWith('sha256:') ? hashed.split(':')[2] : '';
+    return { match: actualHex === expectedHex, expectedLen: Number(lenStr) || 4, legacy: false };
+  }
+  return { match: candidate === s, expectedLen: s.length, legacy: true };
+}
+
+export async function handleOperatorPinInput(val) {
   if (!pendingOperatorId) return;
   const target = state.teamMembers.find(m => m.id === pendingOperatorId);
   if (!target) return;
   const saisie = String(val || '').trim();
-  if (saisie === String(target.pin)) {
+  const res = await verifyPin(saisie, target.pin);
+  if (res.match) {
+    if (res.legacy && target.pin) {
+      target.pin = await hashPin(saisie);
+      saveState();
+    }
     appliquerChangementOperateur(target.id);
-  } else if (saisie.length >= String(target.pin).length) {
+  } else if (saisie.length >= res.expectedLen) {
     playBeep(250, 0.1);
     showToast(`Code PIN incorrect pour ${target.firstName}.`);
     const pinInput = document.getElementById('operator-pin-input');
@@ -300,7 +327,7 @@ export function handleOperatorPinInput(val) {
   }
 }
 
-export function handleSwitchOperator(userId) {
+export async function handleSwitchOperator(userId) {
   const target = state.teamMembers.find(m => m.id === userId);
   if (target && target.pin && target.id !== state.currentOperatorId) {
     const modal = document.getElementById('modal-operator-switch');
@@ -308,7 +335,7 @@ export function handleSwitchOperator(userId) {
     const pinBox = document.getElementById('operator-pin-box');
     const pinInput = document.getElementById('operator-pin-input');
     if (pinBox && pinInput) {
-      if (pendingOperatorId === userId && pinInput.value.trim() === String(target.pin)) {
+      if (pendingOperatorId === userId && (await verifyPin(pinInput.value, target.pin)).match) {
         appliquerChangementOperateur(userId);
         return;
       }
@@ -481,7 +508,7 @@ export function handleTraceFormSubmit(e) {
   const newLot = {
     id: genererId('L', state.lots),
     ...values,
-    receiptDate: new Date().toISOString().split('T')[0],
+    receiptDate: todayLocalIso(),
     status: computeLotStatus(values.dlcDate),
     operator: nomOperateurCourant()
   };
@@ -501,7 +528,8 @@ export function handleRecipeFormSubmit(e) {
   e.preventDefault();
   const name = document.getElementById('recipe-form-name').value;
   const icon = document.getElementById('recipe-form-icon').value || '🍰';
-  const price = parseFloat(document.getElementById('recipe-form-price').value);
+  const rawPrice = parseFloat(document.getElementById('recipe-form-price').value);
+  const price = Number.isFinite(rawPrice) && rawPrice >= 0 ? rawPrice : 0;
 
   const ingRows = document.querySelectorAll('.recipe-ing-row');
   const ingredients = [];
@@ -780,7 +808,7 @@ export function confirmStockDepletion() {
   const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   state.salesHistory.unshift({
     id: genererId('V', state.salesHistory),
-    date: now.toISOString().split('T')[0],
+    date: todayLocalIso(now),
     time: timeStr,
     recipeName: state.pendingSaleRecipe.name,
     channel: custChannel,
@@ -820,7 +848,7 @@ export function handleSecondaryDlcSubmit(e) {
     name: name,
     parentLot: parent,
     type: type,
-    creationDate: new Date().toISOString().split('T')[0],
+    creationDate: todayLocalIso(),
     expiryDate: exp,
     operator: nomOperateurCourant()
   });
@@ -840,13 +868,13 @@ export function handleWitnessFormSubmit(e) {
   const temp = document.getElementById('witness-temp').value;
 
   const now = new Date();
-  const exp = new Date(now.getTime() + 5 * 86400000).toISOString().split('T')[0];
+  const exp = todayLocalIso(new Date(now.getTime() + 5 * 86400000));
 
   state.witnessSamples.unshift({
     id: genererId('WIT', state.witnessSamples),
     dishName: name,
     service: service,
-    serviceDate: now.toISOString().split('T')[0],
+    serviceDate: todayLocalIso(now),
     expiryDate: exp,
     temp: temp,
     operator: nomOperateurCourant()
@@ -860,7 +888,7 @@ export function handleWitnessFormSubmit(e) {
   e.target.reset();
 }
 
-export function handleAddUserSubmit(e) {
+export async function handleAddUserSubmit(e) {
   e.preventDefault();
   const first = document.getElementById('user-firstname').value.trim();
   const last = document.getElementById('user-lastname').value.trim();
@@ -881,9 +909,9 @@ export function handleAddUserSubmit(e) {
     lastName: last,
     initials: initials,
     role: role,
-    pin: pin,
+    pin: pin ? await hashPin(pin) : '',
     active: true,
-    joinedDate: new Date().toISOString().split('T')[0]
+    joinedDate: todayLocalIso()
   };
 
   state.teamMembers.push(newUser);
@@ -919,7 +947,7 @@ export function openSaleEditModal(id, index) {
   if (recap) {
     recap.innerText = [
       `${sale.recipeName} — ${sale.qty} pièce(s)`,
-      `${sale.totalTTC.toFixed(2)} € TTC encaissés à ${sale.time}`,
+      `${Number(sale.totalTTC || 0).toFixed(2)} € TTC encaissés à ${sale.time}`,
       sale.lotsUsed ? `Lots déstockés : ${sale.lotsUsed}` : ''
     ].filter(Boolean).join(' · ');
   }
@@ -1010,7 +1038,7 @@ export function openSaleDeleteModal(id, index) {
   const recap = document.getElementById('sale-delete-recap');
   if (recap) {
     recap.innerText = [
-      `${sale.time} — ${sale.recipeName} — ${sale.qty} pièce(s) — ${sale.totalTTC.toFixed(2)} € TTC`,
+      `${sale.time} — ${sale.recipeName} — ${sale.qty} pièce(s) — ${Number(sale.totalTTC || 0).toFixed(2)} € TTC`,
       `Client : ${sale.customerName}`,
       rendus.length ? `Rendu au stock : ${rendus.join(' · ')}` : 'Aucun lot lié : rien à rendre au stock'
     ].join(' · ');

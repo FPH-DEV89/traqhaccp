@@ -209,9 +209,10 @@ export async function viderFile() {
     parCollection.get(operation.collection).push(operation);
   }
 
-  const clesEnvoyees = new Set();
+  const clesEnvoyees = new Map();
   const clesEchouees = new Set();
   const cle = (o) => `${o.collection}::${o.record_id}`;
+  const signatureOp = (o) => `${JSON.stringify(o.payload ?? null)}:${!!o.deleted}`;
 
   try {
     for (const [collection, operations] of parCollection) {
@@ -227,7 +228,7 @@ export async function viderFile() {
           upsert: true,
           onConflict: 'establishment_id,collection,record_id',
         });
-        operations.forEach((operation) => clesEnvoyees.add(cle(operation)));
+        operations.forEach((operation) => clesEnvoyees.set(cle(operation), signatureOp(operation)));
         // L'horodatage serveur fait foi : on le recopie dans le miroir pour que
         // la comparaison « qui est le plus récent » reste juste.
         const miroir = lireMiroir();
@@ -246,9 +247,12 @@ export async function viderFile() {
     enCours = false;
   }
 
-  // On ne retire de la file que ce qui est parti : les opérations arrivées
-  // pendant l'envoi, ou en échec, restent pour le prochain passage.
-  const restants = lireFile().filter((operation) => !clesEnvoyees.has(cle(operation)) || clesEchouees.has(cle(operation)));
+  // On ne retire de la file que ce qui est parti avec la même signature :
+  // une édition survenue pendant l'envoi reste en file.
+  const restants = lireFile().filter((operation) => {
+    const k = cle(operation);
+    return clesEchouees.has(k) || clesEnvoyees.get(k) !== signatureOp(operation);
+  });
   ecrireFile(restants);
   return { envoyes: clesEnvoyees.size - clesEchouees.size, restants: restants.length };
 }
@@ -290,29 +294,25 @@ export async function recevoirRegistre() {
 
   let lus = 0;
   let adoptes = 0;
-  let curseur = '';
   const lignes = [];
   const vues = new Set();
 
   for (let page = 0; page < PAGES_MAX; page += 1) {
-    const filtres = curseur ? { updated_at: `gte.${curseur}` } : {};
     const lot = await supabase.select(TABLE, {
       colonnes: 'collection,record_id,payload,deleted,updated_at',
-      filtres,
-      ordre: 'updated_at.asc',
+      ordre: 'updated_at.asc,collection.asc,record_id.asc',
       limite: TAILLE_PAGE,
+      decalage: page * TAILLE_PAGE,
     });
     const rang = Array.isArray(lot) ? lot : [];
     for (const ligne of rang) {
       const signature = `${ligne.collection}::${ligne.record_id}`;
       lus += 1;
-      if (vues.has(signature)) continue; // recouvrement de page : on déduplique
+      if (vues.has(signature)) continue;
       vues.add(signature);
       lignes.push(ligne);
     }
-    const dernier = rang[rang.length - 1];
-    if (!dernier || rang.length < TAILLE_PAGE || dernier.updated_at === curseur) break;
-    curseur = dernier.updated_at;
+    if (rang.length < TAILLE_PAGE) break;
   }
 
   attribuerReglages(lignes);

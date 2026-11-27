@@ -438,6 +438,7 @@ export class SupabaseClient {
     params.set('select', options.colonnes ?? '*');
     if (options.ordre) params.set('order', options.ordre);
     if (options.limite) params.set('limit', String(options.limite));
+    if (options.decalage) params.set('offset', String(options.decalage));
     return this.requete(`/rest/v1/${table}?${params.toString()}`);
   }
 

@@ -30,9 +30,11 @@ globalThis.window = globalThis;
 
 const { normaliserDateIso, normaliserExtraction } = await import('../js/patisserie/ai-scanner.js');
 const { state, computeLotStatus, resolveFifoLot, genererId, normaliserIds, loadState } = await import('../js/patisserie/state.js');
-const { calculateRecipeMetrics, formatDateFr } = await import('../js/patisserie/calculations.js');
+const { calculateRecipeMetrics, formatDateFr, todayLocalIso } = await import('../js/patisserie/calculations.js');
 const { dansHeuresCalmes, alertesDuJour } = await import('../js/patisserie/notifications.js');
 const { registresOrphelins, restaurerRegistreOrphelin } = await import('../js/patisserie/recuperation.js');
+const { supabase } = await import('../src/infrastructure/supabase_client.js');
+const { detecterChangements, viderFile, recevoirRegistre } = await import('../js/patisserie/sync.js');
 
 let checks = 0;
 let failures = 0;
@@ -200,6 +202,59 @@ const rest2 = restaurerRegistreOrphelin();
 assert(rest2 === null, 'Second appel idempotent (ne duplique jamais)');
 
 console.log('  → Détection et fusion idempotente de registre orphelin OK.');
+
+/* ── 6. Dates locales & fiabilité de la synchronisation (sync.js) ─────────── */
+section('6. Dates locales & synchronisation (calculations.js, sync.js)');
+
+assert(todayLocalIso(new Date(2026, 10, 27, 0, 15)) === '2026-11-27', 'todayLocalIso garde la date locale juste après minuit');
+
+localStorage.clear();
+const etabUuid = '11111111-1111-4111-8111-111111111111';
+localStorage.setItem('traqhaccp_v2_auth_session', JSON.stringify({ access_token: 'tok-test' }));
+loadState(etabUuid, 'Sync Test');
+
+// 6a. Pagination >500 lignes partageant exactement le même updated_at
+const sameTs = '2026-11-27T01:00:00Z';
+const fakeRows = Array.from({ length: 505 }, (_, i) => ({
+  collection: 'lots',
+  record_id: `L-BULK-${i}`,
+  payload: { id: `L-BULK-${i}`, name: `Ing ${i}`, lot: `B${i}`, stockQty: 1 },
+  deleted: false,
+  updated_at: sameTs,
+}));
+const origSelect = supabase.select.bind(supabase);
+const origInsert = supabase.insert.bind(supabase);
+try {
+  supabase.select = async (_t, opts) => {
+    const off = opts?.decalage || 0;
+    const lim = opts?.limite || 500;
+    return fakeRows.slice(off, off + lim);
+  };
+  const recRes = await recevoirRegistre();
+  assert(recRes.ok && recRes.adoptes === 505 && state.lots.length === 505,
+    `Pagination sync >500 lignes au même updated_at (adoptes=${recRes.adoptes}, lots=${state.lots.length})`);
+
+  // 6b. Modification concurrente pendant viderFile() non effacée de la file
+  state.lots = [{ id: 'L-RACE', name: 'Beurre v1', lot: 'R1', stockQty: 5 }];
+  detecterChangements();
+  let callCount = 0;
+  supabase.insert = async (_t, lignes) => {
+    callCount++;
+    if (callCount === 1) {
+      // Simule une édition pendant le vol de la première requête
+      state.lots[0] = { id: 'L-RACE', name: 'Beurre v2', lot: 'R1', stockQty: 2 };
+      detecterChangements();
+    }
+    return lignes.map((l) => ({ ...l, updated_at: '2026-11-27T02:00:00Z' }));
+  };
+  const vRes = await viderFile();
+  assert(vRes.restants === 1, `Édition concurrente conservée en file après envoi (restants=${vRes.restants})`);
+} finally {
+  supabase.select = origSelect;
+  supabase.insert = origInsert;
+}
+
+console.log('  → Dates locales, pagination >500 et file concurrente OK.');
 
 /* ── Bilan ────────────────────────────────────────────────────────────────── */
 console.log(`\ntest-features: ${checks} assertion(s) · ${failures} échec(s)`);

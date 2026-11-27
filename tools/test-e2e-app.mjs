@@ -33,8 +33,6 @@ function loadPlaywright() {
     'playwright',
     'playwright-core',
     '/opt/data/node_modules/playwright',
-    'C:/Users/Admin/work/cartable-qa3/node_modules/playwright-core',
-    'C:/Users/Admin/work/cartable-qa2/node_modules/playwright-core',
   ];
   for (const c of candidats) {
     if (!c) continue;
@@ -126,7 +124,22 @@ try {
   assert(Boolean(demoVals.name && demoVals.supplier && demoVals.lot), `Démo : produit/fournisseur/lot pré-remplis (${demoVals.lot})`);
   assert(/^\d{4}-\d{2}-\d{2}$/.test(demoVals.dlc || ''), `Démo : DLC ISO valide (${demoVals.dlc})`);
 
-  console.log('\n=== E2E 2 · Scan photo réel (Edge Function Supabase) ===');
+  console.log('\n=== E2E 2 · Scan photo (Edge Function simulée) ===');
+  await page.route('**/functions/v1/extract-label', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      success: true,
+      data: {
+        name: 'Beurre de Tourage AOP',
+        supplier: 'Laiterie Montaigu',
+        lot: 'ABC-1234',
+        dlcDate: '2026-09-28',
+        category: 'cremerie',
+        confidence: 'high',
+      },
+    }),
+  }));
   await page.evaluate(() => { window.closeModals(); window.openScanModal(); });
   const resetOk = await page.evaluate(() => {
     const img = document.getElementById('scan-preview-img');

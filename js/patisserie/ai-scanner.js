@@ -1,4 +1,4 @@
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '../../src/infrastructure/config.js';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_CLE_SESSION } from '../../src/infrastructure/config.js';
 
 /**
  * js/patisserie/ai-scanner.js
@@ -135,9 +135,15 @@ export async function extractLabelData(dataUrl) {
 
   // 2. Repli endpoint serverless relatif (Vercel / serveur local avec /api).
   try {
+    const headersApi = { 'Content-Type': 'application/json' };
+    try {
+      const brutSess = localStorage.getItem(SUPABASE_CLE_SESSION);
+      const token = brutSess ? JSON.parse(brutSess)?.access_token : '';
+      if (token) headersApi.Authorization = `Bearer ${token}`;
+    } catch { /* ignore */ }
     const response = await fetch('./api/extract-label', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headersApi,
       body: JSON.stringify({ image: base64Data, mimeType: 'image/jpeg' })
     });
 
